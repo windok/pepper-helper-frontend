@@ -1,0 +1,127 @@
+{
+  "product-list": [
+    {
+      "id": 1,
+      "name": "Inbox",
+      "state": "active"
+    },
+    {
+      "id": 2,
+      "name": "My List",
+      "state": "active"
+    },
+    {
+      "id": 3,
+      "name": "Test",
+      "state": "archived"
+    },
+    {
+      "name": "Create test",
+      "state": "active",
+      "id": 4
+    }
+  ],
+  "product": [
+    {
+      "id": 1,
+      "name": "Tomato",
+      "listId": 1,
+      "state": "bought",
+      "quantity": 3,
+      "unit": "lb."
+    },
+    {
+      "id": 2,
+      "name": "Milk",
+      "listId": 1,
+      "state": "to-buy",
+      "quantity": 1,
+      "unit": "bottle"
+    },
+    {
+      "id": 3,
+      "name": "Honey",
+      "listId": 1,
+      "state": "to-buy",
+      "quantity": 1,
+      "unit": "bottle"
+    },
+    {
+      "id": 4,
+      "name": "Cookies",
+      "listId": 1,
+      "state": "bought",
+      "quantity": 2,
+      "unit": "boxes"
+    },
+    {
+      "id": 5,
+      "name": "Banana",
+      "listId": 1,
+      "state": "bought",
+      "quantity": 2,
+      "unit": "lb."
+    },
+    {
+      "id": 6,
+      "name": "Apple pie",
+      "listId": 1,
+      "state": "to-buy",
+      "quantity": 2,
+      "unit": "lb."
+    }
+  ],
+  "activities": [
+    {
+      "id": 1,
+      "state": "completed",
+      "customer": {
+        "name": "Ivan",
+        "address": "Kharkiv"
+      },
+      "inventories": []
+    },
+    {
+      "id": 2,
+      "state": "started",
+      "customer": {
+        "name": "Roman",
+        "address": "Kharkiv"
+      },
+      "inventories": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": 3,
+      "state": "pending",
+      "customer": {
+        "name": "Lera",
+        "address": "Kharkiv"
+      },
+      "inventories": [
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "inventories": [
+    {
+      "id": 1,
+      "name": "Cable",
+      "quantity": 50
+    },
+    {
+      "id": 2,
+      "name": "TV receiver",
+      "quantity": 1
+    },
+    {
+      "id": 1,
+      "name": "Ladder",
+      "quantity": 1
+    }
+  ]
+}
