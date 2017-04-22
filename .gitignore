@@ -3,5 +3,6 @@
 
 /node_modules/
 
-/public/static/bundle.js
+/public/static/*.js
+/public/static/*.map
 

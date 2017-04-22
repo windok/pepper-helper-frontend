@@ -70,58 +70,5 @@
       "quantity": 2,
       "unit": "lb."
     }
-  ],
-  "activities": [
-    {
-      "id": 1,
-      "state": "completed",
-      "customer": {
-        "name": "Ivan",
-        "address": "Kharkiv"
-      },
-      "inventories": []
-    },
-    {
-      "id": 2,
-      "state": "started",
-      "customer": {
-        "name": "Roman",
-        "address": "Kharkiv"
-      },
-      "inventories": [
-        1,
-        2
-      ]
-    },
-    {
-      "id": 3,
-      "state": "pending",
-      "customer": {
-        "name": "Lera",
-        "address": "Kharkiv"
-      },
-      "inventories": [
-        1,
-        2,
-        3
-      ]
-    }
-  ],
-  "inventories": [
-    {
-      "id": 1,
-      "name": "Cable",
-      "quantity": 50
-    },
-    {
-      "id": 2,
-      "name": "TV receiver",
-      "quantity": 1
-    },
-    {
-      "id": 1,
-      "name": "Ladder",
-      "quantity": 1
-    }
   ]
 }
