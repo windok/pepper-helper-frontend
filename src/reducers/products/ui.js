@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import * as actionType from '../actions';
+import * as actionType from 'Actions';
 
 const uiCollection = () => {
 

@@ -1,3 +1,13 @@
 import {combineReducers} from 'redux';
 
-export default combineReducers({});
+import productStorage from './products/storage';
+import uiCollection from './products/ui';
+
+const productApp = combineReducers({
+    productStorage,
+    all: uiCollection()
+});
+
+export default combineReducers({
+   productApp
+});

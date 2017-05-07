@@ -10,11 +10,10 @@ export default {
     },
     resolve: {
         alias: {
-            actions: 'actions/',
-            components: 'components/',
-            reducers: 'reducers/',
-            services: 'services/',
-            productScreens: 'screens/product/'
+            Actions: path.resolve(__dirname, 'src/actions/'),
+            Components: path.resolve(__dirname, 'src/components/'),
+            Reducers: path.resolve(__dirname, 'src/reducers/'),
+            Services: path.resolve(__dirname, 'src/services/'),
         },
         extensions: ['.js']
     },

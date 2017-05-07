@@ -1,4 +1,4 @@
-import * as actionType from '../actions';
+import * as actionType from 'Actions';
 
 function productStorage(state = {}, action) {
     switch (action.type) {
