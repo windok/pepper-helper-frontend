@@ -10,7 +10,6 @@ const Root = ({store}) => (
         <BrowserRouter>
             <Main>
                 <Switch>
-                    <Route component/>
                     <Route component={NoMatch}/>
                 </Switch>
             </Main>

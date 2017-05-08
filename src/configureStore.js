@@ -9,6 +9,7 @@ const configureStore = () => {
 
     return applyMiddleware(...middleWares)(createStore)(
         reducers,
+        // todo add this options only in dev environment
         window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     );
 };
