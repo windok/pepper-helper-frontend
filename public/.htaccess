@@ -1,0 +1,15 @@
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^www\.pepper-helper\.com$ [NC]
+RewriteRule ^(.*)$ https://pepper-helper.com/$1 [R=301,L]
+
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} ^pepper-helper\.com$ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ https://pepper-helper.com/$1 [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule (.*) index.html
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+
