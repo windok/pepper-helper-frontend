@@ -14,6 +14,7 @@ export default {
             Components: path.resolve(__dirname, 'src/components/'),
             Reducers: path.resolve(__dirname, 'src/reducers/'),
             Services: path.resolve(__dirname, 'src/services/'),
+            Screens: path.resolve(__dirname, 'src/screens/'),
         },
         extensions: ['.js']
     },

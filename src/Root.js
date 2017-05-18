@@ -2,18 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Provider} from 'react-redux';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
-import Main from './components/Main';
-import NoMatch from './components/NoMatch';
+import Sidebar from 'Components/Sidebar';
+import UserScreen from 'Screens/user';
+import ProductListCollection from 'Screens/productListCollection';
+import ProductList from 'Screens/productList';
 
 const Root = ({store}) => (
     <Provider store={store}>
-        <BrowserRouter>
-            <Main>
+        <div>
+            <Sidebar>
+                <UserScreen/>
+                <ProductListCollection/>
+            </Sidebar>
+
+            <BrowserRouter>
                 <Switch>
-                    <Route component={NoMatch}/>
+                    <Route component={ProductList}/>
                 </Switch>
-            </Main>
-        </BrowserRouter>
+            </BrowserRouter>
+        </div>
     </Provider>
 );
 
