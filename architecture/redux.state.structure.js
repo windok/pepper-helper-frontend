@@ -1,10 +1,12 @@
 const state = {
-    menubar: {
-        title: "Product list default name",
-        showSidebar: true,
-        showBackButton: true,
-        showShareButton: true,
-        showSettingButton: true
+    ui: {
+        menubar: {
+            title: "Product list default name",
+            showSidebar: true,
+            showBackButton: true,
+            showShareButton: true,
+            showSettingButton: true
+        },
     },
     measurementUnits: {
         1: {
@@ -32,19 +34,21 @@ const state = {
         15: {
             id: 15,
             name: "default",
-            listItems: [
-                {
-                    id: 2000,
-                    listId: 15,
-                    productId: 77,
-                    productName: "Bread",
-                    groupId: 75,
-                    groupName: "Bakery",
-                    measurementUnitId: 5,
-                    status: "draft",
-                    quantity: 1
-                }
-            ]
+            listItems: [2000]
+        }
+    },
+    listItems: {
+        2000: {
+            "id": 1,
+            "listId": 1,
+            "translationId": 1,
+            "unitId": 1,
+            "status": "draft",
+            "groupId": 1,
+            "quantity": "1",
+            "type": "general",
+            "date": "2017-05-27 13:21:13"
         }
     }
 };
+

@@ -3,21 +3,29 @@ import PropTypes from 'prop-types';
 import {Provider} from 'react-redux';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import Sidebar from 'Components/Sidebar';
+
+import UserSidebarWidget from 'Screens/user';
+import ProductListCollectionSidebarWidget from 'Screens/productListCollection';
+
+import ProductListScreen from 'Screens/productList';
 import UserScreen from 'Screens/user';
-import ProductListCollection from 'Screens/productListCollection';
-import ProductList from 'Screens/productList';
+import AboutScreen from 'Screens/about';
 
 const Root = ({store}) => (
     <Provider store={store}>
         <div>
             <Sidebar>
-                <UserScreen/>
-                <ProductListCollection/>
+                <UserSidebarWidget/>
+                <ProductListCollectionSidebarWidget/>
             </Sidebar>
 
             <BrowserRouter>
                 <Switch>
-                    <Route component={ProductList}/>
+                    <Route exact path="/product-list/:productListId" component={ProductListScreen}/>
+                    <Route exact path="/user" component={UserScreen}/>
+                    <Route exact path="/about" component={AboutScreen}/>
+
+                    <Route component={ProductListScreen}/>
                 </Switch>
             </BrowserRouter>
         </div>
