@@ -14,19 +14,21 @@ import AboutScreen from 'Screens/about';
 const Root = ({store}) => (
     <Provider store={store}>
         <div>
-            <Sidebar>
-                <UserSidebarWidget/>
-                <ProductListCollectionSidebarWidget/>
-            </Sidebar>
-
             <BrowserRouter>
-                <Switch>
-                    <Route exact path="/product-list/:productListId" component={ProductListScreen}/>
-                    <Route exact path="/user" component={UserScreen}/>
-                    <Route exact path="/about" component={AboutScreen}/>
+                <div>
+                    <Sidebar>
+                        <UserSidebarWidget/>
+                        <ProductListCollectionSidebarWidget/>
+                    </Sidebar>
 
-                    <Route component={ProductListScreen}/>
-                </Switch>
+                    <Switch>
+                        <Route exact path="/product-list/:productListId" component={ProductListScreen}/>
+                        <Route exact path="/user" component={UserScreen}/>
+                        <Route exact path="/about" component={AboutScreen}/>
+
+                        <Route component={ProductListScreen}/>
+                    </Switch>
+                </div>
             </BrowserRouter>
         </div>
     </Provider>

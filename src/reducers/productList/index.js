@@ -1,9 +1,9 @@
-export const FETCH_PRODUCT_LIST = 'fetch-product-list';
+import * as actionType from 'Actions';
 
-const ProductList = (state, action) => {
+const ProductList = (state = {}, action) => {
     switch (action.type) {
-        FETCH_PRODUCT_LIST: {
-
+        case actionType.FETCH_PRODUCT_LIST_SUCCESS: {
+            return {...state, ...action.lists};
         }
     }
 

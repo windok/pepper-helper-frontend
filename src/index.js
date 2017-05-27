@@ -12,31 +12,5 @@ render(
 );
 
 
-
-import axios from 'axios';
-
-const phClient = axios.create({
-    baseURL: 'https://api.pepper-helper.dev:8080/',
-    timeout: 2000,
-    headers: {
-        'ph-token': 'test',
-        'Content-Type': 'application/json'
-    }
-});
-
-phClient.get('/product-list')
-    .then((result) => {
-        console.log('success', result);
-
-        return phClient.get('/list-item', [])
-            .then((result) => {
-                console.log('success', result);
-            })
-            .catch((error) => {
-                console.log('error', error);
-            });
-
-    })
-    .catch((error) => {
-        console.log('error', error);
-    });
+import {fetchProductLists} from 'Actions';
+fetchProductLists()(store.dispatch);
