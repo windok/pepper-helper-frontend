@@ -6,11 +6,11 @@ import configureStore from './configureStore';
 
 const store = configureStore();
 
+// todo fetch list collection somewhere else
+import {fetchProductListCollection} from 'Actions';
+fetchProductListCollection()(store.dispatch);
+
 render(
     <Root store={store}/>,
     document.getElementById('root')
 );
-
-
-import {fetchProductLists} from 'Actions';
-fetchProductLists()(store.dispatch);

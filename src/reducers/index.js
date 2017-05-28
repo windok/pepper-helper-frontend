@@ -1,7 +1,17 @@
 import {combineReducers} from 'redux';
 
-import productList from 'Reducers/productList';
+// import network from './network';
+
+
+import list from './storage/list';
+import listItem from './storage/listItem';
+
+const storage = combineReducers({
+    list,
+    listItem
+});
 
 export default combineReducers({
-    productList
+    // network,
+    storage
 });

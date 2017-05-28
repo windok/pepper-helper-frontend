@@ -28,7 +28,7 @@ ProductListCollection.propTypes = {
 const WrappedProductListCollection = connect(
     (state) => {
         return {
-            lists: state.productList
+            lists: state.storage.list.data
         }
     })(ProductListCollection);
 

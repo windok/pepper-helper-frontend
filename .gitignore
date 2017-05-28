@@ -4,6 +4,8 @@
 
 /node_modules/
 
+/src/config.js
+
 /public/static/*.js
 /public/static/*.map
 
