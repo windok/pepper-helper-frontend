@@ -20,8 +20,6 @@ const phClient = axios.create({
 
 
 export const fetchProductListCollection = () => (dispatch) => {
-    console.log('fetching list collection');
-
     dispatch({
         type: FETCH_LIST_COLLECTION_REQUEST
     });
@@ -34,9 +32,6 @@ export const fetchProductListCollection = () => (dispatch) => {
                 type: FETCH_LIST_COLLECTION_SUCCESS,
                 listCollection
             });
-
-            // todo fetch some how different
-            listCollection.forEach((list) => fetchListItems(list.id)(dispatch));
         }, (error) => {
             dispatch({
                 type: FETCH_LIST_COLLECTION_ERROR,
@@ -76,4 +71,3 @@ export const fetchListItems = (listId) => (dispatch) => {
 
         });
 };
-

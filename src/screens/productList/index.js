@@ -8,6 +8,20 @@ import {fetchListItems} from 'Actions';
 import List from './components/List';
 
 class ProductList extends React.PureComponent {
+    componentWillMount() {
+        this.props.fetchListItems(this.props.productListId);
+    }
+
+    shouldComponentUpdate({productListId}) {
+        if (productListId === this.props.productListId) {
+            return false;
+        }
+
+        this.props.fetchListItems(productListId);
+
+        return true;
+    }
+
     render() {
         return (
             <div>
@@ -35,19 +49,16 @@ export default withRouter(connect(
             // todo maybe open some default list?
             return {
                 productListId: 0,
-                productListName: 'Incorrect request to show list',
-                listItems: []
+                productListName: 'Incorrect request to show list'
             }
         }
-
 
         if (state.storage.list.data[productListId] === undefined) {
             // todo list fetching request in progress
             // todo maybe this list does not exist?
             return {
                 productListId: 0,
-                productListName: 'Fetching list items',
-                listItems: []
+                productListName: 'Fetching list items'
             }
         }
 
@@ -55,14 +66,10 @@ export default withRouter(connect(
 
         return {
             productListId,
-            productListName: productList.name,
-            listItems: productList.listItems.map((listItemId) => {
-                return state.storage.listItem[listItemId];
-            })
+            productListName: productList.name
         }
     },
     (dispatch) => {
-        // fetchListItems(match.params.productListId)(dispatch);
         return {
             fetchListItems: (listId) => fetchListItems(listId)(dispatch)
         }
