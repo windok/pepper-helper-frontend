@@ -1,9 +1,13 @@
 import Axios from 'axios';
+import Config from 'Config';
 
-// todo move host name to application or module config, create application config
-// todo move to some service registry
 const RestClient = Axios.create({
-    baseURL: 'http://localhost:30005'
+    baseURL: Config.BACKEND_URL,
+    timeout: 10000,
+    headers: {
+        'ph-token': 'test',
+        'Content-Type': 'application/json'
+    }
 });
 
 export default RestClient;

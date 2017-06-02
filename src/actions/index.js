@@ -1,6 +1,3 @@
-import axios from 'axios';
-import Config from 'Config';
-
 export const FETCH_LIST_COLLECTION_REQUEST = 'FETCH_PRODUCT_LIST_COLLECTION_REQUEST';
 export const FETCH_LIST_COLLECTION_SUCCESS = 'FETCH_PRODUCT_LIST_COLLECTION_SUCCESS';
 export const FETCH_LIST_COLLECTION_ERROR = 'FETCH_PRODUCT_LIST_COLLECTION_ERROR';
@@ -9,65 +6,19 @@ export const FETCH_ITEMS_FOR_LIST_REQUEST = 'FETCH_LIST_ITEMS_REQUEST';
 export const FETCH_ITEMS_FOR_LIST_SUCCESS = 'FETCH_LIST_ITEMS_SUCCESS';
 export const FETCH_ITEMS_FOR_LIST_ERROR = 'FETCH_LIST_ITEMS_ERROR';
 
-const phClient = axios.create({
-    baseURL: Config.BACKEND_URL,
-    timeout: 2000,
-    headers: {
-        'ph-token': 'test',
-        'Content-Type': 'application/json'
-    }
-});
+export const FETCH_CATEGORY_COLLECTION_REQUEST = 'FETCH_CATEGORY_COLLECTION_REQUEST';
+export const FETCH_CATEGORY_COLLECTION_SUCCESS = 'FETCH_CATEGORY_COLLECTION_SUCCESS';
+export const FETCH_CATEGORY_COLLECTION_ERROR = 'FETCH_CATEGORY_COLLECTION_ERROR';
 
+export const FETCH_TRANSLATION_COLLECTION_REQUEST = 'FETCH_TRANSLATION_COLLECTION_REQUEST';
+export const FETCH_TRANSLATION_COLLECTION_SUCCESS = 'FETCH_TRANSLATION_COLLECTION_SUCCESS';
+export const FETCH_TRANSLATION_COLLECTION_ERROR = 'FETCH_TRANSLATION_COLLECTION_ERROR';
 
-export const fetchProductListCollection = () => (dispatch) => {
-    dispatch({
-        type: FETCH_LIST_COLLECTION_REQUEST
-    });
+export const FETCH_GROUP_COLLECTION_REQUEST = 'FETCH_GROUP_COLLECTION_REQUEST';
+export const FETCH_GROUP_COLLECTION_SUCCESS = 'FETCH_GROUP_COLLECTION_SUCCESS';
+export const FETCH_GROUP_COLLECTION_ERROR = 'FETCH_GROUP_COLLECTION_ERROR';
 
-    phClient.get('/product-list')
-        .then((result) => {
-            const listCollection = result.data.items || [];
+export const FETCH_UNIT_COLLECTION_REQUEST = 'FETCH_UNIT_COLLECTION_REQUEST';
+export const FETCH_UNIT_COLLECTION_SUCCESS = 'FETCH_UNIT_COLLECTION_SUCCESS';
+export const FETCH_UNIT_COLLECTION_ERROR = 'FETCH_UNIT_COLLECTION_ERROR';
 
-            dispatch({
-                type: FETCH_LIST_COLLECTION_SUCCESS,
-                listCollection
-            });
-        }, (error) => {
-            dispatch({
-                type: FETCH_LIST_COLLECTION_ERROR,
-                error
-            });
-
-        });
-};
-
-export const fetchListItems = (listId) => (dispatch) => {
-
-    if (listId == 0 || listId == '0') {
-        return;
-    }
-
-    dispatch({
-        type: FETCH_ITEMS_FOR_LIST_REQUEST,
-        listId
-    });
-
-    phClient.get('/list-item', {params: {listId}})
-        .then((result) => {
-            const listItems = result.data.items || [];
-
-            dispatch({
-                type: FETCH_ITEMS_FOR_LIST_SUCCESS,
-                listId,
-                listItems
-            });
-
-        }, (error) => {
-            dispatch({
-                type: FETCH_ITEMS_FOR_LIST_ERROR,
-                listId,
-                error
-            });
-
-        });
-};

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
 
-import {fetchListItems} from 'Actions';
+import {fetchItemsForList} from 'Actions/listItem';
 
 import List from './components/List';
 
@@ -71,7 +71,7 @@ export default withRouter(connect(
     },
     (dispatch) => {
         return {
-            fetchListItems: (listId) => fetchListItems(listId)(dispatch)
+            fetchListItems: (listId) => fetchItemsForList(listId)(dispatch)
         }
     }
 )(ProductList));
