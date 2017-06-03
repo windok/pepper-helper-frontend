@@ -8,6 +8,7 @@ import UserSidebarWidget from 'Screens/user';
 import ProductListCollectionSidebarWidget from 'Screens/productListCollection';
 
 import ProductListScreen from 'Screens/productList';
+import AddItemToListScreen from 'Screens/addItemToList';
 import UserScreen from 'Screens/user';
 import AboutScreen from 'Screens/about';
 
@@ -23,6 +24,8 @@ const Root = ({store}) => (
 
                     <Switch>
                         <Route exact path="/product-list/:productListId" component={ProductListScreen}/>
+                        <Route exact path="/product-list/:productListId/add-item" component={AddItemToListScreen}/>
+                        <Route exact path="/product-list/:productListId/recommendations" component={ProductListScreen}/>
                         <Route exact path="/user" component={UserScreen}/>
                         <Route exact path="/about" component={AboutScreen}/>
 
