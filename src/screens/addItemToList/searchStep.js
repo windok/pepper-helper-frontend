@@ -3,51 +3,50 @@ import PropTypes from 'prop-types'
 import {withRouter, Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 
-import {fetchItemsForList} from 'Actions/listItem';
+import {searchProductTranslation} from 'Actions/translation';
+import  ProductSearchResultList from './components/ProductSearchResultList';
 
-import List from './components/List';
+class AddItemToList extends React.PureComponent {
 
-class ProductList extends React.PureComponent {
-    componentWillMount() {
-        this.props.fetchListItems(this.props.productListId);
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            searchFieldValue: ''
+        };
     }
 
-    shouldComponentUpdate({productListId}) {
-        if (productListId === this.props.productListId) {
-            return false;
-        }
+    handleSearchFieldChange(event) {
+        const searchFieldValue = event.target.value;
+        this.setState({searchFieldValue});
 
-        this.props.fetchListItems(productListId);
-
-        return true;
+        this.props.searchHandler(searchFieldValue);
     }
 
     render() {
         const listId = this.props.productListId;
 
-        if (!listId || listId === '0') {
-            return (<div>{this.props.productListName}</div>);
-        }
-
         return (
             <div>
-                {"Product list " + this.props.productListName}
-                <List productListId={listId}/>
+                <Link to={"/product-list/" + listId} onClick={() => this.props.cancelHandler(listId)}>Cancel</Link>
                 <br/>
-                <Link to={"/product-list/" + listId + "/recommendations"} onClick={() => this.props.showRecommendationsHandler(listId)}>Show recommendations</Link>
+                <Link to={"/product-list/" + listId} onClick={() => this.props.saveItemHandler(listId)}>Save</Link>
                 <br/>
-                <Link to={"/product-list/" + listId + "/add-item/search"} onClick={() => this.props.addItemHandler(listId)}>Add item</Link>
+                Add item to {this.props.productListName} <br/>
+                Search <input type="text" value={this.state.searchFieldValue}
+                              onChange={this.handleSearchFieldChange.bind(this)}/>
+                <ProductSearchResultList productListId={listId} query={this.state.searchFieldValue}/>
             </div>
         )
     }
 }
 
-ProductList.propTypes = {
+AddItemToList.propTypes = {
     productListId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     productListName: PropTypes.string.isRequired,
-    fetchListItems: PropTypes.func.isRequired,
-    addItemHandler: PropTypes.func.isRequired,
-    showRecommendationsHandler: PropTypes.func.isRequired,
+    cancelHandler: PropTypes.func.isRequired,
+    saveItemHandler: PropTypes.func.isRequired,
+    searchHandler: PropTypes.func.isRequired
 };
 
 export default withRouter(connect(
@@ -56,12 +55,12 @@ export default withRouter(connect(
 
         const productListId = match.params.productListId;
 
-        if (!productListId) {
+        if (!productListId || productListId === '0') {
             // todo incorrect route that leads to this page
             // todo maybe open some default list?
             return {
                 productListId: 0,
-                productListName: 'Incorrect request to show list'
+                productListName: 'Unexisted list, redirect to default'
             }
         }
 
@@ -83,8 +82,6 @@ export default withRouter(connect(
             }
         }
 
-
-
         const productList = state.storage.list.data[productListId];
 
         return {
@@ -94,9 +91,11 @@ export default withRouter(connect(
     },
     (dispatch) => {
         return {
-            fetchListItems: (listId) => fetchItemsForList(listId)(dispatch),
-            showRecommendationsHandler: (listId) => {},
-            addItemHandler: (listId) => {},
+            cancelHandler: (listId) => {
+            },
+            saveItemHandler: (listId) => {
+            },
+            searchHandler: (query) => searchProductTranslation(query)(dispatch),
         }
     }
-)(ProductList));
+)(AddItemToList));

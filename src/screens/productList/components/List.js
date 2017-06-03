@@ -10,7 +10,7 @@ class List extends React.PureComponent {
             <div>
                 <ul>
                     {this.props.listItems.map((listItem) =>
-                    <li key={listItem.id}><Item id={listItem.id} name={listItem.translationId}/></li>
+                        <li key={listItem.id}><Item id={listItem.id}/></li>
                     )}
                     </ul>
             </div>

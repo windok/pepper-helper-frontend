@@ -32,3 +32,29 @@ export const fetchItemsForList = (listId) => (dispatch) => {
 
         });
 };
+
+export const getTemplate = (translationId, listId) => (dispatch) => {
+    dispatch({
+        type: actionType.GET_ITEM_TEMPLATE_REQUEST,
+        listId
+    });
+
+    RestClient.get(`/list-item-template/${translationId}/${listId}`)
+        .then((result) => {
+            dispatch({
+                type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
+                translationId,
+                listId,
+                template: result.data
+            });
+
+        }, (error) => {
+            dispatch({
+                type: actionType.GET_ITEM_TEMPLATE_ERROR,
+                translationId,
+                listId,
+                error
+            });
+
+        });
+};
