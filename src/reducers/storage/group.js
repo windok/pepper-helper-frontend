@@ -13,7 +13,7 @@ export default (state = {items: {}, isFetching: false}, action) => {
                 serverItems[group.id] = group;
             });
 
-            return {isFetching: false, items: {...state.data, ...serverItems}};
+            return {isFetching: false, items: {...state.items, ...serverItems}};
         }
     }
 

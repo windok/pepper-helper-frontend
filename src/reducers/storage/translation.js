@@ -1,6 +1,12 @@
 import * as actionType from 'Actions';
 
-export default (state = {items: {}, isFetching: false}, action) => {
+const initialState = {
+    items: {},
+    isFetching: false,
+    searchProductResults: {}
+};
+
+export default (state = initialState, action) => {
     switch (action.type) {
         case actionType.FETCH_TRANSLATION_COLLECTION_REQUEST:
             return {...state, isFetching: true};
@@ -13,8 +19,12 @@ export default (state = {items: {}, isFetching: false}, action) => {
                 serverItems[translation.id] = translation;
             });
 
-            return {isFetching: false, items: {...state.data, ...serverItems}};
+            return {...state, isFetching: false, items: {...state.items, ...serverItems}};
         }
+        case actionType.SEARCH_TRANSLATION_SUCCESS:
+            console.log(action);
+
+            return {...state, searchProductResults: {...state.searchProductResults, [action.query] : action.items}}
     }
 
     return state;

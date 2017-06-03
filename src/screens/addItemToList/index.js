@@ -3,8 +3,26 @@ import PropTypes from 'prop-types'
 import {withRouter, Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 
+import {searchProductTranslation} from 'Actions/translation';
+import  ProductSearchResultList from './components/ProductSearchResultList';
 
 class AddItemToList extends React.PureComponent {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            searchFieldValue: ''
+        };
+    }
+
+    handleSearchFieldChange(event) {
+        const searchFieldValue = event.target.value;
+        this.setState({searchFieldValue});
+
+        this.props.searchHandler(searchFieldValue);
+    }
+
     render() {
         const listId = this.props.productListId;
 
@@ -14,9 +32,11 @@ class AddItemToList extends React.PureComponent {
                 <br/>
                 <Link to={"/product-list/" + listId} onClick={() => this.props.saveItemHandler(listId)}>Save</Link>
                 <br/>
-                Add item screen.
-                Add item to {this.props.productListName}
-                </div>
+                Add item to {this.props.productListName} <br/>
+                Search <input type="text" value={this.state.searchFieldValue}
+                              onChange={this.handleSearchFieldChange.bind(this)}/>
+                <ProductSearchResultList productListId={listId} query={this.state.searchFieldValue}/>
+            </div>
         )
     }
 }
@@ -26,6 +46,7 @@ AddItemToList.propTypes = {
     productListName: PropTypes.string.isRequired,
     cancelHandler: PropTypes.func.isRequired,
     saveItemHandler: PropTypes.func.isRequired,
+    searchHandler: PropTypes.func.isRequired
 };
 
 export default withRouter(connect(
@@ -39,7 +60,7 @@ export default withRouter(connect(
             // todo maybe open some default list?
             return {
                 productListId: 0,
-                productListName: 'Unexisted list, redirect to default',
+                productListName: 'Unexisted list, redirect to default'
             }
         }
 
@@ -70,8 +91,11 @@ export default withRouter(connect(
     },
     (dispatch) => {
         return {
-            cancelHandler: (listId) => {},
-            saveItemHandler: (listId) => {},
+            cancelHandler: (listId) => {
+            },
+            saveItemHandler: (listId) => {
+            },
+            searchHandler: (query) => searchProductTranslation(query)(dispatch),
         }
     }
 )(AddItemToList));
