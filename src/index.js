@@ -2,9 +2,7 @@ import 'babel-polyfill';
 import React from 'react';
 import {render} from 'react-dom';
 import Root from './Root';
-import configureStore from './configureStore';
-
-const store = configureStore();
+import store from 'Store';
 
 // todo fetch list collection somewhere else
 import {fetchAll as fetchProductListCollection} from 'Actions/list';

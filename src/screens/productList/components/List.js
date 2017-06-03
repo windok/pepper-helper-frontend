@@ -30,7 +30,7 @@ export default connect(
     (state, {productListId}) => {
         const productList = state.storage.list.data[productListId];
 
-        const listItems = productList ? productList.listItems.map((listItemId) => state.storage.listItem[listItemId]) : [];
+        const listItems = productList ? productList.listItems.map((listItemId) => state.storage.listItem.items[listItemId]) : [];
 
         return {
             productListId,

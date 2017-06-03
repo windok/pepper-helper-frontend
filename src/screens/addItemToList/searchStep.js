@@ -30,8 +30,6 @@ class AddItemToList extends React.PureComponent {
             <div>
                 <Link to={"/product-list/" + listId} onClick={() => this.props.cancelHandler(listId)}>Cancel</Link>
                 <br/>
-                <Link to={"/product-list/" + listId} onClick={() => this.props.saveItemHandler(listId)}>Save</Link>
-                <br/>
                 Add item to {this.props.productListName} <br/>
                 Search <input type="text" value={this.state.searchFieldValue}
                               onChange={this.handleSearchFieldChange.bind(this)}/>
@@ -45,7 +43,6 @@ AddItemToList.propTypes = {
     productListId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     productListName: PropTypes.string.isRequired,
     cancelHandler: PropTypes.func.isRequired,
-    saveItemHandler: PropTypes.func.isRequired,
     searchHandler: PropTypes.func.isRequired
 };
 
@@ -92,8 +89,6 @@ export default withRouter(connect(
     (dispatch) => {
         return {
             cancelHandler: (listId) => {
-            },
-            saveItemHandler: (listId) => {
             },
             searchHandler: (query) => searchProductTranslation(query)(dispatch),
         }

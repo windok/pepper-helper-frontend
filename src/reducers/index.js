@@ -6,6 +6,7 @@ import translation from './storage/translation';
 import unit from './storage/unit';
 import category from './storage/category';
 import group from './storage/group';
+import user from './storage/user';
 
 const storage = combineReducers({
     list,
@@ -13,7 +14,8 @@ const storage = combineReducers({
     translation,
     unit,
     category,
-    group
+    group,
+    user
 });
 
 export default combineReducers({

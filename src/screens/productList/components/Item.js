@@ -24,7 +24,7 @@ Item.propTypes = {
 
 export default connect(
     (state, {id}) => {
-        const item = state.storage.listItem[id];
+        const item = state.storage.listItem.items[id];
 
         if (!item) {
             return {
@@ -44,12 +44,10 @@ export default connect(
         const group = state.storage.group.items[item.groupId];
         const unit = state.storage.unit.items[item.unitId];
 
-
-
         return {
             id,
             translationId: item.translationId,
-            translationValue: translation ? translation.en : 'n/a',  // todo show by user lang
+            translationValue: translation ? translation[state.storage.user.language] || translation.en : 'n/a',
             groupId: item.groupId,
             groupName: group ? group.name : 'n/a',  // todo show by user lang
             unitId: item.unitId,

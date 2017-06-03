@@ -2,7 +2,7 @@ import path from 'path';
 import CircularDependencyPlugin from 'circular-dependency-plugin';
 
 export default {
-    //devtool: 'source-map',
+    // devtool: 'source-map',
     entry: './src/index',
     output: {
         path: path.join(__dirname, 'public/static'),
@@ -16,6 +16,7 @@ export default {
             Services: path.resolve(__dirname, 'src/services/'),
             Screens: path.resolve(__dirname, 'src/screens/'),
             Config: path.resolve(__dirname, 'src/config.js'),
+            Store: path.resolve(__dirname, 'src/store.js')
         },
         extensions: ['.js']
     },

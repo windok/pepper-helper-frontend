@@ -22,8 +22,6 @@ export default (state = initialState, action) => {
             return {...state, isFetching: false, items: {...state.items, ...serverItems}};
         }
         case actionType.SEARCH_TRANSLATION_SUCCESS:
-            console.log(action);
-
             return {...state, searchProductResults: {...state.searchProductResults, [action.query] : action.items}}
     }
 

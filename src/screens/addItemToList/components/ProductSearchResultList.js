@@ -1,12 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 class ProductSearchResultList extends React.PureComponent {
     render() {
-
-        console.log(this.props);
-
         if (this.props.searchResults.length === 0) {
             return (<div>No items were found.</div>);
         }
@@ -15,7 +13,9 @@ class ProductSearchResultList extends React.PureComponent {
             <div>
                 <ul>
                     {this.props.searchResults.map((searchProduct) =>
-                        <button key={searchProduct.id}>{searchProduct.value}</button>
+                        <Link to={"/product-list/" + this.props.productListId + "/add-item/save/" + searchProduct.id} key={searchProduct.id}>
+                            <button>{searchProduct.value}</button>
+                        </Link>
                     )}
                 </ul>
             </div>
@@ -34,20 +34,10 @@ ProductSearchResultList.propTypes = {
 
 export default connect(
     (state, {productListId, query}) => {
-
-        let searchResults;
-
-        console.log(state.storage.translation.searchProductResults);
-        try {
-            searchResults = state.storage.translation.searchProductResults[query] || [];
-        } catch (e) {
-            searchResults = [];
-        }
-
         return {
             productListId,
             query,
-            searchResults
+            searchResults : state.storage.translation.searchProductResults[query] || []
         }
     }
 )(ProductSearchResultList);

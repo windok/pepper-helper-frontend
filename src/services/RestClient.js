@@ -1,7 +1,6 @@
 import Axios from 'axios';
 import Config from 'Config';
-
-const language = (navigator.language || navigator.userLanguage).split('-')[0];
+import store from 'Store';
 
 const RestClient = Axios.create({
     baseURL: Config.BACKEND_URL,
@@ -9,7 +8,7 @@ const RestClient = Axios.create({
     headers: {
         'ph-token': 'test',
         'Content-Type': 'application/json',
-        'Accept-Language': language,
+        'Accept-Language': store.getState().storage.user.language,
     }
 });
 

@@ -26,7 +26,7 @@ export const fetchAll = () => (dispatch) => {
 };
 
 export const searchProductTranslation = (query) => (dispatch) => {
-    if (query.length < 3) {
+    if (query.length < 2) {
         return;
     }
 
