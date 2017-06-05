@@ -2,10 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Provider} from 'react-redux';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
-import Sidebar from 'Components/Sidebar';
-
-import UserSidebarWidget from 'Screens/user';
-import ProductListCollectionSidebarWidget from 'Screens/productListCollection';
 
 import ProductListScreen from 'Screens/productList';
 import AddItemToListSearchStep from 'Screens/addItemToList/searchStep';
@@ -18,11 +14,6 @@ const Root = ({store}) => (
         <div>
             <BrowserRouter>
                 <div>
-                    <Sidebar>
-                        <UserSidebarWidget/>
-                        <ProductListCollectionSidebarWidget/>
-                    </Sidebar>
-
                     <Switch>
                         <Route exact path="/product-list/:productListId" component={ProductListScreen}/>
                         <Route exact path="/product-list/:productListId/add-item/search" component={AddItemToListSearchStep}/>

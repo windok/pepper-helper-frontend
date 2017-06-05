@@ -1,13 +1,15 @@
-import React, {Component} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
+import UserSidebarWidget from 'Screens/user';
+import ProductListCollectionSidebarWidget from 'Screens/productListCollection';
 
-class Sidebar extends Component {
+class Sidebar extends React.PureComponent {
     render() {
         return (
             <div>
-                Sidebar:<br/>
-                {this.props.children}
+                <UserSidebarWidget/>
+                <ProductListCollectionSidebarWidget/>
             </div>
         );
     }

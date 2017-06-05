@@ -1,21 +1,29 @@
-import React, {Component} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-
-class Header extends Component {
+class Header extends React.PureComponent {
     render() {
         return (
             <div>
-                <span style="padding:20px;">Action links at left side</span>
-                <span style="padding:20px;">Screen name: {this.props.screenName}</span>
-                <span style="padding:20px;">Action links at right side</span>
+                <div>{this.props.leftLinks.map((link, index) => <div key={index}>{link}</div>)}</div>
+                <div>{this.props.title}</div>
+                <div>{this.props.rightLinks.map((link, index) => <div key={index}>{link}</div>)}</div>
             </div>
         );
     }
 }
 
+
+Header.defaultProps = {
+    leftLinks: [],
+    rightLinks: [],
+};
+
 Header.propTypes = {
-    screenName: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    leftLinks: PropTypes.array,
+    rightLinks: PropTypes.array
 };
 
 export default Header;
+

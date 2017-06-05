@@ -18,20 +18,34 @@ class AddItemToList extends React.PureComponent {
         this.props.getTemplate(this.props.productListId, this.props.translationId);
     }
 
-    shouldComponentUpdate({productListId, translationId, template}) {
-        if (this.props.productListId !== productListId || this.props.translationId !== translationId) {
+    shouldComponentUpdate({productListId, translationId}) {
+        if (
+            this.props.productListId !== productListId
+            || this.props.translationId !== translationId
+        ) {
             this.props.getTemplate(productListId, translationId);
         }
-
-
-        // todo to keep item template in redux store instead of compoent state, bind changes of select and inputs to update redux store
-        this.setState({template});
 
         return true;
     }
 
+    componentDidUpdate({template}) {
+        if (
+            Object.keys(this.props.template).length > 0
+            && this.props.template !== template
+        ) {
+            this.setState({template: this.props.template});
+        }
+    }
+
+    onTemplateFieldChange(event) {
+        this.setState({
+            template: {...this.state.template, [event.target.name]: event.target.value}
+        });
+    }
+
     render() {
-        if (Object.keys(this.props.template).length === 0) {
+        if (Object.keys(this.state.template).length === 0) {
             return <div></div>
         }
 
@@ -42,25 +56,40 @@ class AddItemToList extends React.PureComponent {
                 <Link to={"/product-list/" + listId + "/add-item/search"}
                       onClick={() => this.props.cancelHandler(listId)}>Cancel</Link>
                 <br/>
-                <Link to={"/product-list/" + listId} onClick={() => this.props.saveItemHandler(this.props.template)}>Save</Link>
+                <Link to={"/product-list/" + listId} onClick={() => this.props.saveItemHandler(this.state.template)}>Save</Link>
                 <br/>
                 Add item to {this.props.productListName} <br/>
                 <div>
-                    <label>Group: <select value={this.props.groups[this.props.template.groupId].name} readOnly>
-                        {Object.keys(this.props.groups).map((groupId) => {
-                            return <option key={groupId}>{this.props.groups[groupId].name}</option>
-                        })}
-                    </select></label>
+                    <label>Group:
+                        <select
+                            value={this.state.template.groupId}
+                            name="groupId"
+                            onChange={this.onTemplateFieldChange.bind(this)}>
+                            {Object.keys(this.props.groups).map((groupId) => {
+                                return <option key={groupId} value={groupId}>{this.props.groups[groupId].name}</option>
+                            })}
+                        </select>
+                    </label>
                 </div>
                 <div>
-                    <label>Unit: <select value={this.props.units[this.props.template.unitId].name} readOnly>
-                        {Object.keys(this.props.units).map((unitId) => {
-                            return <option key={unitId}>{this.props.units[unitId].name}</option>
-                        })}
-                    </select></label>
+                    <label>Unit:
+                        <select
+                            value={this.state.template.unitId}
+                            name="unitId"
+                            onChange={this.onTemplateFieldChange.bind(this)}>
+                            {Object.keys(this.props.units).map((unitId) => {
+                                return <option key={unitId} value={unitId}>{this.props.units[unitId].name}</option>
+                            })}
+                        </select>
+                    </label>
                 </div>
                 <div>
-                    <label>Quantity: <input type="text" value={this.props.template.quantity} readOnly/></label>
+                    <label>Quantity:
+                        <input type="text"
+                               name="quantity"
+                               value={this.state.template.quantity}
+                               onChange={this.onTemplateFieldChange.bind(this)}/>
+                    </label>
                 </div>
 
             </div>

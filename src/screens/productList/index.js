@@ -3,6 +3,10 @@ import PropTypes from 'prop-types'
 import {withRouter, Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 
+import Sidebar from 'Components/Sidebar';
+import Header from 'Components/Header';
+import HeaderLink from 'Components/HeaderLink';
+
 import {fetchItemsForList} from 'Actions/listItem';
 
 import List from './components/List';
@@ -25,18 +29,33 @@ class ProductList extends React.PureComponent {
     render() {
         const listId = this.props.productListId;
 
+        // todo create separate component that specifies Menu
+        // todo keep list of links for each screen somewhere
+        const headerLeftLinks = [
+            <HeaderLink title={'Menu'} onClickHandler={() => {}}/>
+        ];
+
         if (!listId || listId === '0') {
-            return (<div>{this.props.productListName}</div>);
+            return (
+                <div>
+                    <Sidebar/>
+                    <Header title={"Product list " + this.props.productListName} leftLinks={headerLeftLinks}/>
+                    {this.props.productListName}
+                </div>
+            );
         }
 
+        // todo add item and recommendation links should be FAB
         return (
             <div>
-                {"Product list " + this.props.productListName}
+                <Sidebar/>
+                <Header title={"Product list " + this.props.productListName} leftLinks={headerLeftLinks}/>
+
                 <List productListId={listId}/>
                 <br/>
-                <Link to={"/product-list/" + listId + "/recommendations"} onClick={() => this.props.showRecommendationsHandler(listId)}>Show recommendations</Link>
+                <Link to={"/product-list/" + listId + "/recommendations"}>Show recommendations</Link>
                 <br/>
-                <Link to={"/product-list/" + listId + "/add-item/search"} onClick={() => this.props.addItemHandler(listId)}>Add item</Link>
+                <Link to={"/product-list/" + listId + "/add-item/search"}>Add item</Link>
             </div>
         )
     }
@@ -46,8 +65,6 @@ ProductList.propTypes = {
     productListId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     productListName: PropTypes.string.isRequired,
     fetchListItems: PropTypes.func.isRequired,
-    addItemHandler: PropTypes.func.isRequired,
-    showRecommendationsHandler: PropTypes.func.isRequired,
 };
 
 export default withRouter(connect(
@@ -94,9 +111,7 @@ export default withRouter(connect(
     },
     (dispatch) => {
         return {
-            fetchListItems: (listId) => fetchItemsForList(listId)(dispatch),
-            showRecommendationsHandler: (listId) => {},
-            addItemHandler: (listId) => {},
+            fetchListItems: (listId) => fetchItemsForList(listId)(dispatch)
         }
     }
 )(ProductList));
