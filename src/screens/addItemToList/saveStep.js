@@ -5,6 +5,11 @@ import {connect} from 'react-redux'
 
 import {getTemplate, createItem} from 'Actions/listItem';
 
+import Header from 'Components/Header';
+import HeaderLink from 'Components/HeaderLink';
+import Select from 'Components/form/Select';
+import Input from 'Components/form/Input';
+
 class AddItemToList extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -12,6 +17,8 @@ class AddItemToList extends React.PureComponent {
         this.state = {
             template: props.template
         };
+
+        this.onTemplateFieldChange.bind(this);
     }
 
     componentWillMount() {
@@ -38,9 +45,9 @@ class AddItemToList extends React.PureComponent {
         }
     }
 
-    onTemplateFieldChange(event) {
+    onTemplateFieldChange(field, value) {
         this.setState({
-            template: {...this.state.template, [event.target.name]: event.target.value}
+            template: {...this.state.template, [field]: value}
         });
     }
 
@@ -51,47 +58,36 @@ class AddItemToList extends React.PureComponent {
 
         const listId = this.props.productListId;
 
+        // todo move action links to header
         return (
             <div>
-                <Link to={"/product-list/" + listId + "/add-item/search"}
-                      onClick={() => this.props.cancelHandler(listId)}>Cancel</Link>
-                <br/>
+                <Header title={"Add item to " + this.props.productListName}/>
+                <div onClick={this.props.cancelHandler} style={{cursor: 'pointer'}}>Back</div>
                 <Link to={"/product-list/" + listId} onClick={() => this.props.saveItemHandler(this.state.template)}>Save</Link>
-                <br/>
-                Add item to {this.props.productListName} <br/>
-                <div>
-                    <label>Group:
-                        <select
-                            value={this.state.template.groupId}
-                            name="groupId"
-                            onChange={this.onTemplateFieldChange.bind(this)}>
-                            {Object.keys(this.props.groups).map((groupId) => {
-                                return <option key={groupId} value={groupId}>{this.props.groups[groupId].name}</option>
-                            })}
-                        </select>
-                    </label>
-                </div>
-                <div>
-                    <label>Unit:
-                        <select
-                            value={this.state.template.unitId}
-                            name="unitId"
-                            onChange={this.onTemplateFieldChange.bind(this)}>
-                            {Object.keys(this.props.units).map((unitId) => {
-                                return <option key={unitId} value={unitId}>{this.props.units[unitId].name}</option>
-                            })}
-                        </select>
-                    </label>
-                </div>
-                <div>
-                    <label>Quantity:
-                        <input type="text"
-                               name="quantity"
-                               value={this.state.template.quantity}
-                               onChange={this.onTemplateFieldChange.bind(this)}/>
-                    </label>
-                </div>
 
+                <Select label="Group"
+                        defaultValue={this.state.template.groupId}
+                        options={Object.keys(this.props.groups).map(groupId => {
+                            return {
+                                value: groupId,
+                                label: this.props.groups[groupId].name
+                            }
+                        })}
+                        onChange={(value) => this.onTemplateFieldChange('groupId', value)}/>
+
+                <Select label="Unit"
+                        defaultValue={this.state.template.unitId}
+                        options={Object.keys(this.props.units).map(unitId => {
+                            return {
+                                value: unitId,
+                                label: this.props.units[unitId].name
+                            }
+                        })}
+                        onChange={(value) => this.onTemplateFieldChange('unitId', value)}/>
+
+                <Input label="Quantity"
+                       defaultValue={this.state.template.quantity}
+                       onChange={(value) => this.onTemplateFieldChange('quantity', value)}/>
             </div>
         )
     }
@@ -141,10 +137,9 @@ export default withRouter(connect(
             translations: state.storage.translation.items,
         }
     },
-    (dispatch) => {
+    (dispatch, {history}) => {
         return {
-            cancelHandler: (listId) => {
-            },
+            cancelHandler: history.goBack,
             saveItemHandler: (template) => createItem(template)(dispatch),
             getTemplate: (listId, translationId) => getTemplate(listId, translationId)(dispatch)
 

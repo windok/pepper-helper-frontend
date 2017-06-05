@@ -4,6 +4,11 @@ import {withRouter, Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 
 import {searchProductTranslation} from 'Actions/translation';
+
+import Header from 'Components/Header';
+import HeaderLink from 'Components/HeaderLink';
+import Input from 'Components/form/Input';
+
 import  ProductSearchResultList from './components/ProductSearchResultList';
 
 class AddItemToList extends React.PureComponent {
@@ -12,28 +17,31 @@ class AddItemToList extends React.PureComponent {
         super(props);
 
         this.state = {
-            searchFieldValue: ''
+            query: ''
         };
+
+        this.onQueryChange.bind(this);
     }
 
-    handleSearchFieldChange(event) {
-        const searchFieldValue = event.target.value;
-        this.setState({searchFieldValue});
+    onQueryChange(newQuery) {
+        this.setState({query: newQuery});
 
-        this.props.searchHandler(searchFieldValue);
+        this.props.searchHandler(newQuery);
     }
 
+    // todo move action links to header
     render() {
         const listId = this.props.productListId;
 
         return (
             <div>
-                <Link to={"/product-list/" + listId} onClick={() => this.props.cancelHandler(listId)}>Cancel</Link>
-                <br/>
-                Add item to {this.props.productListName} <br/>
-                Search <input type="text" value={this.state.searchFieldValue}
-                              onChange={this.handleSearchFieldChange.bind(this)}/>
-                <ProductSearchResultList productListId={listId} query={this.state.searchFieldValue}/>
+                <Header title={"Add item to " + this.props.productListName}/>
+                <div onClick={this.props.cancelHandler} style={{cursor: 'pointer'}}>Cancel</div>
+
+                <Input label="Search"
+                       defaultValue={this.state.query}
+                       onChange={(value) => this.onQueryChange(value)}/>
+                <ProductSearchResultList productListId={listId} query={this.state.query}/>
             </div>
         )
     }
@@ -86,10 +94,9 @@ export default withRouter(connect(
             productListName: productList.name
         }
     },
-    (dispatch) => {
+    (dispatch, {history}) => {
         return {
-            cancelHandler: (listId) => {
-            },
+            cancelHandler: history.goBack,
             searchHandler: (query) => searchProductTranslation(query)(dispatch),
         }
     }
