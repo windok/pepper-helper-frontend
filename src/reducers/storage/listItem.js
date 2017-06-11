@@ -1,14 +1,9 @@
 import * as actionType from 'Actions';
 
-export default (state = {items: {},  template: {}}, action) => {
+export default (state = {items: new Map(), template: {}}, action) => {
     switch (action.type) {
         case actionType.FETCH_ITEMS_FOR_LIST_SUCCESS: {
-            let serverItems = {};
-            action.listItems.forEach((listItem) => {
-                serverItems[listItem.id] = {...listItem};
-            });
-
-            return {...state, items: {...state.items, ...serverItems}};
+            return {...state, items: new Map([...state.items, ...action.payload])};
         }
         case actionType.GET_ITEM_TEMPLATE_SUCCESS: {
             return {...state, template: {...action.template}}

@@ -2,58 +2,39 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
+import {ListItem, ListItemNullObject} from 'Models/ListItem';
+import {Group, GroupNullObject} from 'Models/Group';
+import {Product, ProductNullObject} from 'Models/Product';
+import {Unit, UnitNullObject} from 'Models/Unit';
+
 class Item extends React.PureComponent {
     render() {
+        if (this.props.listItem.isNullObject()) {
+            return (<span></span>);
+        }
+
         return (
-            <span>{this.props.groupName}: {this.props.translationValue} - {this.props.quantity} {this.props.unitName}</span>
+            <span>
+                {this.props.group.getName()}: {this.props.product.getName()} - {this.props.listItem.getQuantity()} {this.props.unit.getName()}
+            </span>
         )
     }
 }
 
 Item.propTypes = {
-    id: PropTypes.any.isRequired,
-    translationId: PropTypes.any.isRequired,
-    translationValue: PropTypes.any.isRequired,
-    groupId: PropTypes.any.isRequired,
-    groupName: PropTypes.any.isRequired,
-    unitId: PropTypes.any.isRequired,
-    unitName: PropTypes.any.isRequired,
-    quantity: PropTypes.any.isRequired,
-    status: PropTypes.any.isRequired,
+    listItem: PropTypes.instanceOf(ListItem).isRequired,
+    group: PropTypes.instanceOf(Group).isRequired,
+    product: PropTypes.instanceOf(Product).isRequired,
+    unit: PropTypes.instanceOf(Unit).isRequired,
 };
 
 export default connect(
-    (state, {id}) => {
-        const item = state.storage.listItem.items[id];
-
-        if (!item) {
-            return {
-                id,
-                translationId: 'n/a',
-                translationValue: 'n/a',
-                groupId: 'n/a',
-                groupName: 'n/a',
-                unitId: 'n/a',
-                unitName: 'n/a',
-                quantity: 'n/a',
-                status: 'n/a',
-            };
-        }
-
-        const translation = state.storage.translation.items[item.translationId];
-        const group = state.storage.group.items[item.groupId];
-        const unit = state.storage.unit.items[item.unitId];
-
+    (state, {listItem}) => {
         return {
-            id,
-            translationId: item.translationId,
-            translationValue: translation ? translation[state.storage.user.language] || translation.en : 'n/a',
-            groupId: item.groupId,
-            groupName: group ? group.name : 'n/a',  // todo show by user lang
-            unitId: item.unitId,
-            unitName: unit ? unit.name : 'n/a',
-            quantity: item.quantity,
-            status: item.status,
+            listItem,
+            group: state.storage.group.items.get(listItem.getGroupId()) || GroupNullObject(),
+            product: state.storage.product.items.get(listItem.getProductId()) || ProductNullObject(),
+            unit: state.storage.unit.items.get(listItem.getUnitId()) || UnitNullObject()
         }
     }
 )(Item);

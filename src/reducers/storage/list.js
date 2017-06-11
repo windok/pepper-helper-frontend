@@ -1,7 +1,7 @@
 import * as actionType from 'Actions';
 
 
-export default (state = {data: {}, isFetching: false}, action) => {
+export default (state = {items: new Map(), isFetching: false}, action) => {
     let newState;
 
     switch (action.type) {
@@ -10,19 +10,16 @@ export default (state = {data: {}, isFetching: false}, action) => {
         case actionType.FETCH_LIST_COLLECTION_ERROR:
             return {...state, isFetching: false};
         case actionType.FETCH_LIST_COLLECTION_SUCCESS:
-            let serverLists = {};
-
-            action.listCollection.forEach((list) => {
-                serverLists[list.id] = {...list, listItems: []};
-            });
-
-            return {isFetching: false, data: {...state.data, ...serverLists}};
+            return {isFetching: false, items: new Map([...state.items, ...action.payload])};
 
         case actionType.FETCH_ITEMS_FOR_LIST_SUCCESS:
-            newState = {...state};
-            newState.data[action.listId].listItems = action.listItems.map((item) => item.id);
+            const itemIds = [];
+            action.payload.forEach(listItem => itemIds.push(listItem.getId()));
 
-            return newState;
+            const items = (new Map([...state.items]))
+                .set(action.meta.list.getId(), action.meta.list.setItems(itemIds));
+
+            return {...state, items};
         case actionType.CREATE_ITEM_SUCCESS:
             newState = {...state};
             newState.data[action.listItem.listId].listItems.push(action.listItem.id);

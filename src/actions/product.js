@@ -1,31 +1,40 @@
 import * as actionType from 'Actions';
 import RestClient from 'Services/RestClient';
 import Store from 'Store';
+import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+import Product from 'Models/Product';
 
 export const fetchAll = () => (dispatch) => {
     dispatch({
-        type: actionType.FETCH_PRODUCT_COLLECTION_REQUEST
+        [API_CALL]: {
+            endpoint: '/translation',
+            method: GET,
+            types: [
+                actionType.FETCH_PRODUCT_COLLECTION_REQUEST,
+                {
+                    type: actionType.FETCH_PRODUCT_COLLECTION_SUCCESS,
+                    payload: (action, state, response) => {
+                        const productCollection = new Map();
+
+                        (response.data.items || []).forEach(productTranslation => productCollection.set(
+                            productTranslation.id,
+                            new Product({
+                                id: productTranslation.id,
+                                name: productTranslation[state.storage.user.language] || productTranslation.en
+                            })
+                        ));
+
+                        return productCollection;
+                    }
+                },
+                actionType.FETCH_PRODUCT_COLLECTION_ERROR
+            ],
+            params: {
+                type: 'product',
+                limit: 1000
+            },
+        }
     });
-
-    // todo iteration if total count is large
-    RestClient.get('/translation', {params: {limit: 1000}})
-        .then((result) => {
-            const items = result.data.items || [];
-
-            dispatch({
-                type: actionType.FETCH_PRODUCT_COLLECTION_SUCCESS,
-                items
-            });
-
-            return items;
-        }, (error) => {
-            dispatch({
-                type: actionType.FETCH_PRODUCT_COLLECTION_ERROR,
-                error
-            });
-
-            return error;
-        });
 };
 
 export const searchProductTranslation = (query) => (dispatch) => {

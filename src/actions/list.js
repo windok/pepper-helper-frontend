@@ -1,26 +1,32 @@
 import * as actionType from 'Actions';
-import RestClient from 'Services/RestClient';
+import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+import List from 'Models/List';
 
 
 export const fetchAll = () => (dispatch) => {
-    dispatch({
-        type: actionType.FETCH_LIST_COLLECTION_REQUEST
-    });
 
     // todo iteration if total count is large
-    RestClient.get('/product-list', {params: {limit: 1000}})
-        .then((result) => {
-            const listCollection = result.data.items || [];
+    dispatch({
+        [API_CALL]: {
+            endpoint: '/product-list',
+            method: GET,
+            types: [
+                actionType.FETCH_LIST_COLLECTION_REQUEST,
+                {
+                    type: actionType.FETCH_LIST_COLLECTION_SUCCESS,
+                    payload: (action, state, response) => {
+                        const listCollection = new Map();
 
-            dispatch({
-                type: actionType.FETCH_LIST_COLLECTION_SUCCESS,
-                listCollection
-            });
-        }, (error) => {
-            dispatch({
-                type: actionType.FETCH_LIST_COLLECTION_ERROR,
-                error
-            });
+                        (response.data.items || []).forEach(list => listCollection.set(list.id, new List(list)));
 
-        });
+                        return listCollection;
+                    }
+                },
+                actionType.FETCH_LIST_COLLECTION_ERROR
+            ],
+            params: {
+                limit: 1000
+            },
+        }
+    });
 };

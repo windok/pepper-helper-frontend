@@ -1,65 +1,78 @@
 import * as actionType from 'Actions';
 import RestClient from 'Services/RestClient';
+import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+import ListItem from 'Models/ListItem';
 
-export const fetchItemsForList = (listId) => (dispatch) => {
 
-    if (listId == 0 || listId == '0') {
+export const fetchItemsForList = (list) => (dispatch) => {
+
+    if (list.isNullObject()) {
         return Promise.resolve();
     }
 
+    // todo iteration if total count is large
     dispatch({
-        type: actionType.FETCH_ITEMS_FOR_LIST_REQUEST,
-        listId
+        [API_CALL]: {
+            endpoint: '/list-item',
+            method: GET,
+            types: [
+                actionType.FETCH_ITEMS_FOR_LIST_REQUEST,
+                {
+                    type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,
+                    payload: (action, state, response) => {
+                        const listItemCollection = new Map();
+
+                        (response.data.items || []).forEach(listItem => listItemCollection.set(
+                            listItem.id, new ListItem({...listItem, productId: listItem.translationId}))
+                        );
+
+                        return listItemCollection;
+                    },
+                    meta: {list}
+                },
+                actionType.FETCH_ITEMS_FOR_LIST_ERROR
+            ],
+            params: {
+                listId: list.getId(),
+                limit: 1000
+            },
+        }
     });
-
-    // todo iteration if total count is large or make lazy loading
-    return RestClient.get('/list-item', {params: {listId, limit: 1500}})
-        .then((result) => {
-            const listItems = result.data.items || [];
-
-            dispatch({
-                type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,
-                listId,
-                listItems
-            });
-
-        }, (error) => {
-            dispatch({
-                type: actionType.FETCH_ITEMS_FOR_LIST_ERROR,
-                listId,
-                error
-            });
-
-        });
 };
 
-export const getTemplate = (listId, translationId) => (dispatch) => {
-    if (!listId || !translationId || listId === '0' || translationId === '0') {
+export const getTemplate = (list, translation) => (dispatch) => {
+    if (!list || !translation || translation.userId > 0) {
         return Promise.resolve();
     }
 
     dispatch({
         type: actionType.GET_ITEM_TEMPLATE_REQUEST,
-        listId
+        listId: list.getId(),
+        translationId: translation.id,
+
     });
 
-    return RestClient.get(`/list-item-template/${translationId}/${listId}`)
+    return RestClient.get('/list-item-template/' + translation.id + '/' + list.getId())
         .then((result) => {
+            const template = result.data;
+
             dispatch({
                 type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
-                translationId,
-                listId,
-                template: result.data
+                listId: list.getId(),
+                translationId: translation.id,
+                template
             });
 
+            return template;
         }, (error) => {
             dispatch({
                 type: actionType.GET_ITEM_TEMPLATE_ERROR,
-                translationId,
-                listId,
+                listId: list.getId(),
+                translationId: translation.id,
                 error
             });
 
+            return error;
         });
 };
 
@@ -71,12 +84,15 @@ export const createItem = (template) => (dispatch) => {
 
     return RestClient.post('/list-item', template)
         .then((result) => {
+            const listItem = result.data;
+
             dispatch({
                 type: actionType.CREATE_ITEM_SUCCESS,
                 template,
-                listItem: result.data,
+                listItem,
             });
 
+            return listItem;
         }, (error) => {
             dispatch({
                 type: actionType.CREATE_ITEM_ERROR,
@@ -84,5 +100,6 @@ export const createItem = (template) => (dispatch) => {
                 error
             });
 
+            return error;
         });
 };

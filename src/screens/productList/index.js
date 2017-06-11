@@ -3,25 +3,27 @@ import PropTypes from 'prop-types'
 import {withRouter, Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 
+import {List as ListModel, ListNullObject} from 'Models/List';
+
 import Sidebar from 'Components/Sidebar';
 import Header from 'Components/Header';
 import HeaderLink from 'Components/HeaderLink';
 
 import {fetchItemsForList} from 'Actions/listItem';
 
-import List from './components/List';
+import ListComponent from './components/List';
 
 class ProductList extends React.PureComponent {
     componentWillMount() {
-        this.props.fetchListItems(this.props.productListId);
+        this.props.fetchListItems(this.props.productList);
     }
 
-    shouldComponentUpdate({productListId}) {
-        if (productListId === this.props.productListId) {
+    shouldComponentUpdate({productList}) {
+        if (productList.getId() === this.props.productList.getId()) {
             return false;
         }
 
-        this.props.fetchListItems(productListId);
+        this.props.fetchListItems(productList);
 
         return true;
     }
@@ -32,10 +34,11 @@ class ProductList extends React.PureComponent {
         // todo create separate component that specifies Menu
         // todo keep list of links for each screen somewhere
         const headerLeftLinks = [
-            <HeaderLink title={'Menu'} onClickHandler={() => {}}/>
+            <HeaderLink title={'Menu'} onClickHandler={() => {
+            }}/>
         ];
 
-        if (!listId || listId === '0') {
+        if (this.props.productList.isNullObject()) {
             return (
                 <div>
                     <Sidebar/>
@@ -51,7 +54,7 @@ class ProductList extends React.PureComponent {
                 <Sidebar/>
                 <Header title={"Product list " + this.props.productListName} leftLinks={headerLeftLinks}/>
 
-                <List productListId={listId}/>
+                <ListComponent productListId={listId}/>
                 <br/>
                 <Link to={"/product-list/" + listId + "/recommendations"}>Show recommendations</Link>
                 <br/>
@@ -63,55 +66,42 @@ class ProductList extends React.PureComponent {
 
 ProductList.propTypes = {
     productListId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    productListName: PropTypes.string.isRequired,
+    productList: PropTypes.instanceOf(ListModel).isRequired,
     fetchListItems: PropTypes.func.isRequired,
 };
 
 export default withRouter(connect(
-    (state, ownProps) => {
-        const match = ownProps.match;
+    (state, {match}) => {
+        const productListId = parseInt(match.params.productListId);
 
-        const productListId = match.params.productListId;
-
-        if (!productListId) {
+        if (
             // todo incorrect route that leads to this page
-            // todo maybe open some default list?
+        // todo maybe open some default list?
+        !productListId
+        // todo list fetching request in progress
+        // todo maybe this list does not exist?
+        || !state.storage.list.items.size
+        // todo list fetching request in progress
+        // todo maybe this list does not exist?
+        // todo unexisted list, redirect to user's default list
+        || !state.storage.list.items.has(productListId)
+        ) {
             return {
                 productListId: 0,
-                productListName: 'Incorrect request to show list'
+                productList: new ListNullObject()
             }
         }
 
-        if (state.storage.list.data.length === 0) {
-            // todo list fetching request in progress
-            // todo maybe this list does not exist?
-            return {
-                productListId: 0,
-                productListName: 'Fetching lists'
-            }
-        }
-
-        if (state.storage.list.data[productListId] === undefined) {
-            // todo list fetching request in progress
-            // todo maybe this list does not exist?
-            return {
-                productListId: 0,
-                productListName: 'Unexisted list, redirect to default'
-            }
-        }
-
-
-
-        const productList = state.storage.list.data[productListId];
+        const productList = state.storage.list.items.get(productListId);
 
         return {
             productListId,
-            productListName: productList.name
+            productList
         }
     },
     (dispatch) => {
         return {
-            fetchListItems: (listId) => fetchItemsForList(listId)(dispatch)
+            fetchListItems: (list) => fetchItemsForList(list)(dispatch)
         }
     }
 )(ProductList));

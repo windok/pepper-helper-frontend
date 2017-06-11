@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 
+import {ListNullObject} from 'Models/List';
+import {ListItem} from 'Models/ListItem';
+
 import Item from './Item';
 
 class List extends React.PureComponent {
@@ -9,10 +12,10 @@ class List extends React.PureComponent {
         return (
             <div>
                 <ul>
-                    {this.props.listItems.map((listItem) =>
-                        <li key={listItem.id}><Item id={listItem.id}/></li>
+                    {this.props.listItems.map(
+                        listItem => <li key={listItem.getId()}><Item listItem={listItem}/></li>
                     )}
-                    </ul>
+                </ul>
             </div>
         )
     }
@@ -20,21 +23,16 @@ class List extends React.PureComponent {
 
 List.propTypes = {
     productListId: PropTypes.any.isRequired,
-    listItems: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.any.isRequired,
-        translationId: PropTypes.any.isRequired
-    })).isRequired
+    listItems: PropTypes.arrayOf(PropTypes.instanceOf(ListItem)).isRequired
 };
 
 export default connect(
     (state, {productListId}) => {
-        const productList = state.storage.list.data[productListId];
-
-        const listItems = productList ? productList.listItems.map((listItemId) => state.storage.listItem.items[listItemId]) : [];
+        const productList = state.storage.list.items.get(productListId) || new ListNullObject();
 
         return {
             productListId,
-            listItems
+            listItems: productList.getItems().map(itemId => state.storage.listItem.items.get(itemId))
         }
     }
 )(List);

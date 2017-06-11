@@ -1,10 +1,12 @@
 import {createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
-import reducers from './reducers';
+import { apiMiddleware } from './api-middleware';
+import reducers from 'Reducers';
 
 const configureStore = () => {
     const middleWares = [
-        thunk
+        thunk,
+        apiMiddleware
     ];
 
     return applyMiddleware(...middleWares)(createStore)(

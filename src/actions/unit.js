@@ -1,26 +1,30 @@
 import * as actionType from 'Actions';
-import RestClient from 'Services/RestClient';
-
+import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+import Unit from 'Models/Unit';
 
 export const fetchAll = () => (dispatch) => {
-    dispatch({
-        type: actionType.FETCH_UNIT_COLLECTION_REQUEST
-    });
-
     // todo iteration if total count is large
-    RestClient.get('/unit', {params: {limit: 1000}})
-        .then((result) => {
-            const items = result.data.items || [];
+    dispatch({
+        [API_CALL]: {
+            endpoint: '/unit',
+            method: GET,
+            types: [
+                actionType.FETCH_UNIT_COLLECTION_REQUEST,
+                {
+                    type: actionType.FETCH_UNIT_COLLECTION_SUCCESS,
+                    payload: (action, state, response) => {
+                        const unitCollection = new Map();
 
-            dispatch({
-                type: actionType.FETCH_UNIT_COLLECTION_SUCCESS,
-                items
-            });
-        }, (error) => {
-            dispatch({
-                type: actionType.FETCH_UNIT_COLLECTION_ERROR,
-                error
-            });
+                        (response.data.items || []).forEach(unit => unitCollection.set(unit.id, new Unit(unit)));
 
-        });
+                        return unitCollection;
+                    }
+                },
+                actionType.FETCH_UNIT_COLLECTION_ERROR
+            ],
+            params: {
+                limit: 1000
+            },
+        }
+    });
 };

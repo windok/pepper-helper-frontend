@@ -1,34 +1,38 @@
 import * as actionType from 'Actions';
-import RestClient from 'Services/RestClient';
-import Store from 'Store';
-
+import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+import Group from 'Models/Group';
 
 export const fetchAll = () => (dispatch) => {
-    dispatch({
-        type: actionType.FETCH_GROUP_COLLECTION_REQUEST
-    });
 
     // todo iteration if total count is large
-    RestClient.get('/translation', {params: {limit: 1000, type: 'group'}})
-        .then((result) => {
+    dispatch({
+        [API_CALL]: {
+            endpoint: '/translation',
+            method: GET,
+            types: [
+                actionType.FETCH_GROUP_COLLECTION_REQUEST,
+                {
+                    type: actionType.FETCH_GROUP_COLLECTION_SUCCESS,
+                    payload: (action, state, response) => {
+                        const groupCollection = new Map();
 
-            // todo process group in reducer, or consider to immutable js or create objects with type  Group
-            const items = (result.data.items || []).map((groupTranslation) => {
-                return {
-                    id: groupTranslation.id,
-                    name: groupTranslation[Store.getState().storage.user.language] || groupTranslation.en
-                }
-            });
+                        (response.data.items || []).forEach(groupTranslation => groupCollection.set(
+                            groupTranslation.id,
+                            new Group({
+                                id: groupTranslation.id,
+                                name: groupTranslation[state.storage.user.language] || groupTranslation.en
+                            })
+                        ));
 
-            dispatch({
-                type: actionType.FETCH_GROUP_COLLECTION_SUCCESS,
-                items
-            });
-        }, (error) => {
-            dispatch({
-                type: actionType.FETCH_GROUP_COLLECTION_ERROR,
-                error
-            });
-
-        });
+                        return groupCollection;
+                    }
+                },
+                actionType.FETCH_GROUP_COLLECTION_ERROR
+            ],
+            params: {
+                type: 'group',
+                limit: 1000
+            },
+        }
+    });
 };

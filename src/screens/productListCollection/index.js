@@ -6,30 +6,32 @@ import {Link} from 'react-router-dom';
 
 class ProductListCollection extends React.PureComponent {
     render() {
+        const liElements = [];
+        this.props.lists.forEach((list) => {
+            liElements.push(
+                <li key={list.getId()}>
+                    <Link to={"/product-list/" + list.getId()}>{list.getName()}</Link>
+                </li>
+            )
+        });
+
         return (
             <div>
                 Lists:
-                <ul>
-                {
-                    Object.keys(this.props.lists).map(
-                        (listId) => <li key={listId}><Link to={"/product-list/" + listId}>{this.props.lists[listId].name}</Link></li>
-                    )
-                }
-                </ul>
+                <ul>{liElements}</ul>
             </div>
         );
     }
 }
 
 ProductListCollection.propTypes = {
-    lists: PropTypes.object.isRequired
+    lists: PropTypes.instanceOf(Map).isRequired
 };
 
-const WrappedProductListCollection = connect(
+export default connect(
     (state) => {
         return {
-            lists: state.storage.list.data
+            lists: state.storage.list.items
         }
-    })(ProductListCollection);
-
-export default WrappedProductListCollection;
+    }
+)(ProductListCollection);

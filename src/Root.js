@@ -4,8 +4,8 @@ import {Provider} from 'react-redux';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 
 import ProductListScreen from 'Screens/productList';
-import AddItemToListSearchStep from 'Screens/addItemToList/searchStep';
-import AddItemToListSaveStep from 'Screens/addItemToList/saveStep';
+import AddItemToListSearchStep from 'Screens/addItemToList/SearchStep';
+import AddItemToListSaveStep from 'Screens/addItemToList/SaveStep';
 import UserScreen from 'Screens/user';
 import AboutScreen from 'Screens/about';
 
