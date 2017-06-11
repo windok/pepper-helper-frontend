@@ -3,7 +3,7 @@ const entityStructureFilter = (entity, requiredFields) => {
 
     requiredFields.forEach((requiredField) => {
         if (entity[requiredField] === undefined) {
-            throw TypeError('Failed to create object. Field ' + requiredField + ' is undefined in entity.');
+            throw TypeError('Failed to create object. Field \'' + requiredField + '\' is required.');
         }
 
         filteredEntity[requiredField] = entity[requiredField];
@@ -12,8 +12,12 @@ const entityStructureFilter = (entity, requiredFields) => {
     return filteredEntity;
 };
 
-const allowedValuesValidator = (entity, field, allowedValues) => {
-    return allowedValues.indexOf(entity[field]) > -1;
+const allowedValuesValidator = (entity, field, allowedFieldValues) => {
+    if (allowedFieldValues.indexOf(entity[field]) === -1) {
+        throw TypeError('Failed to create object. Entity field \'' + field + '\'=\'' + entity[field] + '\' must be one of: ' + allowedFieldValues.join(', '));
+    }
+
+    return entity;
 };
 
 export {

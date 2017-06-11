@@ -5,7 +5,7 @@ import {connect} from 'react-redux'
 
 import {List as ListModel, ListNullObject} from 'Models/List';
 
-import {searchProductTranslation, createProductTranslation} from 'Actions/translation';
+import {searchProductTranslation, createProductTranslation} from 'Actions/product';
 
 import Header from 'Components/Header';
 import HeaderLink from 'Components/HeaderLink';
@@ -34,20 +34,20 @@ class AddItemToListSearchStep extends React.PureComponent {
     // todo move action links to header
     render() {
 
-        if (this.props.productList.isNullObject()) {
+        if (this.props.list.isNullObject()) {
             return (
                 <div>
-                    <Header title={"Add item to " + this.props.productList.getName()}/>
+                    <Header title={"Add item to " + this.props.list.getName()}/>
                     <div onClick={this.props.cancelHandler} style={{cursor: 'pointer'}}>Cancel</div>
                 </div>
             );
         }
 
-        const listId = this.props.productListId;
+        const listId = this.props.listId;
 
         return (
             <div>
-                <Header title={"Add item to " + this.props.productList.getName()}/>
+                <Header title={"Add item to " + this.props.list.getName()}/>
                 <div onClick={this.props.cancelHandler} style={{cursor: 'pointer'}}>Cancel</div>
                 <div onClick={() => {
                     if (this.state.query.trim().length === 0) {
@@ -58,11 +58,11 @@ class AddItemToListSearchStep extends React.PureComponent {
 
                     Object.keys(this.props.searchResults).forEach(query => {
                         if (!internalTranslationWasFound && this.state.query.includes(query)) {
-                            this.props.searchResults[query].forEach((searchOption) => {
-                                if (!internalTranslationWasFound && searchOption.value === this.state.query) {
+                            this.props.searchResults[query].forEach((productId) => {
+                                if (!internalTranslationWasFound && this.props.productCollection.get(productId).getName() === this.state.query) {
                                     internalTranslationWasFound = true;
 
-                                    this.props.postToSaveStepHandler(searchOption.id);
+                                    this.props.postToSaveStepHandler(productId);
                                 }
                             });
                         }
@@ -88,8 +88,11 @@ class AddItemToListSearchStep extends React.PureComponent {
 }
 
 AddItemToListSearchStep.propTypes = {
-    productListId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    productList: PropTypes.instanceOf(ListModel).isRequired,
+    listId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    list: PropTypes.instanceOf(ListModel).isRequired,
+
+    productCollection: PropTypes.instanceOf(Map),
+    searchResults: PropTypes.object,
 
     cancelHandler: PropTypes.func.isRequired,
     searchHandler: PropTypes.func.isRequired,
@@ -99,31 +102,32 @@ AddItemToListSearchStep.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const productListId = parseInt(match.params.productListId);
+        const listId = parseInt(match.params.listId);
 
         if (
             // todo incorrect route that leads to this page
         // todo maybe open some default list?
-        !productListId
+        !listId
         // todo list fetching request in progress
         // todo maybe this list does not exist?
         || !state.storage.list.items.size
         // todo list fetching request in progress
         // todo maybe this list does not exist?
         // todo unexisted list, redirect to user's default list
-        || !state.storage.list.items.has(productListId)
+        || !state.storage.list.items.has(listId)
         ) {
             return {
-                productListId: 0,
-                productList: new ListNullObject()
+                listId: 0,
+                list: new ListNullObject()
             }
         }
 
-        const productList = state.storage.list.items.get(productListId);
+        const list = state.storage.list.items.get(listId);
 
         return {
-            productListId,
-            productList,
+            listId,
+            list,
+            productCollection: state.storage.product.items,
             searchResults: state.storage.product.searchResults
         }
     },
@@ -133,7 +137,7 @@ export default withRouter(connect(
             searchHandler: (query) => searchProductTranslation(query)(dispatch),
             createTranslationHandler: (value) => createProductTranslation(value)(dispatch),
             postToSaveStepHandler: (translationId) => {
-                return history.push('/product-list/' + match.params.productListId + '/add-item/save/' + translationId);
+                return history.push('/product-list/' + match.params.listId + '/add-item/save/' + translationId);
             }
         }
     }

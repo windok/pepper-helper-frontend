@@ -5,7 +5,9 @@ import {connect} from 'react-redux'
 
 import {getTemplate, createItem} from 'Actions/listItem';
 
-import List from 'Models/List';
+import {List, ListNullObject} from 'Models/List';
+import {ListItem, ListItemNullObject} from 'Models/ListItem';
+import {Product, ProductNullObject} from 'Models/Product';
 
 import Header from 'Components/Header';
 import HeaderLink from 'Components/HeaderLink';
@@ -18,32 +20,39 @@ class AddItemToListSaveStep extends React.PureComponent {
     constructor(props) {
         super(props);
 
+        // todo bind template changes to redux state instead component one
         this.state = {
-            template: {...props.template}
+            template: props.template ? props.template.serialize() : null
         };
 
         this.onTemplateFieldChange.bind(this);
     }
 
     componentWillMount() {
-        this.props.getTemplate(this.props.productList, this.props.translation);
+        this.props.getTemplate(this.props.list, this.props.product);
     }
 
-    shouldComponentUpdate({productListId, translationId}) {
-        if (this.props.productListId !== productListId || this.props.translationId !== translationId) {
-            this.props.getTemplate(productListId, translationId);
+    shouldComponentUpdate({listId, productId, list, product}) {
+        if (this.props.listId !== listId || this.props.productId !== productId) {
+            this.props.getTemplate(list, product);
         }
 
         return true;
     }
 
     componentDidUpdate({template}) {
+        // todo bind template changes to redux state instead component one
         if (
-            this.props.template
-            && this.props.template.translationId !== template.translationId
-            && this.props.template.listId !== template.listId
+            // if there were no template before
+            (this.props.template && !template)
+                // or if list or product was changed
+            || (
+                this.props.template
+                && this.props.template.getListId() !== template.getListId()
+                && this.props.template.getProductId() !== template.getProductId()
+            )
         ) {
-            this.setState({template: {...this.props.template}});
+            this.setState({template: this.props.template.serialize()});
         }
     }
 
@@ -61,9 +70,9 @@ class AddItemToListSaveStep extends React.PureComponent {
         // todo move action links to header
         return (
             <div>
-                <Header title={"Add item to " + this.props.productListName}/>
+                <Header title={"Add item to " + this.props.list.getName()}/>
                 <div onClick={this.props.cancelHandler} style={{cursor: 'pointer'}}>Back</div>
-                <Link to={"/product-list/" + this.props.productListId}
+                <Link to={"/product-list/" + this.props.listId}
                       onClick={() => this.props.saveItemHandler(this.state.template)}>Save</Link>
 
                 <GroupSelect groupId={this.state.template.groupId}
@@ -81,11 +90,12 @@ class AddItemToListSaveStep extends React.PureComponent {
 }
 
 AddItemToListSaveStep.propTypes = {
-    productListId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    translationId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    template: PropTypes.object.isRequired,
-    productList: PropTypes.instanceOf(List).isRequired,
-    translation: PropTypes.object.isRequired,
+    listId: PropTypes.number.isRequired,
+    productId: PropTypes.number.isRequired,
+    list: PropTypes.instanceOf(List).isRequired,
+    product: PropTypes.instanceOf(Product).isRequired,
+    template: PropTypes.instanceOf(ListItem),
+
     cancelHandler: PropTypes.func.isRequired,
     saveItemHandler: PropTypes.func.isRequired,
     getTemplate: PropTypes.func.isRequired
@@ -93,34 +103,35 @@ AddItemToListSaveStep.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const {productListId, translationId}= match.params;
+        const listId = parseInt(match.params.listId);
+        const productId = parseInt(match.params.productId);
 
-        const productList = state.storage.list.items.get(productListId);
-        const translation = state.storage.product.items[translationId];
+        const list = state.storage.list.items.get(listId);
+        const product = state.storage.product.items.get(productId);
 
-        if (!productList || !translation) {
+        if (!list || !product) {
             return {
-                productListId: 0,
-                translationId: 0,
-                productList: null,
-                translation: null,
+                listId: 0,
+                productId: 0,
+                list: new ListNullObject(),
+                product: new ProductNullObject(),
                 template: null,
             }
         }
 
         return {
-            productListId,
-            translationId,
-            productList,
-            translation,
+            listId,
+            productId,
+            list,
+            product,
             template: state.storage.listItem.template,
         }
     },
     (dispatch, {history}) => {
         return {
             cancelHandler: history.goBack,
-            saveItemHandler: (template) => createItem(template)(dispatch),
-            getTemplate: (list, translation) => getTemplate(list, translation)(dispatch)
+            saveItemHandler: (template) => createItem(new ListItem(template))(dispatch),
+            getTemplate: (list, product) => getTemplate(list, product)(dispatch)
         }
     }
 )(AddItemToListSaveStep));

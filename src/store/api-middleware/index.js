@@ -74,7 +74,10 @@ const apiMiddleware = (store) => {
         const endpoint = action[API_CALL].endpoint;
         const [requestType, successType, failureType] = action[API_CALL].types;
         const method = action[API_CALL].method;
-        const params = action[API_CALL].params || {};
+        const params = typeof action[API_CALL].params === 'function'
+            ? action[API_CALL].params(action, store.getState())
+            : action[API_CALL].params || {};
+
         const headers = {
             ...{
                 'ph-token': 'test',

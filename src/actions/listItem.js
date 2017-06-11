@@ -1,6 +1,5 @@
 import * as actionType from 'Actions';
-import RestClient from 'Services/RestClient';
-import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+import {API_CALL, GET, POST} from 'Store/api-middleware/RSAA';
 import ListItem from 'Models/ListItem';
 
 
@@ -11,6 +10,7 @@ export const fetchItemsForList = (list) => (dispatch) => {
     }
 
     // todo iteration if total count is large
+    // todo custom redux middleware to fetch and process collections
     dispatch({
         [API_CALL]: {
             endpoint: '/list-item',
@@ -40,66 +40,51 @@ export const fetchItemsForList = (list) => (dispatch) => {
     });
 };
 
-export const getTemplate = (list, translation) => (dispatch) => {
-    if (!list || !translation || translation.userId > 0) {
+export const getTemplate = (list, product) => (dispatch) => {
+    if (
+        !list || !product
+        || list.isNullObject() || product.isNullObject()
+        || product.getUserId() > 0
+    ) {
         return Promise.resolve();
     }
 
     dispatch({
-        type: actionType.GET_ITEM_TEMPLATE_REQUEST,
-        listId: list.getId(),
-        translationId: translation.id,
-
+        [API_CALL]: {
+            endpoint: '/list-item-template/' + product.getId() + '/' + list.getId(),
+            method: GET,
+            types: [
+                actionType.GET_ITEM_TEMPLATE_REQUEST,
+                {
+                    type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
+                    meta: {list, product},
+                    payload: (action, state, response) => new ListItem({
+                        ...response.data,
+                        id: response.data.id || 0,
+                        date: response.data.date || new Date(),
+                        productId: response.data.translationId
+                    })
+                },
+                actionType.GET_ITEM_TEMPLATE_ERROR
+            ]
+        }
     });
-
-    return RestClient.get('/list-item-template/' + translation.id + '/' + list.getId())
-        .then((result) => {
-            const template = result.data;
-
-            dispatch({
-                type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
-                listId: list.getId(),
-                translationId: translation.id,
-                template
-            });
-
-            return template;
-        }, (error) => {
-            dispatch({
-                type: actionType.GET_ITEM_TEMPLATE_ERROR,
-                listId: list.getId(),
-                translationId: translation.id,
-                error
-            });
-
-            return error;
-        });
 };
 
 export const createItem = (template) => (dispatch) => {
     dispatch({
-        type: actionType.CREATE_ITEM_REQUEST,
-        template
+        [API_CALL]: {
+            endpoint: '/list-item/',
+            method: POST,
+            types: [
+                actionType.CREATE_ITEM_REQUEST,
+                {
+                    type: actionType.CREATE_ITEM_SUCCESS,
+                    meta: {template}
+                },
+                actionType.CREATE_ITEM_ERROR
+            ],
+            params: template.serialize(),
+        }
     });
-
-    return RestClient.post('/list-item', template)
-        .then((result) => {
-            const listItem = result.data;
-
-            dispatch({
-                type: actionType.CREATE_ITEM_SUCCESS,
-                template,
-                listItem,
-            });
-
-            return listItem;
-        }, (error) => {
-            dispatch({
-                type: actionType.CREATE_ITEM_ERROR,
-                template,
-                error
-            });
-
-            return error;
-        });
 };

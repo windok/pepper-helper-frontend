@@ -16,8 +16,8 @@ const Root = ({store}) => (
                 <div>
                     <Switch>
                         <Route exact path="/product-list/:productListId" component={ProductListScreen}/>
-                        <Route exact path="/product-list/:productListId/add-item/search" component={AddItemToListSearchStep}/>
-                        <Route exact path="/product-list/:productListId/add-item/save/:translationId" component={AddItemToListSaveStep}/>
+                        <Route exact path="/product-list/:listId/add-item/search" component={AddItemToListSearchStep}/>
+                        <Route exact path="/product-list/:listId/add-item/save/:productId" component={AddItemToListSaveStep}/>
                         <Route exact path="/product-list/:productListId/recommendations" component={ProductListScreen}/>
                         <Route exact path="/user" component={UserScreen}/>
                         <Route exact path="/about" component={AboutScreen}/>

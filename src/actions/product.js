@@ -1,10 +1,10 @@
 import * as actionType from 'Actions';
-import RestClient from 'Services/RestClient';
-import Store from 'Store';
-import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+import {API_CALL, GET, POST} from 'Store/api-middleware/RSAA';
 import Product from 'Models/Product';
 
 export const fetchAll = () => (dispatch) => {
+    // todo iterate if there are too much products
+    // todo custom redux middleware to fetch and process collections
     dispatch({
         [API_CALL]: {
             endpoint: '/translation',
@@ -19,8 +19,9 @@ export const fetchAll = () => (dispatch) => {
                         (response.data.items || []).forEach(productTranslation => productCollection.set(
                             productTranslation.id,
                             new Product({
-                                id: productTranslation.id,
-                                name: productTranslation[state.storage.user.language] || productTranslation.en
+                                ...productTranslation,
+                                name: productTranslation[state.storage.user.language],
+                                defaultName: productTranslation.en
                             })
                         ));
 
@@ -43,55 +44,51 @@ export const searchProductTranslation = (query) => (dispatch) => {
     }
 
     dispatch({
-        type: actionType.SEARCH_TRANSLATION_REQUEST
+        [API_CALL]: {
+            endpoint: '/translation/search',
+            method: GET,
+            types: [
+                actionType.SEARCH_PRODUCT_REQUEST,
+                {
+                    type: actionType.SEARCH_PRODUCT_SUCCESS,
+                    meta: {query},
+                    payload: (action, state, response) => response.data.items.map(product => product.id)
+                },
+                actionType.SEARCH_PRODUCT_ERROR
+            ],
+            params: {
+                value: query,
+                type: 'product',
+                limit: 50               // todo make support for limit in api
+            },
+        }
     });
-
-    RestClient.get('/translation/search', {params: {value: query, type: 'product', limit: 50}})
-        .then((result) => {
-            const items = result.data.items || [];
-
-            dispatch({
-                type: actionType.SEARCH_TRANSLATION_SUCCESS,
-                query,
-                items
-            });
-
-            return items;
-        }, (error) => {
-            dispatch({
-                type: actionType.SEARCH_TRANSLATION_ERROR,
-                query,
-                error
-            });
-
-            return error;
-        });
-};
-
-const createTranslation = (type, value) => (dispatch) => {
-    dispatch({
-        type: actionType.CREATE_PRODUCT_TRANSLATION_REQUEST
-    });
-
-    return RestClient.post('/translation', {type, [Store.getState().storage.user.language]: value})
-        .then((result) => {
-            dispatch({
-                type: actionType.CREATE_PRODUCT_TRANSLATION_SUCCESS,
-                translation: result.data
-            });
-
-            return result.data;
-        }, (error) => {
-            dispatch({
-                type: actionType.CREATE_PRODUCT_TRANSLATION_ERROR,
-                value,
-                error
-            });
-
-            return error;
-        });
 };
 
 export const createProductTranslation = (value) => (dispatch) => {
-    return createTranslation('product', value)(dispatch);
+    dispatch({
+        [API_CALL]: {
+            endpoint: '/translation',
+            method: POST,
+            types: [
+                actionType.CREATE_PRODUCT_REQUEST,
+                {
+                    type: actionType.CREATE_PRODUCT_SUCCESS,
+                    payload: (action, state, response) => new Product({
+                        ...response.data,
+                        name: response.data[state.storage.user.language],
+                        defaultName: response.data.en
+                    })
+                },
+                actionType.CREATE_PRODUCT_ERROR
+            ],
+            params: (action, state) => {
+                return {
+                    type: 'product',
+                    en: value,
+                    [state.storage.user.language]: value
+                }
+            },
+        }
+    });
 };

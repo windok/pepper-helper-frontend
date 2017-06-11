@@ -6,6 +6,7 @@ import List from 'Models/List';
 export const fetchAll = () => (dispatch) => {
 
     // todo iteration if total count is large
+    // todo custom redux middleware to fetch and process collections
     dispatch({
         [API_CALL]: {
             endpoint: '/product-list',

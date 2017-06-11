@@ -5,7 +5,7 @@ import {Nullable, NotNullable} from 'Models/NullableInterface';
 class Unit extends NotNullable(Entity) {
     constructor(entity) {
         super(entity, [
-            () => entityStructureFilter(entity, ['id', 'name'])
+            (entity) => entityStructureFilter(entity, ['id', 'name'])
         ]);
     }
 

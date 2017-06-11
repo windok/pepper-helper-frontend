@@ -12,11 +12,13 @@ const TYPE_RECOMMENDED = 'recommended';
 class ListItem extends NotNullable(Entity) {
 
     constructor(entity) {
-        super(entity, [
-            () => entityStructureFilter(entity, ['id', 'status', 'listId', 'productId', 'unitId', 'groupId', 'quantity', 'type', 'date']),
-            () => allowedValuesValidator(entity, 'status', [STATUS_DRAFT, STATUS_BOUGHT, STATUS_SUSPENDED]),
-            () => allowedValuesValidator(entity, 'type', [TYPE_GENERAL, TYPE_RECOMMENDED]),
+        // todo add entity processor to wrap dates
+        entity.date = typeof entity.date === 'string' ? new Date(entity.date) : entity.date;
 
+        super(entity, [
+            (entity) => entityStructureFilter(entity, ['id', 'status', 'listId', 'productId', 'unitId', 'groupId', 'quantity', 'type', 'date']),
+            (entity) => allowedValuesValidator(entity, 'status', [STATUS_DRAFT, STATUS_BOUGHT, STATUS_SUSPENDED]),
+            (entity) => allowedValuesValidator(entity, 'type', [TYPE_GENERAL, TYPE_RECOMMENDED]),
         ]);
     }
 

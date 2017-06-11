@@ -10,5 +10,14 @@ const apiTransport = Axios.create({
 export default {
     [GET]: (endpoint, params, headers) => {
         return apiTransport.get(endpoint, {params, headers});
+    },
+    [POST]: (endpoint, params, headers) => {
+        return apiTransport.post(endpoint, params, {headers});
+    },
+    [PUT]: (endpoint, params, headers) => {
+        return apiTransport.put(endpoint, params, {headers});
+    },
+    [DELETE]: (endpoint, params, headers) => {
+        return apiTransport.delete(endpoint, {params, headers});
     }
 };

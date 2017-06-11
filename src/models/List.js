@@ -7,7 +7,7 @@ class List extends NotNullable(Entity) {
         entity.listItems = entity.listItems || [];
 
         super(entity, [
-            () => entityStructureFilter(entity, ['id', 'name', 'listItems'])
+            (entity) => entityStructureFilter(entity, ['id', 'name', 'listItems'])
         ]);
     }
 

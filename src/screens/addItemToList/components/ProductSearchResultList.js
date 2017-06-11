@@ -12,9 +12,9 @@ class ProductSearchResultList extends React.PureComponent {
         return (
             <div>
                 <ul>
-                    {this.props.searchResults.map((translation) =>
-                        <Link to={"/product-list/" + this.props.productListId + "/add-item/save/" + translation.id} key={translation.id}>
-                            <button>{translation.value}</button>
+                    {this.props.searchResults.map((productId) =>
+                        <Link to={"/product-list/" + this.props.listId + "/add-item/save/" + productId} key={productId}>
+                            <button>{this.props.productCollection.get(productId).getName()}</button>
                         </Link>
                     )}
                 </ul>
@@ -24,19 +24,18 @@ class ProductSearchResultList extends React.PureComponent {
 }
 
 ProductSearchResultList.propTypes = {
-    productListId: PropTypes.any.isRequired,
+    listId: PropTypes.any.isRequired,
     query: PropTypes.string.isRequired,
-    searchResults: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.any.isRequired,
-        value: PropTypes.string.isRequired,
-    })).isRequired
+    productCollection: PropTypes.instanceOf(Map).isRequired,
+    searchResults: PropTypes.arrayOf(PropTypes.number).isRequired
 };
 
 export default connect(
     (state, {productListId, query}) => {
         return {
-            productListId,
+            listId: productListId,
             query,
+            productCollection: state.storage.product.items,
             searchResults : state.storage.product.searchResults[query] || []
         }
     }
