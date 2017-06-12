@@ -2,7 +2,7 @@ const entityStructureFilter = (entity, requiredFields) => {
     const filteredEntity = {};
 
     requiredFields.forEach((requiredField) => {
-        if (entity[requiredField] === undefined) {
+        if (!entity.hasOwnProperty(requiredField)) {
             throw TypeError('Failed to create object. Field \'' + requiredField + '\' is required.');
         }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
+import {findBestSearchResults} from 'Reducers/storage/product';
 
 class ProductSearchResultList extends React.PureComponent {
     render() {
@@ -31,12 +32,12 @@ ProductSearchResultList.propTypes = {
 };
 
 export default connect(
-    (state, {productListId, query}) => {
+    (state, {listId, query}) => {
         return {
-            listId: productListId,
+            listId,
             query,
             productCollection: state.storage.product.items,
-            searchResults : state.storage.product.searchResults[query] || []
+            searchResults: findBestSearchResults(state, query)
         }
     }
 )(ProductSearchResultList);

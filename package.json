@@ -6,8 +6,7 @@
     "start": "babel-node devServer.js",
     "watch": "webpack -w",
     "build": "webpack --optimize-minimize",
-    "lint": "eslint src",
-    "fake-server": "json-server db/db.json --port=30005 --host=localhost --delay=1000 --watch"
+    "lint": "eslint src"
   },
   "dependencies": {
     "axios": "^0.16.2",
@@ -35,7 +34,6 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
     "express": "^4.15.2",
-    "json-server": "^0.10.0",
     "webpack": "^2.6.1"
   }
 }

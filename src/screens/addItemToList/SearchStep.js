@@ -5,7 +5,8 @@ import {connect} from 'react-redux'
 
 import {List as ListModel, ListNullObject} from 'Models/List';
 
-import {searchProductTranslation, createProductTranslation} from 'Actions/product';
+import {searchProduct, createProduct} from 'Actions/product';
+import {findProductByName} from 'Reducers/storage/product';
 
 import Header from 'Components/Header';
 import HeaderLink from 'Components/HeaderLink';
@@ -28,7 +29,7 @@ class AddItemToListSearchStep extends React.PureComponent {
     onQueryChange(newQuery) {
         this.setState({query: newQuery});
 
-        this.props.searchHandler(newQuery);
+        this.props.searchProduct(newQuery);
     }
 
     // todo move action links to header
@@ -54,26 +55,15 @@ class AddItemToListSearchStep extends React.PureComponent {
                         return;
                     }
 
-                    let internalTranslationWasFound = false;
+                    const product = this.props.findProductByName(this.state.query);
 
-                    Object.keys(this.props.searchResults).forEach(query => {
-                        if (!internalTranslationWasFound && this.state.query.includes(query)) {
-                            this.props.searchResults[query].forEach((productId) => {
-                                if (!internalTranslationWasFound && this.props.productCollection.get(productId).getName() === this.state.query) {
-                                    internalTranslationWasFound = true;
+                    if (product) {
+                        return this.props.postToSaveStep(product);
+                    }
 
-                                    this.props.postToSaveStepHandler(productId);
-                                }
-                            });
-                        }
-                    });
-
-                    {/*if (!internalTranslationWasFound) {*/}
-                        {/*this.props.createTranslationHandler(this.state.query)*/}
-                            {/*.then((createdTranslation) => {*/}
-                                {/*this.props.postToSaveStepHandler(createdTranslation.id);*/}
-                            {/*})*/}
-                    {/*}*/}
+                    // todo think how to refactor this
+                    this.props.createProduct(this.state.query)
+                        .then(product => this.props.postToSaveStep(product));
                 }}
                      style={{cursor: 'pointer'}}>Create
                 </div>
@@ -81,7 +71,7 @@ class AddItemToListSearchStep extends React.PureComponent {
                 <Input label="Search"
                        defaultValue={this.state.query}
                        onChange={(value) => this.onQueryChange(value)}/>
-                <ProductSearchResultList productListId={listId} query={this.state.query}/>
+                <ProductSearchResultList listId={listId} query={this.state.query}/>
             </div>
         )
     }
@@ -91,13 +81,12 @@ AddItemToListSearchStep.propTypes = {
     listId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     list: PropTypes.instanceOf(ListModel).isRequired,
 
-    productCollection: PropTypes.instanceOf(Map),
-    searchResults: PropTypes.object,
+    findProductByName: PropTypes.func,
 
     cancelHandler: PropTypes.func.isRequired,
-    searchHandler: PropTypes.func.isRequired,
-    postToSaveStepHandler: PropTypes.func.isRequired,
-    createTranslationHandler: PropTypes.func.isRequired
+    searchProduct: PropTypes.func.isRequired,
+    postToSaveStep: PropTypes.func.isRequired,
+    createProduct: PropTypes.func.isRequired
 };
 
 export default withRouter(connect(
@@ -127,17 +116,16 @@ export default withRouter(connect(
         return {
             listId,
             list,
-            productCollection: state.storage.product.items,
-            searchResults: state.storage.product.searchResults
+            findProductByName: (name) => findProductByName(state, name)
         }
     },
     (dispatch, {match, history}) => {
         return {
             cancelHandler: history.goBack,
-            searchHandler: (query) => searchProductTranslation(query)(dispatch),
-            createTranslationHandler: (value) => createProductTranslation(value)(dispatch),
-            postToSaveStepHandler: (translationId) => {
-                return history.push('/product-list/' + match.params.listId + '/add-item/save/' + translationId);
+            searchProduct: (query) => searchProduct(query)(dispatch),
+            createProduct: (value) => createProduct(value)(dispatch),
+            postToSaveStep: (product) => {
+                return history.push('/product-list/' + match.params.listId + '/add-item/save/' + product.getId());
             }
         }
     }

@@ -124,7 +124,7 @@ export default withRouter(connect(
             productId,
             list,
             product,
-            template: state.storage.listItem.template,
+            template: !product.isCustom() ? state.storage.listItem.template : new ListItemNullObject(),
         }
     },
     (dispatch, {history}) => {

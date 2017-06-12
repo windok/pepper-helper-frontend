@@ -38,7 +38,7 @@ export const fetchAll = () => (dispatch) => {
     });
 };
 
-export const searchProductTranslation = (query) => (dispatch) => {
+export const searchProduct = (query) => (dispatch) => {
     if (query.length < 2) {
         return Promise.resolve();
     }
@@ -58,37 +58,42 @@ export const searchProductTranslation = (query) => (dispatch) => {
             ],
             params: {
                 value: query,
-                type: 'product',
-                limit: 50               // todo make support for limit in api
+                type: 'product'
             },
         }
     });
 };
 
-export const createProductTranslation = (value) => (dispatch) => {
-    dispatch({
-        [API_CALL]: {
-            endpoint: '/translation',
-            method: POST,
-            types: [
-                actionType.CREATE_PRODUCT_REQUEST,
-                {
-                    type: actionType.CREATE_PRODUCT_SUCCESS,
-                    payload: (action, state, response) => new Product({
-                        ...response.data,
-                        name: response.data[state.storage.user.language],
-                        defaultName: response.data.en
-                    })
-                },
-                actionType.CREATE_PRODUCT_ERROR
-            ],
-            params: (action, state) => {
-                return {
+export const createProduct = (value) => (dispatch) => {
+    // todo refactor this
+    return new Promise((resolve, reject) => {
+        dispatch({
+            [API_CALL]: {
+                endpoint: '/translation',
+                method: POST,
+                types: [
+                    actionType.CREATE_PRODUCT_REQUEST,
+                    {
+                        type: actionType.CREATE_PRODUCT_SUCCESS,
+                        payload: (action, state, response) => {
+                            const product = new Product({
+                                ...response.data,
+                                name: response.data.value,          // todo api should return translation object with language keys
+                                defaultName: response.data.value
+                            });
+
+                            resolve(product);
+
+                            return product;
+                        }
+                    },
+                    actionType.CREATE_PRODUCT_ERROR
+                ],
+                params: {
                     type: 'product',
-                    en: value,
-                    [state.storage.user.language]: value
-                }
-            },
-        }
+                    value,
+                },
+            }
+        });
     });
 };
