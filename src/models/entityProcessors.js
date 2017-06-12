@@ -20,7 +20,30 @@ const allowedValuesValidator = (entity, field, allowedFieldValues) => {
     return entity;
 };
 
+const fieldConverter = (entity, convertFields, convertFunction) => {
+    convertFields.forEach(field => {
+        if (entity[field] === undefined) {
+            return;
+        }
+
+        entity[field] = convertFunction(entity[field], entity);
+    });
+
+    return entity;
+};
+
+const numberConverter = (entity, numericFields = []) => {
+    return fieldConverter(entity, numericFields, fieldValue => parseInt(fieldValue));
+};
+
+const dateConverter = (entity, numericFields = []) => {
+    return fieldConverter(entity, numericFields, fieldValue => new Date(Date.parse(fieldValue)));
+};
+
 export {
     entityStructureFilter,
-    allowedValuesValidator
+    allowedValuesValidator,
+    fieldConverter,
+    numberConverter,
+    dateConverter
 };

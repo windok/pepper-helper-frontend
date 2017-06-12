@@ -1,5 +1,5 @@
 import Entity from './Entity';
-import {entityStructureFilter, allowedValuesValidator} from './entityProcessors';
+import {entityStructureFilter, allowedValuesValidator, numberConverter, dateConverter} from './entityProcessors';
 import {Nullable, NotNullable} from 'Models/NullableInterface';
 
 const STATUS_DRAFT = 'draft';
@@ -12,13 +12,12 @@ const TYPE_RECOMMENDED = 'recommended';
 class ListItem extends NotNullable(Entity) {
 
     constructor(entity) {
-        // todo add entity processor to wrap dates
-        entity.date = typeof entity.date === 'string' ? new Date(entity.date) : entity.date;
-
         super(entity, [
             (entity) => entityStructureFilter(entity, ['id', 'status', 'listId', 'productId', 'unitId', 'groupId', 'quantity', 'type', 'date']),
             (entity) => allowedValuesValidator(entity, 'status', [STATUS_DRAFT, STATUS_BOUGHT, STATUS_SUSPENDED]),
             (entity) => allowedValuesValidator(entity, 'type', [TYPE_GENERAL, TYPE_RECOMMENDED]),
+            (entity) => numberConverter(entity, ['id', 'listId', 'productId', 'unitId', 'groupId', 'quantity']),
+            (entity) => dateConverter(entity, ['date']),
         ]);
     }
 

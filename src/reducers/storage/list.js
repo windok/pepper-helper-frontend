@@ -2,8 +2,6 @@ import * as actionType from 'Actions';
 
 
 export default (state = {items: new Map(), isFetching: false}, action) => {
-    let newState;
-
     switch (action.type) {
         case actionType.FETCH_LIST_COLLECTION_REQUEST:
             return {...state, isFetching: true};
@@ -16,15 +14,18 @@ export default (state = {items: new Map(), isFetching: false}, action) => {
             const itemIds = [];
             action.payload.forEach(listItem => itemIds.push(listItem.getId()));
 
-            const items = (new Map([...state.items]))
-                .set(action.meta.list.getId(), action.meta.list.setItems(itemIds));
+            return {
+                ...state,
+                items: (new Map([...state.items])).set(action.meta.list.getId(), action.meta.list.setItems(itemIds))
+            };
 
-            return {...state, items};
         case actionType.CREATE_ITEM_SUCCESS:
-            newState = {...state};
-            newState.data[action.listItem.listId].listItems.push(action.listItem.id);
+            const updatedList = state.items.get(action.payload.getListId()).pushItem(action.payload.getId());
 
-            return newState;
+            return {
+                ...state,
+                items: (new Map([...state.items])).set(updatedList.getId(), updatedList)
+            };
     }
 
     return state;

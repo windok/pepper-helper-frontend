@@ -1,8 +1,8 @@
 class Entity {
     constructor(entity, processors = []) {
-        processors.forEach(processor => entity = processor(entity));
-
         this.entity = entity;
+
+        processors.forEach(processor => this.entity = processor(this.entity));
 
         Object.freeze(this);
     }

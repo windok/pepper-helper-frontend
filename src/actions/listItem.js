@@ -71,20 +71,37 @@ export const getTemplate = (list, product) => (dispatch) => {
     });
 };
 
-export const createItem = (template) => (dispatch) => {
+export const createItem = (listItem) => (dispatch) => {
+    const postData = listItem.serialize();
+    const date = listItem.getDate();
+    postData.translationId = listItem.getProductId();
+
+    // 2017-06-03 20:55:26
+    postData.date = `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDay()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
+
+
     dispatch({
         [API_CALL]: {
-            endpoint: '/list-item/',
+            endpoint: '/list-item',
             method: POST,
             types: [
-                actionType.CREATE_ITEM_REQUEST,
+                // todo create item in offline storage before request is sent
+                {
+                    type: actionType.CREATE_ITEM_REQUEST,
+                    meta: {listItem}
+                },
                 {
                     type: actionType.CREATE_ITEM_SUCCESS,
-                    meta: {template}
+                    meta: {listItem},
+                    payload: (action, state, response) => new ListItem({
+                        ...response.data,
+                        date: response.data.date || new Date(),
+                        productId: response.data.translationId
+                    })
                 },
                 actionType.CREATE_ITEM_ERROR
             ],
-            params: template.serialize(),
+            params: postData,
         }
     });
 };
