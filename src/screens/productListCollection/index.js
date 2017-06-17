@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
 
+import {getListCollection} from 'Reducers/storage/list';
 
 class ProductListCollection extends React.PureComponent {
     render() {
@@ -31,7 +32,7 @@ ProductListCollection.propTypes = {
 export default connect(
     (state) => {
         return {
-            lists: state.storage.list.items
+            lists: getListCollection(state)
         }
     }
 )(ProductListCollection);

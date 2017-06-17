@@ -6,8 +6,12 @@ import {connect} from 'react-redux'
 import {getTemplate, createItem} from 'Actions/listItem';
 
 import {List, ListNullObject} from 'Models/List';
-import {ListItem, ListItemNullObject} from 'Models/ListItem';
+import {ListItem, ListItemNullObject, CustomProductListItemTemplate} from 'Models/ListItem';
 import {Product, ProductNullObject} from 'Models/Product';
+
+import {getList} from 'Reducers/storage/list';
+import {getProduct} from 'Reducers/storage/product';
+import {getTemplate as getListItemTemplate} from 'Reducers/storage/listItem';
 
 import Header from 'Components/Header';
 import HeaderLink from 'Components/HeaderLink';
@@ -106,15 +110,16 @@ export default withRouter(connect(
         const listId = parseInt(match.params.listId);
         const productId = parseInt(match.params.productId);
 
-        const list = state.storage.list.items.get(listId);
-        const product = state.storage.product.items.get(productId);
+        // todo consider to use global state in selector instead of passing it as param
+        const list = getList(state, listId);
+        const product = getProduct(state, productId);
 
-        if (!list || !product) {
+        if (list.isNullObject() || product.isNullObject()) {
             return {
                 listId: 0,
                 productId: 0,
-                list: new ListNullObject(),
-                product: new ProductNullObject(),
+                list: list,
+                product: product,
                 template: null,
             }
         }
@@ -124,7 +129,7 @@ export default withRouter(connect(
             productId,
             list,
             product,
-            template: !product.isCustom() ? state.storage.listItem.template : new ListItemNullObject(),
+            template: getListItemTemplate(state, list, product),
         }
     },
     (dispatch, {history}) => {

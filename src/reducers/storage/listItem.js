@@ -1,4 +1,5 @@
 import * as actionType from 'Actions';
+import {ListItem, CustomProductListItemTemplate} from 'Models/ListItem';
 
 export default (state = {items: new Map(), template: null}, action) => {
     switch (action.type) {
@@ -17,3 +18,50 @@ export default (state = {items: new Map(), template: null}, action) => {
 
     return state;
 };
+
+/**
+ * @param state
+ * @param {List} productList
+ * @return {Map}
+ */
+export const getListItemCollectionForList = (state, productList) => {
+    const itemCollection = new Map();
+
+    productList.getItems().forEach(itemId => itemCollection.set(itemId, state.storage.listItem.items.get(itemId)));
+
+    return itemCollection;
+};
+
+/**
+ * @param state
+ * @param {List} list
+ * @param {Product} product
+ * @return {ListItem}
+ */
+export const getTemplate = (state, list, product) => {
+    if (!product.isCustom) {
+        const template = state.storage.listItem.template;
+
+        if (!template || template.getProductId() === product.getId() || template.getListId() === list.getId()) {
+            return null;
+        }
+
+        return template;
+    }
+
+    let groupId = 0;
+    let unitId = 0;
+
+    for (let [key, value] of state.storage.group.items) {
+        groupId = key;
+        break;
+    }
+
+    for (let [key, value] of state.storage.unit.items) {
+        unitId = key;
+        break;
+    }
+
+    return new CustomProductListItemTemplate(list.getId(), product.getId(), groupId, unitId, 0);
+};
+

@@ -73,9 +73,9 @@ export const getTemplate = (list, product) => (dispatch) => {
 
 export const createItem = (listItem) => (dispatch) => {
     const postData = listItem.serialize();
-    const date = listItem.getDate();
     postData.translationId = listItem.getProductId();
 
+    const date = new Date();
     // 2017-06-03 20:55:26
     postData.date = `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDay()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
 

@@ -6,6 +6,7 @@ import {connect} from 'react-redux'
 import {List as ListModel, ListNullObject} from 'Models/List';
 
 import {searchProduct, createProduct} from 'Actions/product';
+import {getList} from 'Reducers/storage/list';
 import {findProductByName} from 'Reducers/storage/product';
 
 import Header from 'Components/Header';
@@ -93,25 +94,19 @@ export default withRouter(connect(
     (state, {match}) => {
         const listId = parseInt(match.params.listId);
 
+        const list = getList(state, listId);
+
         if (
-            // todo incorrect route that leads to this page
+        // todo incorrect route that leads to this page
         // todo maybe open some default list?
         !listId
         // todo list fetching request in progress
         // todo maybe this list does not exist?
-        || !state.storage.list.items.size
-        // todo list fetching request in progress
-        // todo maybe this list does not exist?
         // todo unexisted list, redirect to user's default list
-        || !state.storage.list.items.has(listId)
+        || list.isNullObject()
         ) {
-            return {
-                listId: 0,
-                list: new ListNullObject()
-            }
+            return {listId: 0, list}
         }
-
-        const list = state.storage.list.items.get(listId);
 
         return {
             listId,

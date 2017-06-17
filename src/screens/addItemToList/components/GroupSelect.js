@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import Select from 'Components/form/Select';
 import {connect} from 'react-redux';
 
+import {getGroupCollection} from 'Reducers/storage/group';
+
 // todo create user group if not found
 class GroupSelect extends React.PureComponent {
     render() {
@@ -31,7 +33,7 @@ GroupSelect.propTypes = {
 export default connect(
     (state) => {
         return {
-            groups: state.storage.group.items
+            groups: getGroupCollection(state)
         }
     }
 )(GroupSelect);

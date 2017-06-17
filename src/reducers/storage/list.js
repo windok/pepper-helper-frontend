@@ -1,5 +1,5 @@
 import * as actionType from 'Actions';
-
+import {List, ListNullObject} from 'Models/List';
 
 export default (state = {items: new Map(), isFetching: false}, action) => {
     switch (action.type) {
@@ -29,4 +29,22 @@ export default (state = {items: new Map(), isFetching: false}, action) => {
     }
 
     return state;
+};
+
+
+/**
+ * @param state
+ * @param idE
+ * @return {List}
+ */
+export const getList = (state, id) => {
+    return state.storage.list.items.get(id) || new ListNullObject();
+};
+
+/**
+ * @param state
+ * @return {Map}
+ */
+export const getListCollection = (state) => {
+    return state.storage.list.items;
 };

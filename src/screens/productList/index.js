@@ -9,28 +9,28 @@ import Sidebar from 'Components/Sidebar';
 import Header from 'Components/Header';
 import HeaderLink from 'Components/HeaderLink';
 
+import {getList} from 'Reducers/storage/list';
+
 import {fetchItemsForList} from 'Actions/listItem';
 
 import ListComponent from './components/List';
 
 class ProductList extends React.PureComponent {
     componentWillMount() {
-        this.props.fetchListItems(this.props.productList);
+        this.props.fetchListItems(this.props.list);
     }
 
-    shouldComponentUpdate({productList}) {
-        if (productList.getId() === this.props.productList.getId()) {
+    shouldComponentUpdate({list}) {
+        if (list.getId() === this.props.list.getId()) {
             return false;
         }
 
-        this.props.fetchListItems(productList);
+        this.props.fetchListItems(list);
 
         return true;
     }
 
     render() {
-        const listId = this.props.productListId;
-
         // todo create separate component that specifies Menu
         // todo keep list of links for each screen somewhere
         const headerLeftLinks = [
@@ -38,12 +38,12 @@ class ProductList extends React.PureComponent {
             }}/>
         ];
 
-        if (this.props.productList.isNullObject()) {
+        if (this.props.list.isNullObject()) {
             return (
                 <div>
                     <Sidebar/>
-                    <Header title={"Product list " + this.props.productListName} leftLinks={headerLeftLinks}/>
-                    {this.props.productListName}
+                    <Header title={"Product list " + this.props.list.getName()} leftLinks={headerLeftLinks}/>
+                    {this.props.list.getName()}
                 </div>
             );
         }
@@ -52,56 +52,47 @@ class ProductList extends React.PureComponent {
         return (
             <div>
                 <Sidebar/>
-                <Header title={"Product list " + this.props.productListName} leftLinks={headerLeftLinks}/>
+                <Header title={"Product list " + this.props.list.getName()} leftLinks={headerLeftLinks}/>
 
-                <ListComponent productListId={listId}/>
+                <ListComponent productListId={this.props.listId}/>
                 <br/>
-                <Link to={"/product-list/" + listId + "/recommendations"}>Show recommendations</Link>
+                <Link to={"/product-list/" + this.props.listId + "/recommendations"}>Show recommendations</Link>
                 <br/>
-                <Link to={"/product-list/" + listId + "/add-item/search"}>Add item</Link>
+                <Link to={"/product-list/" + this.props.listId + "/add-item/search"}>Add item</Link>
             </div>
         )
     }
 }
 
 ProductList.propTypes = {
-    productListId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    productList: PropTypes.instanceOf(ListModel).isRequired,
+    listId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    list: PropTypes.instanceOf(ListModel).isRequired,
     fetchListItems: PropTypes.func.isRequired,
 };
 
 export default withRouter(connect(
     (state, {match}) => {
-        const productListId = parseInt(match.params.productListId);
+        const listId = parseInt(match.params.productListId);
+
+        const list = getList(state, listId);
 
         if (
             // todo incorrect route that leads to this page
         // todo maybe open some default list?
-        !productListId
-        // todo list fetching request in progress
-        // todo maybe this list does not exist?
-        || !state.storage.list.items.size
+        !listId
         // todo list fetching request in progress
         // todo maybe this list does not exist?
         // todo unexisted list, redirect to user's default list
-        || !state.storage.list.items.has(productListId)
+        || list.isNullObject()
         ) {
-            return {
-                productListId: 0,
-                productList: new ListNullObject()
-            }
+            return {listId: 0, list};
         }
 
-        const productList = state.storage.list.items.get(productListId);
-
-        return {
-            productListId,
-            productList
-        }
+        return {listId, list};
     },
     (dispatch) => {
         return {
             fetchListItems: (list) => fetchItemsForList(list)(dispatch)
-        }
+        };
     }
 )(ProductList));

@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {findBestSearchResults} from 'Reducers/storage/product';
+
+import {getProductCollection, findBestSearchResults} from 'Reducers/storage/product';
 
 class ProductSearchResultList extends React.PureComponent {
     render() {
@@ -36,7 +37,7 @@ export default connect(
         return {
             listId,
             query,
-            productCollection: state.storage.product.items,
+            productCollection: getProductCollection(state),
             searchResults: findBestSearchResults(state, query)
         }
     }

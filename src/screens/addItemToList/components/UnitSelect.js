@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import Select from 'Components/form/Select';
 import {connect} from 'react-redux';
 
+import {getUnitCollection} from 'Reducers/storage/unit';
+
 class UnitSelect extends React.PureComponent {
     render() {
 
@@ -32,7 +34,7 @@ UnitSelect.propTypes = {
 export default connect(
     (state) => {
         return {
-            units: state.storage.unit.items
+            units: getUnitCollection(state)         // todo consider to use global state instead of passing as param
         }
     }
 )(UnitSelect);

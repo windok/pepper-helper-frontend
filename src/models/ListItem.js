@@ -69,7 +69,23 @@ class ListItemNullObject extends Nullable(ListItem) {
             unitId: 0,
             quantity: 0,
             type: TYPE_GENERAL,
-            date: ''
+            date: new Date()
+        });
+    }
+}
+
+class CustomProductListItemTemplate extends NotNullable(ListItem) {
+    constructor(listId, productId, groupId, unitId, quantity) {
+        super({
+            id: 0,
+            status: STATUS_DRAFT,
+            listId,
+            productId,
+            groupId,
+            unitId,
+            quantity,
+            type: TYPE_GENERAL,
+            date: new Date()
         });
     }
 }
@@ -78,6 +94,7 @@ export default ListItem;
 export {
     ListItem,
     ListItemNullObject,
+    CustomProductListItemTemplate,
     STATUS_DRAFT,
     STATUS_BOUGHT,
     STATUS_SUSPENDED,

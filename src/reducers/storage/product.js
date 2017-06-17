@@ -1,4 +1,5 @@
 import * as actionType from 'Actions';
+import {Product, ProductNullObject} from 'Models/Product';
 
 const initialState = {
     items: new Map(),
@@ -28,6 +29,24 @@ export default (state = initialState, action) => {
     }
 
     return state;
+};
+
+/**
+ * @param state
+ * @param productId
+ * @return {Product}
+ */
+export const getProduct = (state, productId) => {
+    return state.storage.product.items.get(productId) || new ProductNullObject();
+};
+
+/**
+ * @param state
+ * @param productId
+ * @return {Map}
+ */
+export const getProductCollection = (state) => {
+    return state.storage.product.items;
 };
 
 export const findBestSearchResults = (state, query) => {

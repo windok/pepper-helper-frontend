@@ -1,4 +1,5 @@
 import * as actionType from 'Actions';
+import {Unit, UnitNullObject} from 'Models/Unit';
 
 export default (state = {items: new Map(), isFetching: false}, action) => {
     switch (action.type) {
@@ -12,4 +13,22 @@ export default (state = {items: new Map(), isFetching: false}, action) => {
     }
 
     return state;
+};
+
+
+/**
+ * @param state
+ * @param id
+ * @return {Unit}
+ */
+export const getUnit = (state, id) => {
+    return state.storage.unit.items.get(id) || new UnitNullObject();
+};
+
+/**
+ * @param state
+ * @return {Map}
+ */
+export const getUnitCollection = (state) => {
+    return state.storage.unit.items;
 };

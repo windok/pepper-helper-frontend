@@ -7,6 +7,10 @@ import {Group, GroupNullObject} from 'Models/Group';
 import {Product, ProductNullObject} from 'Models/Product';
 import {Unit, UnitNullObject} from 'Models/Unit';
 
+import {getGroup} from 'Reducers/storage/group';
+import {getProduct} from 'Reducers/storage/product';
+import {getUnit} from 'Reducers/storage/unit';
+
 class Item extends React.PureComponent {
     render() {
         if (this.props.listItem.isNullObject()) {
@@ -32,9 +36,10 @@ export default connect(
     (state, {listItem}) => {
         return {
             listItem,
-            group: state.storage.group.items.get(listItem.getGroupId()) || GroupNullObject(),
-            product: state.storage.product.items.get(listItem.getProductId()) || ProductNullObject(),
-            unit: state.storage.unit.items.get(listItem.getUnitId()) || UnitNullObject()
+            // todo consider to use global state in selector instead of passing as param
+            group: getGroup(state, listItem.getGroupId()),
+            product: getProduct(state, listItem.getProductId()),
+            unit: getUnit(state, listItem.getUnitId())
         }
     }
 )(Item);

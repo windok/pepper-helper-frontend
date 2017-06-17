@@ -1,4 +1,5 @@
 import * as actionType from 'Actions';
+import {Group, GroupNullObject} from 'Models/Group';
 
 export default (state = {items: new Map(), isFetching: false}, action) => {
     switch (action.type) {
@@ -12,4 +13,21 @@ export default (state = {items: new Map(), isFetching: false}, action) => {
     }
 
     return state;
+};
+
+/**
+ * @param state
+ * @param id
+ * @return {Group}
+ */
+export const getGroup = (state, id) => {
+    return state.storage.group.items.get(id) || new GroupNullObject();
+};
+
+/**
+ * @param state
+ * @return {Map}
+ */
+export const getGroupCollection = (state) => {
+    return state.storage.group.items;
 };
