@@ -15,6 +15,7 @@ import Input from 'Components/form/Input';
 
 import ProductSearchResultList from './components/ProductSearchResultList';
 import CloseButton from './components/buttons/CloseButton';
+import ForwardToSaveButton from './components/buttons/ForwardToSaveButton';
 
 class AddItemToListSearchStep extends React.PureComponent {
 
@@ -48,26 +49,29 @@ class AddItemToListSearchStep extends React.PureComponent {
 
         const listId = this.props.listId;
 
+        const forwardToSaveButton = <ForwardToSaveButton onTouchTap={() => {
+            if (this.state.query.trim().length === 0) {
+                return;
+            }
+
+            const product = this.props.findProductByName(this.state.query);
+
+            if (product) {
+                return this.props.postToSaveStep(product);
+            }
+
+            // todo think how to refactor this
+            this.props.createProduct(this.state.query)
+                .then(product => this.props.postToSaveStep(product));
+        }}/>;
+
         return (
             <div>
-                <Header title={"Add item to " + this.props.list.getName()} leftLinks={[<CloseButton key="1" history={this.props.history}/>]}/>
-                <div onClick={() => {
-                    if (this.state.query.trim().length === 0) {
-                        return;
-                    }
-
-                    const product = this.props.findProductByName(this.state.query);
-
-                    if (product) {
-                        return this.props.postToSaveStep(product);
-                    }
-
-                    // todo think how to refactor this
-                    this.props.createProduct(this.state.query)
-                        .then(product => this.props.postToSaveStep(product));
-                }}
-                     style={{cursor: 'pointer'}}>Create
-                </div>
+                <Header
+                    title={"Add item to " + this.props.list.getName()}
+                    leftLinks={<CloseButton history={this.props.history}/>}
+                    rightLinks={forwardToSaveButton}
+                />
 
                 <Input label="Search"
                        defaultValue={this.state.query}

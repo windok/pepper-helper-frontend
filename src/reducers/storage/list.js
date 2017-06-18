@@ -19,7 +19,7 @@ export default (state = {items: new Map(), isFetching: false}, action) => {
                 items: (new Map([...state.items])).set(action.meta.list.getId(), action.meta.list.setItems(itemIds))
             };
 
-        case actionType.CREATE_ITEM_SUCCESS:
+        case actionType.SAVE_ITEM_SUCCESS:
             const updatedList = state.items.get(action.payload.getListId()).pushItem(action.payload.getId());
 
             return {

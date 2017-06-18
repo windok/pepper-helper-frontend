@@ -3,23 +3,23 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import IconButton from 'material-ui/IconButton';
-import SaveIcon from 'material-ui/svg-icons/content/send';
+import ForwardIcon from 'material-ui/svg-icons/content/forward';
 
-class SaveButton extends React.PureComponent {
+class ForwardToSaveButton extends React.PureComponent {
     render() {
         return (
-            <IconButton tooltip="Save" onTouchTap={this.props.onTouchTap} >
-                <SaveIcon />
+            <IconButton tooltip="Create" onTouchTap={this.props.onTouchTap} >
+                <ForwardIcon />
             </IconButton>
         );
     }
 }
 
-SaveButton.propTypes = {
+ForwardToSaveButton.propTypes = {
     onTouchTap: PropTypes.func.isRequired
 };
 
-export default SaveButton;
+export default ForwardToSaveButton;
 
 // export default connect(
 //     () => {return {}},
@@ -28,4 +28,4 @@ export default SaveButton;
 //             onTouchTap: (event) => history.goBack()
 //         }
 //     }
-// )(SaveButton);
+// )(ForwardToSaveButton);

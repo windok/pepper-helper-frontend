@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {withRouter, Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 
-import {getTemplate, createItem} from 'Actions/listItem';
+import {getTemplate, saveItem} from 'Actions/listItem';
 
 import {List, ListNullObject} from 'Models/List';
 import {ListItem, ListItemNullObject, CustomProductListItemTemplate} from 'Models/ListItem';
@@ -20,6 +20,7 @@ import Input from 'Components/form/Input';
 import UnitSelect from './components/UnitSelect';
 import GroupSelect from './components/GroupSelect';
 import BackButton from './components/buttons/BackButton';
+import SaveButton from './components/buttons/SaveButton';
 
 class AddItemToListSaveStep extends React.PureComponent {
     constructor(props) {
@@ -75,9 +76,11 @@ class AddItemToListSaveStep extends React.PureComponent {
         // todo move action links to header
         return (
             <div>
-                <Header title={"Add item to " + this.props.list.getName()} leftLinks={[<BackButton key="1" history={this.props.history}/>]}/>
-                <Link to={"/product-list/" + this.props.listId}
-                      onClick={() => this.props.saveItemHandler(this.state.template)}>Save</Link>
+                <Header
+                    title={"Add item to " + this.props.list.getName()}
+                    leftLinks={<BackButton history={this.props.history}/>}
+                    rightLinks={<SaveButton onTouchTap={() => this.props.saveItemHandler(this.state.template)}/>}
+                />
 
                 <GroupSelect groupId={this.state.template.groupId}
                              onGroupChange={(groupId) => this.onTemplateFieldChange('groupId', groupId)}/>
@@ -133,7 +136,10 @@ export default withRouter(connect(
     },
     (dispatch, {history}) => {
         return {
-            saveItemHandler: (template) => createItem(new ListItem(template))(dispatch),
+            saveItemHandler: (template) => {
+                history.push('/product-list/' + template.listId);
+                saveItem(new ListItem(template))(dispatch);
+            },
             getTemplate: (list, product) => getTemplate(list, product)(dispatch)
         }
     }

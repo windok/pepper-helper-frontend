@@ -1,6 +1,10 @@
 import * as actionType from 'Actions';
-import {API_CALL, GET, POST} from 'Store/api-middleware/RSAA';
-import ListItem from 'Models/ListItem';
+import {API_CALL, GET, POST, PUT} from 'Store/api-middleware/RSAA';
+
+import {ListItem, CustomProductListItemTemplate} from 'Models/ListItem';
+
+import Store from 'Store';
+import {getListItem} from 'Reducers/storage/listItem';
 
 
 export const fetchItemsForList = (list) => (dispatch) => {
@@ -44,9 +48,42 @@ export const getTemplate = (list, product) => (dispatch) => {
     if (
         !list || !product
         || list.isNullObject() || product.isNullObject()
-        || product.getUserId() > 0
     ) {
-        return Promise.resolve();
+        return;
+    }
+
+    if (product.isCustom()) {
+        let groupId = 0;
+        let unitId = 0;
+
+        for (let [key, value] of Store.getState().storage.group.items) {
+            groupId = key;
+            break;
+        }
+
+        for (let [key, value] of Store.getState().storage.unit.items) {
+            unitId = key;
+            break;
+        }
+
+        dispatch({
+            type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
+            meta: {list, product},
+            payload: new CustomProductListItemTemplate(list.getId(), product.getId(), groupId, unitId, 0)
+        });
+
+        return;
+    }
+
+    const matchingListItem = getListItem(Store.getState(), list, product);
+    if (!matchingListItem.isNullObject()) {
+        dispatch({
+            type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
+            meta: {list, product},
+            payload: matchingListItem.clone()
+        });
+
+        return;
     }
 
     dispatch({
@@ -71,7 +108,7 @@ export const getTemplate = (list, product) => (dispatch) => {
     });
 };
 
-export const createItem = (listItem) => (dispatch) => {
+export const saveItem = (listItem) => (dispatch) => {
     const postData = listItem.serialize();
     postData.translationId = listItem.getProductId();
 
@@ -79,19 +116,18 @@ export const createItem = (listItem) => (dispatch) => {
     // 2017-06-03 20:55:26
     postData.date = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
 
-
     dispatch({
         [API_CALL]: {
-            endpoint: '/list-item',
-            method: POST,
+            endpoint: '/list-item' + (listItem.getId() ? '/' + listItem.getId() : ''),
+            method: listItem.getId() ? PUT : POST,
             types: [
                 // todo create item in offline storage before request is sent
                 {
-                    type: actionType.CREATE_ITEM_REQUEST,
+                    type: actionType.SAVE_ITEM_REQUEST,
                     meta: {listItem}
                 },
                 {
-                    type: actionType.CREATE_ITEM_SUCCESS,
+                    type: actionType.SAVE_ITEM_SUCCESS,
                     meta: {listItem},
                     payload: (action, state, response) => new ListItem({
                         ...response.data,
@@ -99,7 +135,7 @@ export const createItem = (listItem) => (dispatch) => {
                         productId: response.data.translationId
                     })
                 },
-                actionType.CREATE_ITEM_ERROR
+                actionType.SAVE_ITEM_ERROR
             ],
             params: postData,
         }

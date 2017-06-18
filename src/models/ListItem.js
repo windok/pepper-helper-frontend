@@ -88,6 +88,12 @@ class CustomProductListItemTemplate extends NotNullable(ListItem) {
             date: new Date()
         });
     }
+
+    clone() {
+        const template = this.serialize();
+
+        return new this.constructor(template.listId, template.productId, template.groupId, template.unitId, template.quantity);
+    }
 }
 
 export default ListItem;

@@ -22,8 +22,8 @@ Header.defaultProps = {
 
 Header.propTypes = {
     title: PropTypes.string.isRequired,
-    leftLinks: PropTypes.array,
-    rightLinks: PropTypes.array
+    leftLinks: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.element), PropTypes.element]).isRequired,
+    rightLinks: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.element), PropTypes.element]).isRequired
 };
 
 export default Header;
