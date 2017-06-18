@@ -10,7 +10,7 @@ import Header from 'Components/Header';
 import HeaderLink from 'Components/HeaderLink';
 import MenuButton from 'Components/buttons/MenuButton';
 
-import {getList} from 'Reducers/storage/list';
+import {getList, getFirstList} from 'Reducers/storage/list';
 
 import {fetchItemsForList} from 'Actions/listItem';
 
@@ -72,16 +72,13 @@ export default withRouter(connect(
     (state, {match}) => {
         const listId = parseInt(match.params.productListId);
 
-        const list = getList(state, listId);
+        const list = listId ? getList(state, listId) : getFirstList(state);
 
         if (
-            // todo incorrect route that leads to this page
-        // todo maybe open some default list?
-        !listId
-        // todo list fetching request in progress
-        // todo maybe this list does not exist?
-        // todo unexisted list, redirect to user's default list
-        || list.isNullObject()
+            // todo list fetching request in progress
+            // todo maybe this list does not exist?
+            // todo unexisted list, redirect to user's default list
+            list.isNullObject()
         ) {
             return {listId: 0, list};
         }

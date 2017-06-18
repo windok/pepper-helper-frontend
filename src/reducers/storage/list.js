@@ -34,11 +34,23 @@ export default (state = {items: new Map(), isFetching: false}, action) => {
 
 /**
  * @param state
- * @param idE
+ * @param id
  * @return {List}
  */
 export const getList = (state, id) => {
     return state.storage.list.items.get(id) || new ListNullObject();
+};
+
+/**
+ * @param state
+ * @return {List}
+ */
+export const getFirstList = (state) => {
+    for (let [listId, list] of state.storage.list.items) {
+        return list;
+    }
+
+    return new ListNullObject();
 };
 
 /**
