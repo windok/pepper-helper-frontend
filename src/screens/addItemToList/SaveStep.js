@@ -19,6 +19,7 @@ import Input from 'Components/form/Input';
 
 import UnitSelect from './components/UnitSelect';
 import GroupSelect from './components/GroupSelect';
+import BackButton from './components/buttons/BackButton';
 
 class AddItemToListSaveStep extends React.PureComponent {
     constructor(props) {
@@ -74,8 +75,7 @@ class AddItemToListSaveStep extends React.PureComponent {
         // todo move action links to header
         return (
             <div>
-                <Header title={"Add item to " + this.props.list.getName()}/>
-                <div onClick={this.props.cancelHandler} style={{cursor: 'pointer'}}>Back</div>
+                <Header title={"Add item to " + this.props.list.getName()} leftLinks={[<BackButton key="1" history={this.props.history}/>]}/>
                 <Link to={"/product-list/" + this.props.listId}
                       onClick={() => this.props.saveItemHandler(this.state.template)}>Save</Link>
 
@@ -100,7 +100,6 @@ AddItemToListSaveStep.propTypes = {
     product: PropTypes.instanceOf(Product).isRequired,
     template: PropTypes.instanceOf(ListItem),
 
-    cancelHandler: PropTypes.func.isRequired,
     saveItemHandler: PropTypes.func.isRequired,
     getTemplate: PropTypes.func.isRequired
 };
@@ -134,7 +133,6 @@ export default withRouter(connect(
     },
     (dispatch, {history}) => {
         return {
-            cancelHandler: history.goBack,
             saveItemHandler: (template) => createItem(new ListItem(template))(dispatch),
             getTemplate: (list, product) => getTemplate(list, product)(dispatch)
         }

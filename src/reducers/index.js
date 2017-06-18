@@ -1,5 +1,7 @@
 import {combineReducers} from 'redux';
 
+import ui from './ui';
+
 import list from './storage/list';
 import listItem from './storage/listItem';
 import product from './storage/product';
@@ -17,5 +19,6 @@ const storage = combineReducers({
 });
 
 export default combineReducers({
-    storage
+    storage,
+    ui
 });

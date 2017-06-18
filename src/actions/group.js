@@ -1,5 +1,5 @@
 import * as actionType from 'Actions';
-import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+import {API_CALL, GET, POST} from 'Store/api-middleware/RSAA';
 import Group from 'Models/Group';
 
 export const fetchAll = () => (dispatch) => {
@@ -35,5 +35,39 @@ export const fetchAll = () => (dispatch) => {
                 limit: 1000
             },
         }
+    });
+};
+
+
+export const createGroup = (value) => (dispatch) => {
+    // todo refactor this, to not use promise
+    return new Promise((resolve, reject) => {
+        dispatch({
+            [API_CALL]: {
+                endpoint: '/translation',
+                method: POST,
+                types: [
+                    actionType.CREATE_GROUP_REQUEST,
+                    {
+                        type: actionType.CREATE_GROUP_SUCCESS,
+                        payload: (action, state, response) => {
+                            const group = new Group({
+                                id: response.data.id,
+                                name: response.data[state.storage.user.language] || response.data.en
+                            });
+
+                            resolve(group);
+
+                            return group;
+                        }
+                    },
+                    actionType.CREATE_GROUP_ERROR
+                ],
+                params: {
+                    type: 'group',
+                    value,
+                },
+            }
+        });
     });
 };

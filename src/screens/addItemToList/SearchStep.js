@@ -13,7 +13,8 @@ import Header from 'Components/Header';
 import HeaderLink from 'Components/HeaderLink';
 import Input from 'Components/form/Input';
 
-import  ProductSearchResultList from './components/ProductSearchResultList';
+import ProductSearchResultList from './components/ProductSearchResultList';
+import CloseButton from './components/buttons/CloseButton';
 
 class AddItemToListSearchStep extends React.PureComponent {
 
@@ -49,8 +50,7 @@ class AddItemToListSearchStep extends React.PureComponent {
 
         return (
             <div>
-                <Header title={"Add item to " + this.props.list.getName()}/>
-                <div onClick={this.props.cancelHandler} style={{cursor: 'pointer'}}>Cancel</div>
+                <Header title={"Add item to " + this.props.list.getName()} leftLinks={[<CloseButton key="1" history={this.props.history}/>]}/>
                 <div onClick={() => {
                     if (this.state.query.trim().length === 0) {
                         return;
@@ -84,7 +84,6 @@ AddItemToListSearchStep.propTypes = {
 
     findProductByName: PropTypes.func,
 
-    cancelHandler: PropTypes.func.isRequired,
     searchProduct: PropTypes.func.isRequired,
     postToSaveStep: PropTypes.func.isRequired,
     createProduct: PropTypes.func.isRequired
@@ -116,7 +115,6 @@ export default withRouter(connect(
     },
     (dispatch, {match, history}) => {
         return {
-            cancelHandler: history.goBack,
             searchProduct: (query) => searchProduct(query)(dispatch),
             createProduct: (value) => createProduct(value)(dispatch),
             postToSaveStep: (product) => {

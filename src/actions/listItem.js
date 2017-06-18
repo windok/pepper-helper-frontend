@@ -77,7 +77,7 @@ export const createItem = (listItem) => (dispatch) => {
 
     const date = new Date();
     // 2017-06-03 20:55:26
-    postData.date = `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDay()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
+    postData.date = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
 
 
     dispatch({

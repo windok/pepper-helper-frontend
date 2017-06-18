@@ -4,43 +4,10 @@ import {render} from 'react-dom';
 import Root from './Root';
 import store from 'Store';
 
-// import List from './models/List';
-//
-// let state = {isFetching: false, items: new Map()};
-//
-// const f = new Map();
-// f.set(1, new List({id: 1, name: 'first'}))
-//     .set(2, new List({id: 2, name: 'second'}))
-//     .set(4, {id: 4, name: 'forth'});
-//
-// const s = new Map();
-// s.set(3, new List({id: 3, name: 'third'}))
-//     .set(2, new List({id: 2, name: 'new second'}));
-//
-// const merged = new Map([...f, ...s]);
-// console.log(state);
-// state = {...state, isFetching: true};
-// console.log(state);
-// state = {...state, items: new Map([...state.items, ...merged])};
-// console.log(state);
-// state = {...state, isFetching: false};
-// console.log(state);
-//
-// console.log(f);
-// console.log(s);
-// console.log(merged);
-//
-// f.set(1, new List({id: 1, name: 'updated first'}));
-//
-// console.log(f);
-// console.log(s);
-// console.log(merged);
-//
-// f.get(4).name = 'updated forth';
-//
-// console.log(f);
-// console.log(s);
-// console.log(merged);
+import injectTapEventPlugin from 'react-tap-event-plugin';
+// Needed for onTouchTap
+// http://stackoverflow.com/a/34015469/988941
+injectTapEventPlugin();
 
 // todo fetch list collection somewhere else
 import {fetchAll as fetchProductListCollection} from 'Actions/list';

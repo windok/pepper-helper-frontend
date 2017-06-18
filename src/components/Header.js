@@ -1,14 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import AppBar from 'material-ui/AppBar';
 
 class Header extends React.PureComponent {
     render() {
         return (
-            <div>
-                <div>{this.props.leftLinks.map((link, index) => <div key={index}>{link}</div>)}</div>
-                <div>{this.props.title}</div>
-                <div>{this.props.rightLinks.map((link, index) => <div key={index}>{link}</div>)}</div>
-            </div>
+            <AppBar
+                title={this.props.title}
+                iconElementLeft={<div>{this.props.leftLinks}</div>}
+                iconElementRight={<div>{this.props.rightLinks}</div>}
+            />
         );
     }
 }

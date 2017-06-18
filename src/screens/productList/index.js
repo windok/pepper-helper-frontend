@@ -8,6 +8,7 @@ import {List as ListModel, ListNullObject} from 'Models/List';
 import Sidebar from 'Components/Sidebar';
 import Header from 'Components/Header';
 import HeaderLink from 'Components/HeaderLink';
+import MenuButton from 'Components/buttons/MenuButton';
 
 import {getList} from 'Reducers/storage/list';
 
@@ -33,10 +34,7 @@ class ProductList extends React.PureComponent {
     render() {
         // todo create separate component that specifies Menu
         // todo keep list of links for each screen somewhere
-        const headerLeftLinks = [
-            <HeaderLink title={'Menu'} onClickHandler={() => {
-            }}/>
-        ];
+        const headerLeftLinks = [<MenuButton key="1"/>];
 
         if (this.props.list.isNullObject()) {
             return (
