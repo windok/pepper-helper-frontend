@@ -1,0 +1,34 @@
+service: application
+runtime: php55
+api_version: 1
+threadsafe: true
+
+skip_files: ^(?!public).*
+default_expiration: "10m"
+
+handlers:
+
+- url: /
+  static_files: public/index.html
+  upload: public/index.html
+  secure: always
+
+- url: /images
+  static_dir: public/images
+  expiration: "1h"
+  secure: always
+
+- url: /static
+  static_dir: public/static
+  secure: always
+
+- url: /favicon.ico
+  static_files: public/favicon.ico
+  upload: public/favicon.ico
+  expiration: "1d"
+  secure: always
+
+- url: /.*
+  static_files: public/index.html
+  upload: public/index.html
+  secure: always
