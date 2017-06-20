@@ -1,12 +1,11 @@
 import 'babel-polyfill';
 import React from 'react';
 import {render} from 'react-dom';
+import injectTapEventPlugin from 'react-tap-event-plugin';
 import Root from './Root';
 import store from 'Store';
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
-// Needed for onTouchTap
-// http://stackoverflow.com/a/34015469/988941
+import 'normalize.css';
 injectTapEventPlugin();
 
 // todo fetch list collection somewhere else
