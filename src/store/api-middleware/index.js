@@ -80,13 +80,12 @@ const apiMiddleware = (store) => {
 
         const headers = {
             ...{
-                'ph-token': 'test',
+                'PH-TOKEN': 'test',
                 'Content-Type': 'application/json',
                 'Accept-Language': store.getState().storage.user.language,
             },
             ...(action[API_CALL].headers || {})
         };
-
 
         next(createActionForNext(requestType, action, store));
 

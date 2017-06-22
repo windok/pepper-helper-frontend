@@ -34,13 +34,12 @@ class ProductList extends React.PureComponent {
     render() {
         // todo create separate component that specifies Menu
         // todo keep list of links for each screen somewhere
-        const headerLeftLinks = [<MenuButton key="1"/>];
 
         if (this.props.list.isNullObject()) {
             return (
                 <div>
                     <Sidebar/>
-                    <Header title={"Product list " + this.props.list.getName()} leftLinks={headerLeftLinks}/>
+                    <Header title={"Product list " + this.props.list.getName()} leftLinks={<MenuButton/>}/>
                     {this.props.list.getName()}
                 </div>
             );
@@ -50,13 +49,13 @@ class ProductList extends React.PureComponent {
         return (
             <div>
                 <Sidebar/>
-                <Header title={"Product list " + this.props.list.getName()} leftLinks={headerLeftLinks}/>
+                <Header title={"Product list " + this.props.list.getName()} leftLinks={<MenuButton/>}/>
 
-                <ListComponent productListId={this.props.listId}/>
+                <ListComponent productListId={this.props.list.getId()}/>
                 <br/>
-                <Link to={"/product-list/" + this.props.listId + "/recommendations"}>Show recommendations</Link>
+                <Link to={"/product-list/" + this.props.list.getId() + "/recommendations"}>Show recommendations</Link>
                 <br/>
-                <Link to={"/product-list/" + this.props.listId + "/add-item/search"}>Add item</Link>
+                <Link to={"/product-list/" + this.props.list.getId() + "/add-item/search"}>Add item</Link>
             </div>
         )
     }
@@ -70,7 +69,7 @@ ProductList.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const listId = parseInt(match.params.productListId);
+        const listId = parseInt(match.params.productListId) || 0;
 
         const list = listId ? getList(state, listId) : getFirstList(state);
 

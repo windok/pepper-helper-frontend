@@ -1,3 +1,3 @@
 export default {
-    BACKEND_URL: 'http://api.pepper.local/'
+    BACKEND_URL: 'https://api.pepper-helper.dev:8080/'
 };
