@@ -6,10 +6,15 @@ import {List as ListModel, ListNullObject} from 'Models/List';
 import {ListItem as ListItemModel, STATUS_DRAFT, STATUS_BOUGHT} from 'Models/ListItem';
 
 import {List as ListComponent, ListItem as ListItemComponent} from 'material-ui/List';
+import IconButton from 'material-ui/IconButton';
+import BuyIcon from 'material-ui/svg-icons/action/done';
+
 import Item from './Item';
 
 import {getListItemsToDisplay} from 'Reducers/storage/listItem';
 import {getGroupCollection} from 'Reducers/storage/group';
+
+import {buyItem} from 'Actions/listItem';
 
 class List extends React.PureComponent {
     render() {
@@ -30,7 +35,9 @@ class List extends React.PureComponent {
             };
 
             if (listItem.getStatus() === STATUS_DRAFT) {
-                componentProps.onTouchTap = () => this.props.editItem(listItem)
+                componentProps.onTouchTap = () => this.props.editItem(listItem);
+                // todo replace button with swipe, keep button only for desktop
+                componentProps.rightIconButton = <IconButton tooltip="buy" onTouchTap={() => this.props.buyItem(listItem)}><BuyIcon/></IconButton>;
             }
 
             if (listItem.getStatus() === STATUS_BOUGHT) {
@@ -62,7 +69,8 @@ List.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
     listItems: PropTypes.instanceOf(Map).isRequired,
     groups: PropTypes.instanceOf(Map).isRequired,
-    editItem: PropTypes.func.isRequired
+    editItem: PropTypes.func.isRequired,
+    buyItem: PropTypes.func.isRequired
 };
 
 export default connect(
@@ -78,7 +86,8 @@ export default connect(
             editItem: (listItem) => {
                 // todo separate url for edit
                 history.push('/product-list/' + listItem.getListId() + '/add-item/save/' + listItem.getProductId());
-            }
+            },
+            buyItem: (listItem) => buyItem(listItem)(dispatch)
         };
     }
 )(List);

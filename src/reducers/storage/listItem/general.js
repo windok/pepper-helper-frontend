@@ -25,6 +25,22 @@ export default (state = {items: new Map(), unsavedItems: new Map(), template: nu
                 template: null
             };
         }
+
+        case actionType.BUY_ITEM_REQUEST:
+            return {
+                ...state,
+                unsavedItems: new Map([...state.unsavedItems]).set(action.meta.listItem.getId(), action.meta.listItem.clone())
+            };
+        case actionType.BUY_ITEM_SUCCESS: {
+            const unsavedItems = new Map([...state.unsavedItems]);
+            unsavedItems.delete(action.meta.listItem.getId());
+
+            return {
+                ...state,
+                items: new Map([...state.items]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
+                unsavedItems
+            };
+        }
     }
 
     return state;

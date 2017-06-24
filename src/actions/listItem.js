@@ -67,6 +67,17 @@ export const getTemplate = (list, product) => (dispatch) => {
         return;
     }
 
+    const matchingListItem = getListItem(Store.getState(), list, product);
+    if (!matchingListItem.isNullObject() && matchingListItem.getStatus() === STATUS_DRAFT) {
+        dispatch({
+            type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
+            meta: {list, product},
+            payload: matchingListItem.clone()
+        });
+
+        return;
+    }
+
     if (product.isCustom()) {
         let groupId = 0;
         let unitId = 0;
@@ -85,17 +96,6 @@ export const getTemplate = (list, product) => (dispatch) => {
             type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
             meta: {list, product},
             payload: new CustomProductListItemTemplate(list.getId(), product.getId(), groupId, unitId, 0)
-        });
-
-        return;
-    }
-
-    const matchingListItem = getListItem(Store.getState(), list, product);
-    if (!matchingListItem.isNullObject()) {
-        dispatch({
-            type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
-            meta: {list, product},
-            payload: matchingListItem.clone()
         });
 
         return;
@@ -164,6 +164,8 @@ export const buyItem = (listItem) => (dispatch) => {
     if (listItem.getStatus() !== STATUS_DRAFT) {
         return;
     }
+
+    listItem = new ListItem({...listItem.serialize(), status: STATUS_BOUGHT});
 
     dispatch({
         [API_CALL]: {
