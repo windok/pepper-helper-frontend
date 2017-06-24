@@ -185,3 +185,32 @@ export const buyItem = (listItem) => (dispatch) => {
         }
     });
 };
+
+/**
+ * @param {ListItem} listItem
+ */
+export const returnItem = (listItem) => (dispatch) => {
+    if (listItem.getStatus() !== STATUS_BOUGHT) {
+        return;
+    }
+
+    listItem = new ListItem({...listItem.serialize(), status: STATUS_DRAFT});
+
+    dispatch({
+        [API_CALL]: {
+            endpoint: '/list-item/return/' + listItem.getId(),
+            method: PUT,
+            types: [
+                {
+                    type: actionType.RETURN_ITEM_REQUEST,
+                    meta: {listItem}
+                },
+                {
+                    type: actionType.RETURN_ITEM_SUCCESS,
+                    meta: {listItem},
+                },
+                actionType.RETURN_ITEM_ERROR
+            ],
+        }
+    });
+};

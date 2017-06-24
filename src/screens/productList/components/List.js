@@ -8,13 +8,14 @@ import {ListItem as ListItemModel, STATUS_DRAFT, STATUS_BOUGHT} from 'Models/Lis
 import {List as ListComponent, ListItem as ListItemComponent} from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
 import BuyIcon from 'material-ui/svg-icons/action/done';
+import ReturnIcon from 'material-ui/svg-icons/content/undo';
 
 import Item from './Item';
 
 import {getListItemsToDisplay} from 'Reducers/storage/listItem';
 import {getGroupCollection} from 'Reducers/storage/group';
 
-import {buyItem} from 'Actions/listItem';
+import {buyItem, returnItem} from 'Actions/listItem';
 
 class List extends React.PureComponent {
     render() {
@@ -34,6 +35,8 @@ class List extends React.PureComponent {
                 key: listItem.getId()
             };
 
+            let arrayInsertMethod = 'unshift';
+
             if (listItem.getStatus() === STATUS_DRAFT) {
                 componentProps.onTouchTap = () => this.props.editItem(listItem);
                 // todo replace button with swipe, keep button only for desktop
@@ -41,10 +44,14 @@ class List extends React.PureComponent {
             }
 
             if (listItem.getStatus() === STATUS_BOUGHT) {
-                componentProps.style = {textDecoration: 'line-through'}
+                componentProps.style = {textDecoration: 'line-through'};
+                // todo replace button with swipe, keep button only for desktop
+                componentProps.rightIconButton = <IconButton tooltip="return" onTouchTap={() => this.props.returnItem(listItem)}><ReturnIcon/></IconButton>;
+
+                arrayInsertMethod = 'push';
             }
 
-            groupedItems.get(listItem.getGroupId()).push(
+            groupedItems.get(listItem.getGroupId())[arrayInsertMethod](
                 <ListItemComponent {...componentProps}><Item listItem={listItem}/></ListItemComponent>
             );
         });
@@ -70,7 +77,8 @@ List.propTypes = {
     listItems: PropTypes.instanceOf(Map).isRequired,
     groups: PropTypes.instanceOf(Map).isRequired,
     editItem: PropTypes.func.isRequired,
-    buyItem: PropTypes.func.isRequired
+    buyItem: PropTypes.func.isRequired,
+    returnItem: PropTypes.func.isRequired
 };
 
 export default connect(
@@ -87,7 +95,8 @@ export default connect(
                 // todo separate url for edit
                 history.push('/product-list/' + listItem.getListId() + '/add-item/save/' + listItem.getProductId());
             },
-            buyItem: (listItem) => buyItem(listItem)(dispatch)
+            buyItem: (listItem) => buyItem(listItem)(dispatch),
+            returnItem: (listItem) => returnItem(listItem)(dispatch)
         };
     }
 )(List);
