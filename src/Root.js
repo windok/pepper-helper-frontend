@@ -16,10 +16,10 @@ const Root = ({store}) => (
         <Provider store={store}>
             <BrowserRouter>
                 <Switch>
-                    <Route exact path="/product-list/:productListId" component={ProductListScreen}/>
+                    <Route exact path="/product-list/:listId" component={ProductListScreen}/>
                     <Route exact path="/product-list/:listId/add-item/search" component={AddItemToListSearchStep}/>
                     <Route exact path="/product-list/:listId/add-item/save/:productId" component={AddItemToListSaveStep}/>
-                    <Route exact path="/product-list/:productListId/recommendations" component={ProductListScreen}/>
+                    <Route exact path="/product-list/:listId/recommendations" component={ProductListScreen}/>
                     <Route exact path="/user" component={UserScreen}/>
                     <Route exact path="/about" component={AboutScreen}/>
 

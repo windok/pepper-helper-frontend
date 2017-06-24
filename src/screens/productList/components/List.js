@@ -2,36 +2,48 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 
-import {getList} from 'Reducers/storage/list';
-import {getListItemCollectionForList} from 'Reducers/storage/listItem';
+import {List as ListModel, ListNullObject} from 'Models/List';
 
+import {List as ListComponent, ListItem as ListItemComponent} from 'material-ui/List';
 import Item from './Item';
+
+import {getDraftListItems, getBoughtListItems} from 'Reducers/storage/listItem';
 
 class List extends React.PureComponent {
     render() {
-        const liElements = [];
-        this.props.listItems.forEach(listItem => liElements.push(
-            <li key={listItem.getId()}><Item listItem={listItem}/></li>
+        const draftItems = [];
+        const boughtItems = [];
+
+        this.props.draftListItems.forEach(listItem => draftItems.push(
+            <ListItemComponent key={listItem.getId()}><Item listItem={listItem}/></ListItemComponent>
+        ));
+
+        this.props.boughtListItems.forEach(listItem => boughtItems.push(
+            <ListItemComponent key={listItem.getId()}><Item listItem={listItem}/></ListItemComponent>
         ));
 
         return (
             <div>
-                <ul>{liElements}</ul>
+                <ListComponent>{draftItems}</ListComponent>
+                <div>Bought:</div>
+                <ListComponent>{boughtItems}</ListComponent>
             </div>
-        )
+        );
     }
 }
 
 List.propTypes = {
-    productListId: PropTypes.any.isRequired,
-    listItems: PropTypes.instanceOf(Map).isRequired
+    list: PropTypes.instanceOf(ListModel).isRequired,
+    draftListItems: PropTypes.instanceOf(Map).isRequired,
+    boughtListItems: PropTypes.instanceOf(Map).isRequired
 };
 
 export default connect(
-    (state, {productListId}) => {
+    (state, {list}) => {
         return {
-            productListId,
-            listItems: getListItemCollectionForList(state, getList(state, productListId))
+            list,
+            draftListItems: getDraftListItems(state, list),
+            boughtListItems: getBoughtListItems(state, list)
         }
     }
 )(List);

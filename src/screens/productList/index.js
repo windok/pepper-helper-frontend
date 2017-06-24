@@ -51,7 +51,7 @@ class ProductList extends React.PureComponent {
                 <Sidebar/>
                 <Header title={"Product list " + this.props.list.getName()} leftLinks={<MenuButton/>}/>
 
-                <ListComponent productListId={this.props.list.getId()}/>
+                <ListComponent list={this.props.list}/>
                 <br/>
                 <Link to={"/product-list/" + this.props.list.getId() + "/recommendations"}>Show recommendations</Link>
                 <br/>
@@ -69,7 +69,7 @@ ProductList.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const listId = parseInt(match.params.productListId) || 0;
+        const listId = parseInt(match.params.listId) || 0;
 
         const list = listId ? getList(state, listId) : getFirstList(state);
 

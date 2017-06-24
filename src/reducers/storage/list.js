@@ -9,23 +9,6 @@ export default (state = {items: new Map(), isFetching: false}, action) => {
             return {...state, isFetching: false};
         case actionType.FETCH_LIST_COLLECTION_SUCCESS:
             return {isFetching: false, items: new Map([...state.items, ...action.payload])};
-
-        case actionType.FETCH_ITEMS_FOR_LIST_SUCCESS:
-            const itemIds = [];
-            action.payload.forEach(listItem => itemIds.push(listItem.getId()));
-
-            return {
-                ...state,
-                items: (new Map([...state.items])).set(action.meta.list.getId(), action.meta.list.setItems(itemIds))
-            };
-
-        case actionType.SAVE_ITEM_SUCCESS:
-            const updatedList = state.items.get(action.payload.getListId()).pushItem(action.payload.getId());
-
-            return {
-                ...state,
-                items: (new Map([...state.items])).set(updatedList.getId(), updatedList)
-            };
     }
 
     return state;

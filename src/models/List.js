@@ -4,10 +4,8 @@ import {Nullable, NotNullable} from 'Models/NullableInterface';
 
 class List extends NotNullable(Entity) {
     constructor(entity) {
-        entity.listItems = entity.listItems || [];
-
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['id', 'name', 'listItems'])
+            (entity) => entityStructureFilter(entity, ['id', 'name'])
         ]);
     }
 
@@ -17,26 +15,6 @@ class List extends NotNullable(Entity) {
 
     getName() {
         return this.entity.name;
-    }
-
-    setItems(items) {
-        return new List({
-            id: this.getId(),
-            name: this.getName(),
-            listItems: [...items]
-        });
-    }
-
-    pushItem(itemId) {
-        return new List({
-            id: this.getId(),
-            name: this.getName(),
-            listItems: [...this.getItems(), itemId]
-        });
-    }
-
-    getItems() {
-        return this.entity.listItems;
     }
 }
 

@@ -7,7 +7,7 @@ const STATUS_BOUGHT = 'bought';
 const STATUS_SUSPENDED = 'suspended';
 
 const TYPE_GENERAL = 'general';
-const TYPE_RECOMMENDED = 'recommended';
+const TYPE_RECOMMENDED = 'recommendation';
 
 class ListItem extends NotNullable(Entity) {
 
