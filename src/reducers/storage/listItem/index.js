@@ -15,47 +15,22 @@ export default combineReducers({
  * @param {List} productList
  * @return {Map}
  */
-export const getDraftListItems = (state, productList) => {
-    return getGeneralListItemsByStatus(state, productList, STATUS_DRAFT);
-};
-
-/**
- * @param state
- * @param {List} productList
- * @return {Map}
- */
-export const getBoughtListItems = (state, productList) => {
-    return getGeneralListItemsByStatus(state, productList, STATUS_BOUGHT);
-};
-
-/**
- * @param state
- * @param {List} productList
- * @param {string} status
- * @return {Map}
- */
-export const getGeneralListItemsByStatus = (state, productList, status) => {
+export const getListItemsToDisplay = (state, productList) => {
     const itemCollection = new Map();
 
-    state.storage.listItem.general.items.forEach(listItem => {
-        if (listItem.getListId() !== productList.getId() || listItem.getStatus() !== status) {
+    const addItemToCollection = listItem => {
+        if (listItem.getListId() !== productList.getId()) {
             return;
         }
 
         itemCollection.set(listItem.getId(), listItem);
-    });
+    };
 
-    state.storage.listItem.general.unsavedItems.forEach(listItem => {
-        if (listItem.getListId() !== productList.getId() || listItem.getStatus() !== status) {
-            return;
-        }
-
-        itemCollection.set(listItem.getId(), listItem);
-    });
+    state.storage.listItem.general.items.forEach(addItemToCollection);
+    state.storage.listItem.general.unsavedItems.forEach(addItemToCollection);
 
     return itemCollection;
 };
-
 
 /**
  * @param state

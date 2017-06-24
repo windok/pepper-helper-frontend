@@ -7,7 +7,6 @@ import {Group, GroupNullObject} from 'Models/Group';
 import {Product, ProductNullObject} from 'Models/Product';
 import {Unit, UnitNullObject} from 'Models/Unit';
 
-import {getGroup} from 'Reducers/storage/group';
 import {getProduct} from 'Reducers/storage/product';
 import {getUnit} from 'Reducers/storage/unit';
 
@@ -19,7 +18,7 @@ class Item extends React.PureComponent {
 
         return (
             <span>
-                {this.props.group.getName()}: {this.props.product.getName()} - {this.props.listItem.getQuantity()} {this.props.unit.getName()}
+                {this.props.product.getName()} - {this.props.listItem.getQuantity()} {this.props.unit.getName()}
             </span>
         )
     }
@@ -27,7 +26,6 @@ class Item extends React.PureComponent {
 
 Item.propTypes = {
     listItem: PropTypes.instanceOf(ListItem).isRequired,
-    group: PropTypes.instanceOf(Group).isRequired,
     product: PropTypes.instanceOf(Product).isRequired,
     unit: PropTypes.instanceOf(Unit).isRequired,
 };
@@ -37,7 +35,6 @@ export default connect(
         return {
             listItem,
             // todo consider to use global state in selector instead of passing as param
-            group: getGroup(state, listItem.getGroupId()),
             product: getProduct(state, listItem.getProductId()),
             unit: getUnit(state, listItem.getUnitId())
         }

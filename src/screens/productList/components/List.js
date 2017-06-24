@@ -3,32 +3,56 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 
 import {List as ListModel, ListNullObject} from 'Models/List';
+import {ListItem as ListItemModel, STATUS_DRAFT, STATUS_BOUGHT} from 'Models/ListItem';
 
 import {List as ListComponent, ListItem as ListItemComponent} from 'material-ui/List';
 import Item from './Item';
 
-import {getDraftListItems, getBoughtListItems} from 'Reducers/storage/listItem';
+import {getListItemsToDisplay} from 'Reducers/storage/listItem';
+import {getGroupCollection} from 'Reducers/storage/group';
 
 class List extends React.PureComponent {
     render() {
-        const draftItems = [];
-        const boughtItems = [];
+        // todo refactor, separate into smaller components
 
-        this.props.draftListItems.forEach(listItem => draftItems.push(
-            <ListItemComponent key={listItem.getId()} onTouchTap={() => this.props.editItem(listItem)}>
-                <Item listItem={listItem}/>
-            </ListItemComponent>
-        ));
+        const groupedItems = new Map();
 
-        this.props.boughtListItems.forEach(listItem => boughtItems.push(
-            <ListItemComponent key={listItem.getId()}><Item listItem={listItem}/></ListItemComponent>
-        ));
+        /**
+         * @type {ListItem} listItem
+         */
+        this.props.listItems.forEach(listItem => {
+            if (!groupedItems.has(listItem.getGroupId())) {
+                groupedItems.set(listItem.getGroupId(), []);
+            }
+
+            const componentProps = {
+                key: listItem.getId()
+            };
+
+            if (listItem.getStatus() === STATUS_DRAFT) {
+                componentProps.onTouchTap = () => this.props.editItem(listItem)
+            }
+
+            if (listItem.getStatus() === STATUS_BOUGHT) {
+                componentProps.style = {textDecoration: 'line-through'}
+            }
+
+            groupedItems.get(listItem.getGroupId()).push(
+                <ListItemComponent {...componentProps}><Item listItem={listItem}/></ListItemComponent>
+            );
+        });
+
+        const groupedItemElements = [];
+
+        groupedItems.forEach((nestedListItems, groupId) => {
+            groupedItemElements.push(<ListItemComponent key={groupId} nestedItems={nestedListItems} open={true}>
+                {this.props.groups.has(groupId) ? this.props.groups.get(groupId).getName() : 'n/a'}
+            </ListItemComponent>)
+        });
 
         return (
             <div>
-                <ListComponent>{draftItems}</ListComponent>
-                <div>Bought:</div>
-                <ListComponent>{boughtItems}</ListComponent>
+                <ListComponent>{groupedItemElements}</ListComponent>
             </div>
         );
     }
@@ -36,16 +60,17 @@ class List extends React.PureComponent {
 
 List.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
-    draftListItems: PropTypes.instanceOf(Map).isRequired,
-    boughtListItems: PropTypes.instanceOf(Map).isRequired
+    listItems: PropTypes.instanceOf(Map).isRequired,
+    groups: PropTypes.instanceOf(Map).isRequired,
+    editItem: PropTypes.func.isRequired
 };
 
 export default connect(
     (state, {list}) => {
         return {
             list,
-            draftListItems: getDraftListItems(state, list),
-            boughtListItems: getBoughtListItems(state, list)
+            listItems: getListItemsToDisplay(state, list),
+            groups: getGroupCollection(state)
         };
     },
     (dispatch, {history}) => {
