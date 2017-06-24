@@ -15,7 +15,9 @@ class List extends React.PureComponent {
         const boughtItems = [];
 
         this.props.draftListItems.forEach(listItem => draftItems.push(
-            <ListItemComponent key={listItem.getId()}><Item listItem={listItem}/></ListItemComponent>
+            <ListItemComponent key={listItem.getId()} onTouchTap={() => this.props.editItem(listItem)}>
+                <Item listItem={listItem}/>
+            </ListItemComponent>
         ));
 
         this.props.boughtListItems.forEach(listItem => boughtItems.push(
@@ -44,6 +46,14 @@ export default connect(
             list,
             draftListItems: getDraftListItems(state, list),
             boughtListItems: getBoughtListItems(state, list)
-        }
+        };
+    },
+    (dispatch, {history}) => {
+        return {
+            editItem: (listItem) => {
+                // todo separate url for edit
+                history.push('/product-list/' + listItem.getListId() + '/add-item/save/' + listItem.getProductId());
+            }
+        };
     }
 )(List);

@@ -45,6 +45,14 @@ export const getGeneralListItemsByStatus = (state, productList, status) => {
         itemCollection.set(listItem.getId(), listItem);
     });
 
+    state.storage.listItem.general.unsavedItems.forEach(listItem => {
+        if (listItem.getListId() !== productList.getId() || listItem.getStatus() !== status) {
+            return;
+        }
+
+        itemCollection.set(listItem.getId(), listItem);
+    });
+
     return itemCollection;
 };
 

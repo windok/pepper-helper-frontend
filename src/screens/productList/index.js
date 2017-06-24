@@ -51,7 +51,7 @@ class ProductList extends React.PureComponent {
                 <Sidebar/>
                 <Header title={"Product list " + this.props.list.getName()} leftLinks={<MenuButton/>}/>
 
-                <ListComponent list={this.props.list}/>
+                <ListComponent list={this.props.list} history={this.props.history}/>
                 <br/>
                 <Link to={"/product-list/" + this.props.list.getId() + "/recommendations"}>Show recommendations</Link>
                 <br/>
