@@ -21,14 +21,10 @@ class ProductList extends React.PureComponent {
         this.props.fetchListItems(this.props.list);
     }
 
-    shouldComponentUpdate({list}) {
-        if (list.getId() === this.props.list.getId()) {
-            return false;
+    componentWillReceiveProps({listId, list}) {
+        if (listId !== this.props.listId) {
+            this.props.fetchListItems(list);
         }
-
-        this.props.fetchListItems(list);
-
-        return true;
     }
 
     render() {

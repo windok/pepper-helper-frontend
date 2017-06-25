@@ -38,27 +38,23 @@ class AddItemToListSaveStep extends React.PureComponent {
         this.props.getTemplate(this.props.list, this.props.product);
     }
 
-    shouldComponentUpdate({listId, productId, list, product}) {
+    componentWillReceiveProps({listId, productId, list, product, template}) {
         if (this.props.listId !== listId || this.props.productId !== productId) {
             this.props.getTemplate(list, product);
         }
 
-        return true;
-    }
-
-    componentDidUpdate({template}) {
         // todo bind template changes to redux state instead component one
         if (
             // if there were no template before
-            (this.props.template && !template)
-                // or if list or product was changed
-            || (
-                this.props.template
-                && this.props.template.getListId() !== template.getListId()
-                && this.props.template.getProductId() !== template.getProductId()
-            )
+        (template && !this.props.template)
+        // or if list or product has changed
+        || (
+            template
+            && template.getListId() !== this.props.template.getListId()
+            && template.getProductId() !== this.props.template.getProductId()
+        )
         ) {
-            this.setState({template: this.props.template.serialize()});
+            this.setState({template: template.serialize()});
         }
     }
 
