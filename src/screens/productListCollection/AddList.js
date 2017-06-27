@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import Header from 'Components/Header';
+import BackButton from 'Components/buttons/BackButton';
+import {SaveButton} from 'Components/buttons/Button';
 import TextField from 'material-ui/TextField';
-import IconButton from 'material-ui/IconButton';
-import SaveIcon from 'material-ui/svg-icons/content/send';
-import CloseIcon from 'material-ui/svg-icons/navigation/close';
 
 import {create as createList} from 'Actions/list';
 import {showMenu} from 'Actions/ui';
@@ -22,8 +21,8 @@ class AddList extends React.PureComponent {
         return (
             <div>
                 <Header title={"Create product list"}
-                        leftLinks={<IconButton onTouchTap={this.props.cancel}><CloseIcon/></IconButton>}
-                        rightLinks={<IconButton onTouchTap={() => this.props.save(this.state.name)}><SaveIcon/></IconButton>}/>
+                        leftLinks={<BackButton onTouchTap={this.props.cancel}/>}
+                        rightLinks={<SaveButton onTouchTap={() => this.props.save(this.state.name)}/>}/>
 
                 <TextField
                     hintText="List name"
@@ -43,16 +42,11 @@ AddList.propTypes = {
 
 export default connect(
     (state) => {
-        return {
-
-        }
+        return {}
     },
     (dispatch, {history}) => {
         return {
-            cancel: () => {
-                history.goBack();
-                showMenu()(dispatch);
-            },
+            cancel: () => showMenu()(dispatch),
             save: (listName) => {
                 createList(listName)(dispatch);
                 history.goBack();

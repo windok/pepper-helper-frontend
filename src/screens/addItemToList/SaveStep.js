@@ -14,13 +14,12 @@ import {getProduct} from 'Reducers/storage/product';
 import {getTemplate as getListItemTemplate} from 'Reducers/storage/listItem';
 
 import Header from 'Components/Header';
-import HeaderLink from 'Components/HeaderLink';
 import Input from 'Components/form/Input';
+import BackButton from 'Components/buttons/BackButton';
+import {SaveButton} from 'Components/buttons/Button';
 
 import UnitSelect from './components/UnitSelect';
 import GroupSelect from './components/GroupSelect';
-import BackButton from './components/buttons/BackButton';
-import SaveButton from './components/buttons/SaveButton';
 
 class AddItemToListSaveStep extends React.PureComponent {
     constructor(props) {
@@ -74,7 +73,7 @@ class AddItemToListSaveStep extends React.PureComponent {
             <div>
                 <Header
                     title={"Add item to " + this.props.list.getName()}
-                    leftLinks={<BackButton history={this.props.history}/>}
+                    leftLinks={<BackButton/>}
                     rightLinks={<SaveButton onTouchTap={() => this.props.saveItemHandler(this.state.template)}/>}
                 />
 

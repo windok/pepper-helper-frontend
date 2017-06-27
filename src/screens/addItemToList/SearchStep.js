@@ -10,12 +10,11 @@ import {getList} from 'Reducers/storage/list';
 import {findProductByName} from 'Reducers/storage/product';
 
 import Header from 'Components/Header';
-import HeaderLink from 'Components/HeaderLink';
 import Input from 'Components/form/Input';
+import BackButton from 'Components/buttons/BackButton';
+import {ForwardButton} from 'Components/buttons/Button';
 
 import ProductSearchResultList from './components/ProductSearchResultList';
-import CloseButton from './components/buttons/CloseButton';
-import ForwardToSaveButton from './components/buttons/ForwardToSaveButton';
 
 class AddItemToListSearchStep extends React.PureComponent {
 
@@ -41,15 +40,17 @@ class AddItemToListSearchStep extends React.PureComponent {
         if (this.props.list.isNullObject()) {
             return (
                 <div>
-                    <Header title={"Add item to " + this.props.list.getName()}/>
-                    <div onClick={this.props.cancelHandler} style={{cursor: 'pointer'}}>Cancel</div>
+                    <Header
+                        title={"Add item to " + this.props.list.getName()}
+                        leftLinks={<BackButton/>}
+                    />
                 </div>
             );
         }
 
         const listId = this.props.listId;
 
-        const forwardToSaveButton = <ForwardToSaveButton onTouchTap={() => {
+        const forwardToSaveButton = <ForwardButton onTouchTap={() => {
             if (this.state.query.trim().length === 0) {
                 return;
             }
@@ -69,7 +70,7 @@ class AddItemToListSearchStep extends React.PureComponent {
             <div>
                 <Header
                     title={"Add item to " + this.props.list.getName()}
-                    leftLinks={<CloseButton history={this.props.history}/>}
+                    leftLinks={<BackButton history={this.props.history}/>}
                     rightLinks={forwardToSaveButton}
                 />
 

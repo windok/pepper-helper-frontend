@@ -5,10 +5,9 @@ import {connect} from 'react-redux';
 import ListModel from 'Models/List';
 
 import Header from 'Components/Header';
+import BackButton from 'Components/buttons/BackButton';
+import {SaveButton} from 'Components/buttons/Button';
 import TextField from 'material-ui/TextField';
-import IconButton from 'material-ui/IconButton';
-import SaveIcon from 'material-ui/svg-icons/content/send';
-import CloseIcon from 'material-ui/svg-icons/navigation/close';
 
 import {getList} from 'Reducers/storage/list';
 import {update as editList} from 'Actions/list';
@@ -21,13 +20,18 @@ class EditList extends React.PureComponent {
         this.state = params.list.serialize();
     }
 
+    componentWillReceiveProps({list}) {
+        if (list.getId() !== this.state.id) {
+            this.setState(list.serialize());
+        }
+    }
+
     render() {
         if (this.props.list.isNullObject()) {
             return (
                 <div>
-                    <Header title={"Create product list"}
-                            leftLinks={<IconButton onTouchTap={this.props.cancel}><CloseIcon/></IconButton>}
-                            rightLinks={<IconButton onTouchTap={() => this.props.save(this.state.name)}><SaveIcon/></IconButton>}/>
+                    <Header title={"Edit product list"}
+                            leftLinks={<BackButton onTouchTap={this.props.cancel}/>}/>
                 </div>
             )
         }
@@ -35,8 +39,8 @@ class EditList extends React.PureComponent {
         return (
             <div>
                 <Header title={"Edit product list"}
-                        leftLinks={<IconButton onTouchTap={this.props.cancel}><CloseIcon/></IconButton>}
-                        rightLinks={<IconButton onTouchTap={() => this.props.save(this.props.list, this.state.name)}><SaveIcon/></IconButton>}/>
+                        leftLinks={<BackButton onTouchTap={this.props.cancel}/>}
+                        rightLinks={<SaveButton onTouchTap={() => this.props.save(this.props.list, this.state.name)}/>}/>
 
                 <TextField
                     hintText="List name"
@@ -63,10 +67,7 @@ export default connect(
     },
     (dispatch, {history}) => {
         return {
-            cancel: () => {
-                history.goBack();
-                showMenu()(dispatch);
-            },
+            cancel: () => showMenu()(dispatch),
             save: (oldList, newListName) => {
                 editList(oldList, newListName)(dispatch);
                 history.goBack();
