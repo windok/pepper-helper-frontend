@@ -70,7 +70,7 @@ class AddItemToListSearchStep extends React.PureComponent {
             <div>
                 <Header
                     title={"Add item to " + this.props.list.getName()}
-                    leftLinks={<BackButton history={this.props.history}/>}
+                    leftLinks={<BackButton/>}
                     rightLinks={forwardToSaveButton}
                 />
 

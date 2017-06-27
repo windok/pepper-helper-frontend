@@ -24,6 +24,13 @@ export default (state = {items: new Map(), unsavedItems: new Map(), isFetching: 
                 unsavedItems
             };
         }
+
+        case actionType.DELETE_LIST_REQUEST: {
+            const items = new Map([...state.items]);
+            items.delete(action.meta.list.getId());
+
+            return {...state, items};
+        }
     }
 
     return state;

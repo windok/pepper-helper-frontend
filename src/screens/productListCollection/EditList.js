@@ -8,9 +8,10 @@ import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 import {SaveButton} from 'Components/buttons/Button';
 import TextField from 'material-ui/TextField';
+import MenuItem from 'material-ui/MenuItem';
 
-import {getList} from 'Reducers/storage/list';
-import {update as editList} from 'Actions/list';
+import {getList, getFirstList} from 'Reducers/storage/list';
+import {updateList, deleteList} from 'Actions/list';
 import {showMenu} from 'Actions/ui';
 
 class EditList extends React.PureComponent {
@@ -36,11 +37,16 @@ class EditList extends React.PureComponent {
             )
         }
 
+        const options = this.props.isDeleteAllowed
+            ? [<MenuItem key="delete" primaryText="Delete" onTouchTap={() => this.props.delete(this.props.list)}/>]
+            : [];
+
         return (
             <div>
                 <Header title={"Edit product list"}
                         leftLinks={<BackButton onTouchTap={this.props.cancel}/>}
-                        rightLinks={<SaveButton onTouchTap={() => this.props.save(this.props.list, this.state.name)}/>}/>
+                        rightLinks={[<SaveButton key="save" onTouchTap={() => this.props.save(this.props.list, this.state.name)}/>]}
+                        options={options}/>
 
                 <TextField
                     hintText="List name"
@@ -55,22 +61,32 @@ class EditList extends React.PureComponent {
 
 EditList.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
+    isDeleteAllowed: PropTypes.bool.isRequired,
     cancel: PropTypes.func.isRequired,
     save: PropTypes.func.isRequired,
+    delete: PropTypes.func.isRequired,
 };
 
 export default connect(
     (state, {match}) => {
+        const list = getList(state, parseInt(match.params.listId) || 0);
+
         return {
-            list: getList(state, parseInt(match.params.listId) || 0)
+            list,
+            isDeleteAllowed: list !== getFirstList(state)
         }
     },
     (dispatch, {history}) => {
         return {
             cancel: () => showMenu()(dispatch),
             save: (oldList, newListName) => {
-                editList(oldList, newListName)(dispatch);
+                updateList(oldList, newListName)(dispatch);
                 history.goBack();
+                showMenu()(dispatch);
+            },
+            delete: (list) => {
+                deleteList(list)(dispatch);
+                history.push('/');
                 showMenu()(dispatch);
             }
         }

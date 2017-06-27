@@ -1,5 +1,5 @@
 import * as actionType from 'Actions';
-import {API_CALL, GET, POST, PUT} from 'Store/api-middleware/RSAA';
+import {API_CALL, GET, POST, PUT, DELETE} from 'Store/api-middleware/RSAA';
 import List from 'Models/List';
 
 
@@ -62,7 +62,7 @@ export const create = (listName) => (dispatch) => {
     });
 };
 
-export const update = (oldList, newListName) => (dispatch) => {
+export const updateList = (oldList, newListName) => (dispatch) => {
 
     if (oldList.isNullObject()) {
         return;
@@ -89,6 +89,31 @@ export const update = (oldList, newListName) => (dispatch) => {
                 actionType.EDIT_LIST_ERROR
             ],
             params: {...list.serialize()},
+        }
+    });
+};
+
+export const deleteList = (list) => (dispatch) => {
+
+    if (list.isNullObject()) {
+        return;
+    }
+
+    dispatch({
+        [API_CALL]: {
+            endpoint: '/product-list/' + list.getId(),
+            method: DELETE,
+            types: [
+                {
+                    type: actionType.DELETE_LIST_REQUEST,
+                    meta: {list}
+                },
+                {
+                    type: actionType.DELETE_LIST_SUCCESS,
+                    meta: {list},
+                },
+                actionType.DELETE_LIST_ERROR
+            ]
         }
     });
 };
