@@ -17,7 +17,9 @@ import {getGroupCollection} from 'Reducers/storage/group';
 
 import {buyItem, returnItem} from 'Actions/listItem';
 
-class List extends React.PureComponent {
+import history from 'Services/BrowserHistory';
+
+class GeneralList extends React.PureComponent {
     render() {
         // todo refactor, separate into smaller components
 
@@ -72,7 +74,7 @@ class List extends React.PureComponent {
     }
 }
 
-List.propTypes = {
+GeneralList.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
     listItems: PropTypes.instanceOf(Map).isRequired,
     groups: PropTypes.instanceOf(Map).isRequired,
@@ -89,7 +91,7 @@ export default connect(
             groups: getGroupCollection(state)
         };
     },
-    (dispatch, {history}) => {
+    (dispatch) => {
         return {
             editItem: (listItem) => {
                 // todo separate url for edit
@@ -99,4 +101,4 @@ export default connect(
             returnItem: (listItem) => returnItem(listItem)(dispatch)
         };
     }
-)(List);
+)(GeneralList);

@@ -8,7 +8,8 @@ import history from 'Services/BrowserHistory';
 
 import AddListScreen from 'Screens/productListCollection/AddList';
 import EditListScreen from 'Screens/productListCollection/EditList';
-import ProductListScreen from 'Screens/productList';
+import ProductListScreen from 'Screens/productList/ProductList';
+import RecommendationsScreen from 'Screens/productList/Recommendations';
 import AddItemToListSearchStep from 'Screens/addItemToList/SearchStep';
 import AddItemToListSaveStep from 'Screens/addItemToList/SaveStep';
 import UserScreen from 'Screens/user';
@@ -24,7 +25,7 @@ const Root = ({store}) => (
                     <Route exact path="/product-list/:listId" component={ProductListScreen}/>
                     <Route exact path="/product-list/:listId/add-item/search" component={AddItemToListSearchStep}/>
                     <Route exact path="/product-list/:listId/add-item/save/:productId" component={AddItemToListSaveStep}/>
-                    <Route exact path="/product-list/:listId/recommendations" component={ProductListScreen}/>
+                    <Route exact path="/product-list/:listId/recommendations" component={RecommendationsScreen}/>
                     <Route exact path="/user" component={UserScreen}/>
                     <Route exact path="/about" component={AboutScreen}/>
 
