@@ -34,7 +34,6 @@ export default connect(
     (state, {listItem}) => {
         return {
             listItem,
-            // todo consider to use global state in selector instead of passing as param
             product: getProduct(state, listItem.getProductId()),
             unit: getUnit(state, listItem.getUnitId())
         }

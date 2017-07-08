@@ -56,6 +56,17 @@ class ListItem extends NotNullable(Entity) {
     getDate() {
         return this.entity.date;
     }
+
+    serialize() {
+        const serializedData = super.serialize();
+
+        // 2017-06-03 20:55:26
+        serializedData.date =
+            this.getDate().getUTCFullYear() + '-' + (this.getDate().getUTCMonth() + 1) + '-' + this.getDate().getUTCDate() + ' '
+            + this.getDate().getUTCHours() + ':' + this.getDate().getUTCMinutes() + ':' + this.getDate().getUTCSeconds();
+
+        return serializedData;
+    }
 }
 
 class ListItemNullObject extends Nullable(ListItem) {

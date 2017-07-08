@@ -16,26 +16,32 @@ import {fetchItemsForList} from 'Actions/listItem';
 import ListComponent from './components/RecommendationList';
 
 class RecommendationsScreen extends React.PureComponent {
-    constructor(props) {
-        super(props);
+    componentWillMount() {
+        if (this.redirectToDefaultListIfNecessary(this.props.listId, this.props.list)) {
+            return;
+        }
 
-        this.redirectToDefaultListIfNecessary(props);
-
-        props.fetchListItems(props.list);
+        this.props.fetchListItems(this.props.list);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.redirectToDefaultListIfNecessary(nextProps);
+    componentWillReceiveProps({listId, list}) {
+        if (this.redirectToDefaultListIfNecessary(listId, list)) {
+            return;
+        }
 
-        if (nextProps.listId !== this.props.listId) {
-            nextProps.fetchListItems(nextProps.list);
+        if (listId !== this.props.listId) {
+            this.props.fetchListItems(list);
         }
     }
 
-    redirectToDefaultListIfNecessary(props) {
-        if (props.listId !== props.list.getId() || props.list.isNullObject()) {
-            redirectToDefaultList();
+    redirectToDefaultListIfNecessary(listId, list) {
+        if (listId === list.getId() && !list.isNullObject()) {
+            return false;
         }
+
+        redirectToDefaultList();
+
+        return true;
     }
 
     render() {

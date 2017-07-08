@@ -1,21 +1,71 @@
 import * as actionType from 'Actions';
-import {ListItem, ListItemNullObject, STATUS_DRAFT, STATUS_BOUGHT, STATUS_SUSPENDED} from 'Models/ListItem';
+import {
+    ListItem,
+    ListItemNullObject,
+    STATUS_DRAFT,
+    STATUS_BOUGHT,
+    STATUS_SUSPENDED,
+    TYPE_GENERAL,
+    TYPE_RECOMMENDED
+} from 'Models/ListItem';
 
-import general from './general';
-import recommended from './recommended';
-import {combineReducers} from 'redux';
+const initialState = {
+    items: new Map(),
+    unsavedItems: new Map(),
+    template: null,
+};
 
-export default combineReducers({
-    general,
-    recommended
-});
+export default (state = initialState, action) => {
+    switch (action.type) {
+        case actionType.FETCH_ITEMS_FOR_LIST_SUCCESS:
+            return {
+                ...state,
+                items: new Map([...state.items, ...action.payload]),
+            };
+
+        case actionType.GET_ITEM_TEMPLATE_SUCCESS:
+            return {
+                ...state,
+                template: action.payload.clone()
+            };
+
+        case actionType.CREATE_ITEM_REQUEST:
+            return {
+                ...state,
+                unsavedItems: new Map([...state.unsavedItems]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
+                template: null
+            };
+
+        case actionType.CREATE_ITEM_SUCCESS: {
+            const unsavedItems = new Map([...state.unsavedItems]);
+            unsavedItems.delete(action.meta.listItem.getId());
+
+            return {
+                ...state,
+                items: new Map([...state.items]).set(action.payload.getId(), action.payload.clone()),
+                unsavedItems,
+                template: null
+            };
+        }
+
+        case actionType.EDIT_ITEM_REQUEST:
+        case actionType.BUY_ITEM_REQUEST:
+        case actionType.RETURN_ITEM_REQUEST:
+            return {
+                ...state,
+                items: new Map([...state.items]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
+            };
+    }
+
+    return state;
+};
 
 /**
  * @param state
  * @param {List} productList
  * @return {Map}
  */
-export const getListItemsToDisplay = (state, productList) => {
+export const getGeneralListItemsToDisplay = (state, productList) => {
     const itemCollection = new Map();
 
     if (productList.isNullObject()) {
@@ -23,15 +73,15 @@ export const getListItemsToDisplay = (state, productList) => {
     }
 
     const addItemToCollection = listItem => {
-        if (listItem.getListId() !== productList.getId()) {
+        if (listItem.getListId() !== productList.getId() || listItem.getType() !== TYPE_GENERAL) {
             return;
         }
 
         itemCollection.set(listItem.getId(), listItem);
     };
 
-    state.storage.listItem.general.items.forEach(addItemToCollection);
-    state.storage.listItem.general.unsavedItems.forEach(addItemToCollection);
+    state.storage.listItem.items.forEach(addItemToCollection);
+    state.storage.listItem.unsavedItems.forEach(addItemToCollection);
 
     return itemCollection;
 };
@@ -44,8 +94,11 @@ export const getListItemsToDisplay = (state, productList) => {
 export const getRecommendedListItems = (state, productList) => {
     const itemCollection = new Map();
 
-    state.storage.listItem.recommended.items.forEach(listItem => {
-        if (listItem.getListId() !== productList.getId()) {
+    state.storage.listItem.items.forEach(listItem => {
+        if (
+            listItem.getListId() !== productList.getId()
+            || listItem.getType() !== TYPE_RECOMMENDED
+        ) {
             return;
         }
 
@@ -57,12 +110,21 @@ export const getRecommendedListItems = (state, productList) => {
 
 /**
  * @param state
+ * @param {number} itemId
+ * @return {ListItem}
+ */
+export const getListItem = (state, itemId) => {
+    return state.storage.listItem.items.get(itemId) || new ListItemNullObject();
+};
+
+/**
+ * @param state
  * @param {List} list
  * @param {Product} product
  * @return {ListItem}
  */
-export const getListItem = (state, list, product) => {
-    for (let [listItemId, listItem] of state.storage.listItem.general.items) {
+export const getListItemByListAndProduct = (state, list, product) => {
+    for (let listItem of state.storage.listItem.items.values()) {
         if (listItem.getListId() === list.getId() && listItem.getProductId() === product.getId()) {
             return listItem;
         }
@@ -78,7 +140,7 @@ export const getListItem = (state, list, product) => {
  * @return {ListItem}
  */
 export const getTemplate = (state, list, product) => {
-    const template = state.storage.listItem.general.template;
+    const template = state.storage.listItem.template;
 
     if (!template || template.getProductId() !== product.getId() || template.getListId() !== list.getId()) {
         return null;

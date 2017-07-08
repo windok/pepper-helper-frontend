@@ -12,7 +12,7 @@ import ReturnIcon from 'material-ui/svg-icons/content/undo';
 
 import Item from './Item';
 
-import {getListItemsToDisplay} from 'Reducers/storage/listItem';
+import {getGeneralListItemsToDisplay} from 'Reducers/storage/listItem';
 import {getGroupCollection} from 'Reducers/storage/group';
 
 import {buyItem, returnItem} from 'Actions/listItem';
@@ -87,15 +87,14 @@ export default connect(
     (state, {list}) => {
         return {
             list,
-            listItems: getListItemsToDisplay(state, list),
+            listItems: getGeneralListItemsToDisplay(state, list),
             groups: getGroupCollection(state)
         };
     },
     (dispatch) => {
         return {
             editItem: (listItem) => {
-                // todo separate url for edit
-                history.push('/product-list/' + listItem.getListId() + '/add-item/save/' + listItem.getProductId());
+                history.push('/product-list/' + listItem.getListId() + '/item/' + listItem.getId());
             },
             buyItem: (listItem) => buyItem(listItem)(dispatch),
             returnItem: (listItem) => returnItem(listItem)(dispatch)

@@ -3,8 +3,6 @@ import {API_CALL, GET, POST} from 'Store/api-middleware/RSAA';
 import Product from 'Models/Product';
 
 export const fetchAll = () => (dispatch) => {
-    // todo iterate if there are too much products
-    // todo custom redux middleware to fetch and process collections
     dispatch({
         [API_CALL]: {
             endpoint: '/translation',
@@ -76,7 +74,7 @@ export const createProduct = (value) => (dispatch) => {
                     payload: (action, state, response) => {
                         return new Product({
                             ...response.data,
-                            name: response.data.value,          // todo api should return translation object with language keys
+                            name: response.data.value,
                             defaultName: response.data.value
                         });
                     }

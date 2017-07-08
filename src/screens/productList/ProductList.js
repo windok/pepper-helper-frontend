@@ -86,7 +86,7 @@ export default withRouter(connect(
     (dispatch, {history}) => {
         return {
             fetchListItems: (list) => fetchItemsForList(list)(dispatch),
-            addItem: (list) => history.push('/product-list/' + list.getId() + '/add-item/search'),
+            addItem: (list) => history.push('/product-list/' + list.getId() + '/item/search'),
             showRecommendations: (list) => history.push('/product-list/' + list.getId() + '/recommendations')
         };
     }

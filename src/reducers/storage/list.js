@@ -51,11 +51,7 @@ export const getList = (state, id) => {
  * @return {List}
  */
 export const getFirstList = (state) => {
-    for (let [listId, list] of state.storage.list.items) {
-        return list;
-    }
-
-    return new ListNullObject();
+    return state.storage.list.items.values().next().value || new ListNullObject();
 };
 
 /**

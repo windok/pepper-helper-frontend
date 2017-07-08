@@ -34,7 +34,7 @@ UnitSelect.propTypes = {
 export default connect(
     (state) => {
         return {
-            units: getUnitCollection(state)         // todo consider to use global state instead of passing as param
+            units: getUnitCollection(state)
         }
     }
 )(UnitSelect);

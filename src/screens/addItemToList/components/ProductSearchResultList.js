@@ -15,7 +15,7 @@ class ProductSearchResultList extends React.PureComponent {
             <div>
                 <ul>
                     {this.props.searchResults.map((productId) =>
-                        <Link to={"/product-list/" + this.props.listId + "/add-item/save/" + productId} key={productId}>
+                        <Link to={"/product-list/" + this.props.listId + "/item/save/" + productId} key={productId}>
                             <button>{this.props.productCollection.get(productId).getName()}</button>
                         </Link>
                     )}

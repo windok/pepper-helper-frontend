@@ -98,7 +98,7 @@ export default withRouter(connect(
             searchProduct: (query) => searchProduct(query)(dispatch),
             createProduct: (value) => createProduct(value)(dispatch),
             postToSaveStep: (product) => {
-                return history.push('/product-list/' + match.params.listId + '/add-item/save/' + product.getId());
+                return history.push('/product-list/' + match.params.listId + '/item/save/' + product.getId());
             }
         }
     }

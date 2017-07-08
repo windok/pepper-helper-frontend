@@ -11,6 +11,8 @@ import Item from './Item';
 import {getRecommendedListItems} from 'Reducers/storage/listItem';
 import {getGroupCollection} from 'Reducers/storage/group';
 
+import history from 'Services/BrowserHistory';
+
 class GeneralList extends React.PureComponent {
     render() {
         // todo refactor, separate into smaller components
@@ -26,7 +28,8 @@ class GeneralList extends React.PureComponent {
             }
 
             groupedItems.get(listItem.getGroupId()).push(
-                <ListItemComponent key={listItem.getId()}>
+                <ListItemComponent key={listItem.getId()}
+                                   onTouchTap={() => this.props.editItem(listItem)}>
                     <Item listItem={listItem}/>
                 </ListItemComponent>
             );
@@ -52,6 +55,7 @@ GeneralList.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
     listItems: PropTypes.instanceOf(Map).isRequired,
     groups: PropTypes.instanceOf(Map).isRequired,
+    editItem: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -64,7 +68,7 @@ export default connect(
     },
     (dispatch) => {
         return {
-
+            editItem: (item) => history.push('/product-list/' + item.getListId() + '/item/' + item.getId())
         };
     }
 )(GeneralList);

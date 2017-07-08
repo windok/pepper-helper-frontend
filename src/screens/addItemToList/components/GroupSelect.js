@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 
 import {getGroupCollection} from 'Reducers/storage/group';
 
-// todo create user group if not found
 class GroupSelect extends React.PureComponent {
     render() {
         const options = [];

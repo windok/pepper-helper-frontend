@@ -5,8 +5,6 @@ const isRSAA = (action) => {
     return action[API_CALL] !== undefined;
 };
 
-// todo make middleware immutable
-
 const validateRSAA = (action) => {
     if (
         action[API_CALL].endpoint === undefined

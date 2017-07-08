@@ -6,8 +6,6 @@ import {ListItem, CustomProductListItemTemplate,
     TYPE_GENERAL, TYPE_RECOMMENDED} from 'Models/ListItem';
 
 import Store from 'Store';
-import {getListItem} from 'Reducers/storage/listItem';
-
 
 export const fetchItemsForList = (list) => (dispatch) => {
 
@@ -15,8 +13,6 @@ export const fetchItemsForList = (list) => (dispatch) => {
         return Promise.resolve();
     }
 
-    // todo iteration if total count is large
-    // todo custom redux middleware to fetch and process collections
     return dispatch({
         [API_CALL]: {
             endpoint: '/list-item',
@@ -26,26 +22,17 @@ export const fetchItemsForList = (list) => (dispatch) => {
                 {
                     type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,
                     payload: (action, state, response) => {
-                        const generalListItemCollection = new Map();
-                        const recommendedListItemCollection = new Map();
+                        const items = new Map();
 
                         (response.data.items || []).forEach(listItemData => {
                             const listItem = new ListItem({
                                 ...listItemData, productId: listItemData.translationId
                             });
 
-                            switch (listItem.getType()) {
-                                case TYPE_GENERAL:
-                                    return generalListItemCollection.set(listItem.getId(), listItem);
-                                case TYPE_RECOMMENDED:
-                                    return recommendedListItemCollection.set(listItem.getId(), listItem);
-                            }
+                            return items.set(listItem.getId(), listItem);
                         });
 
-                        return {
-                            general: generalListItemCollection,
-                            recommended: recommendedListItemCollection
-                        };
+                        return items;
                     },
                     meta: {list}
                 },
@@ -67,30 +54,9 @@ export const getTemplate = (list, product) => (dispatch) => {
         return Promise.resolve();
     }
 
-    const matchingListItem = getListItem(Store.getState(), list, product);
-    if (!matchingListItem.isNullObject() && matchingListItem.getStatus() === STATUS_DRAFT) {
-        dispatch({
-            type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
-            meta: {list, product},
-            payload: matchingListItem.clone()
-        });
-
-        return Promise.resolve();
-    }
-
     if (product.isCustom()) {
-        let groupId = 0;
-        let unitId = 0;
-
-        for (let [key, value] of Store.getState().storage.group.items) {
-            groupId = key;
-            break;
-        }
-
-        for (let [key, value] of Store.getState().storage.unit.items) {
-            unitId = key;
-            break;
-        }
+        let groupId = Store.getState().storage.group.items.keys().next().value || 0;
+        let unitId = Store.getState().storage.unit.items.keys().next().value || 0;
 
         dispatch({
             type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
@@ -123,26 +89,20 @@ export const getTemplate = (list, product) => (dispatch) => {
     });
 };
 
-export const saveItem = (listItem) => (dispatch) => {
-    const postData = listItem.serialize();
-    postData.translationId = listItem.getProductId();
-
-    const date = new Date();
-    // 2017-06-03 20:55:26
-    postData.date = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
+export const createItem = (listItem) => (dispatch) => {
+    listItem = new ListItem({...listItem.serialize(), date: new Date()});
 
     return dispatch({
         [API_CALL]: {
-            endpoint: '/list-item' + (listItem.getId() ? '/' + listItem.getId() : ''),
-            method: listItem.getId() ? PUT : POST,
+            endpoint: '/list-item',
+            method: POST,
             types: [
-                // todo create item in offline storage before request is sent
                 {
-                    type: actionType.SAVE_ITEM_REQUEST,
+                    type: actionType.CREATE_ITEM_REQUEST,
                     meta: {listItem}
                 },
                 {
-                    type: actionType.SAVE_ITEM_SUCCESS,
+                    type: actionType.CREATE_ITEM_SUCCESS,
                     meta: {listItem},
                     payload: (action, state, response) => new ListItem({
                         ...response.data,
@@ -150,9 +110,44 @@ export const saveItem = (listItem) => (dispatch) => {
                         productId: response.data.translationId
                     })
                 },
-                actionType.SAVE_ITEM_ERROR
+                actionType.CREATE_ITEM_ERROR
             ],
-            params: postData,
+            params: {
+                ...listItem.serialize(),
+                translationId: listItem.getProductId()
+            },
+        }
+    });
+};
+
+export const editItem = (listItem) => (dispatch) => {
+    // todo convert recommended item in general one in corresponding component
+    listItem = new ListItem({...listItem.serialize(), date: new Date(), type: TYPE_GENERAL});
+
+    return dispatch({
+        [API_CALL]: {
+            endpoint: '/list-item/' + listItem.getId(),
+            method: PUT,
+            types: [
+                {
+                    type: actionType.EDIT_ITEM_REQUEST,
+                    meta: {listItem}
+                },
+                {
+                    type: actionType.EDIT_ITEM_SUCCESS,
+                    meta: {listItem},
+                    payload: (action, state, response) => new ListItem({
+                        ...response.data,
+                        date: response.data.date || new Date(),
+                        productId: response.data.translationId
+                    })
+                },
+                actionType.EDIT_ITEM_ERROR
+            ],
+            params: {
+                ...listItem.serialize(),
+                translationId: listItem.getProductId()
+            },
         }
     });
 };
@@ -161,7 +156,7 @@ export const saveItem = (listItem) => (dispatch) => {
  * @param {ListItem} listItem
  */
 export const buyItem = (listItem) => (dispatch) => {
-    if (listItem.getStatus() !== STATUS_DRAFT) {
+    if (listItem.getStatus() !== STATUS_DRAFT && listItem.getType() !== TYPE_GENERAL) {
         return Promise.reject();
     }
 
@@ -190,7 +185,7 @@ export const buyItem = (listItem) => (dispatch) => {
  * @param {ListItem} listItem
  */
 export const returnItem = (listItem) => (dispatch) => {
-    if (listItem.getStatus() !== STATUS_BOUGHT) {
+    if (listItem.getStatus() !== STATUS_BOUGHT && listItem.getType() !== TYPE_GENERAL) {
         return Promise.reject();
     }
 
