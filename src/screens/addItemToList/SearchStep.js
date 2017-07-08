@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import {List as ListModel, ListNullObject} from 'Models/List';
 
 import {searchProduct, createProduct} from 'Actions/product';
-import {getList} from 'Reducers/storage/list';
+import {getList, getFirstList} from 'Reducers/storage/list';
 import {findProductByName} from 'Reducers/storage/product';
 
 import Header from 'Components/Header';
@@ -34,19 +34,7 @@ class AddItemToListSearchStep extends React.PureComponent {
         this.props.searchProduct(newQuery);
     }
 
-    // todo move action links to header
     render() {
-
-        if (this.props.list.isNullObject()) {
-            return (
-                <div>
-                    <Header
-                        title={"Add item to " + this.props.list.getName()}
-                        leftLinks={<BackButton/>}
-                    />
-                </div>
-            );
-        }
 
         const listId = this.props.listId;
 
@@ -61,7 +49,6 @@ class AddItemToListSearchStep extends React.PureComponent {
                 return this.props.postToSaveStep(product);
             }
 
-            // todo think how to refactor this
             this.props.createProduct(this.state.query)
                 .then(product => this.props.postToSaveStep(product));
         }}/>;
@@ -98,19 +85,7 @@ export default withRouter(connect(
     (state, {match}) => {
         const listId = parseInt(match.params.listId);
 
-        const list = getList(state, listId);
-
-        if (
-        // todo incorrect route that leads to this page
-        // todo maybe open some default list?
-        !listId
-        // todo list fetching request in progress
-        // todo maybe this list does not exist?
-        // todo unexisted list, redirect to user's default list
-        || list.isNullObject()
-        ) {
-            return {listId: 0, list}
-        }
+        const list = listId ? getList(state, listId) : getFirstList(state);
 
         return {
             listId,

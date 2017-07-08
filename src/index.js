@@ -13,12 +13,18 @@ import {fetchAll as fetchProductListCollection} from 'Actions/list';
 import {fetchAll as fetchProductCollection} from 'Actions/product';
 import {fetchAll as fetchUnitCollection} from 'Actions/unit';
 import {fetchAll as fetchGroupCollection} from 'Actions/group';
-fetchProductListCollection()(store.dispatch);
-fetchProductCollection()(store.dispatch);
-fetchUnitCollection()(store.dispatch);
-fetchGroupCollection()(store.dispatch);
 
-render(
-    <Root store={store}/>,
-    document.getElementById('root')
-);
+
+Promise.all([
+    fetchProductListCollection()(store.dispatch),
+    fetchProductCollection()(store.dispatch),
+    fetchUnitCollection()(store.dispatch),
+    fetchGroupCollection()(store.dispatch)
+])
+    .then(() => {
+        render(
+            <Root store={store}/>,
+            document.getElementById('root')
+        );
+    });
+

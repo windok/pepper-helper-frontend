@@ -4,7 +4,7 @@ import {GET, POST, PUT, DELETE} from './RSAA';
 
 const apiTransport = Axios.create({
     baseURL: Config.BACKEND_URL,
-    timeout: 10000,
+    timeout: 30000,
 });
 
 export default {

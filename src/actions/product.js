@@ -65,35 +65,28 @@ export const searchProduct = (query) => (dispatch) => {
 };
 
 export const createProduct = (value) => (dispatch) => {
-    // todo refactor this
-    return new Promise((resolve, reject) => {
-        dispatch({
-            [API_CALL]: {
-                endpoint: '/translation',
-                method: POST,
-                types: [
-                    actionType.CREATE_PRODUCT_REQUEST,
-                    {
-                        type: actionType.CREATE_PRODUCT_SUCCESS,
-                        payload: (action, state, response) => {
-                            const product = new Product({
-                                ...response.data,
-                                name: response.data.value,          // todo api should return translation object with language keys
-                                defaultName: response.data.value
-                            });
-
-                            resolve(product);
-
-                            return product;
-                        }
-                    },
-                    actionType.CREATE_PRODUCT_ERROR
-                ],
-                params: {
-                    type: 'product',
-                    value,
+    return dispatch({
+        [API_CALL]: {
+            endpoint: '/translation',
+            method: POST,
+            types: [
+                actionType.CREATE_PRODUCT_REQUEST,
+                {
+                    type: actionType.CREATE_PRODUCT_SUCCESS,
+                    payload: (action, state, response) => {
+                        return new Product({
+                            ...response.data,
+                            name: response.data.value,          // todo api should return translation object with language keys
+                            defaultName: response.data.value
+                        });
+                    }
                 },
-            }
-        });
+                actionType.CREATE_PRODUCT_ERROR
+            ],
+            params: {
+                type: 'product',
+                value,
+            },
+        }
     });
 };

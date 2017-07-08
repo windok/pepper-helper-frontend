@@ -7,7 +7,7 @@ export const fetchAll = () => (dispatch) => {
 
     // todo iteration if total count is large
     // todo custom redux middleware to fetch and process collections
-    dispatch({
+    return dispatch({
         [API_CALL]: {
             endpoint: '/product-list',
             method: GET,
@@ -34,12 +34,12 @@ export const fetchAll = () => (dispatch) => {
 
 export const create = (listName) => (dispatch) => {
     if (listName.trim().length === 0) {
-        return;
+        return Promise.reject();
     }
 
     const list = new List({id: 0, name: listName});
 
-    dispatch({
+    return dispatch({
         [API_CALL]: {
             endpoint: '/product-list',
             method: POST,

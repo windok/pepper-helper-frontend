@@ -92,14 +92,22 @@ const apiMiddleware = (store) => {
         return RestClient[method](endpoint, params, headers)
             .then(
                 (response) => {
-                    next(createActionForNext(successType, action, store, response))
+                    const actionForNext = createActionForNext(successType, action, store, response);
+
+                    next(actionForNext);
+
+                    return Promise.resolve(actionForNext.payload);
                 },
                 (error) => {
                     // todo error payload and meta wrapping
-                    next({
+                    const actionForNext = {
                         type: failureType,
                         error
-                    })
+                    };
+
+                    next(actionForNext);
+
+                    return Promise.reject(actionForNext.error);
                 }
             );
     }

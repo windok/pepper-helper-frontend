@@ -26,7 +26,9 @@ class GeneralList extends React.PureComponent {
             }
 
             groupedItems.get(listItem.getGroupId()).push(
-                <ListItemComponent key={listItem.getId()}><Item listItem={listItem}/></ListItemComponent>
+                <ListItemComponent key={listItem.getId()}>
+                    <Item listItem={listItem}/>
+                </ListItemComponent>
             );
         });
 

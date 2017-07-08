@@ -18,6 +18,10 @@ export default combineReducers({
 export const getListItemsToDisplay = (state, productList) => {
     const itemCollection = new Map();
 
+    if (productList.isNullObject()) {
+        return itemCollection;
+    }
+
     const addItemToCollection = listItem => {
         if (listItem.getListId() !== productList.getId()) {
             return;

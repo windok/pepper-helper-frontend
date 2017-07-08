@@ -18,31 +18,19 @@ import {fetchItemsForList} from 'Actions/listItem';
 import ListComponent from './components/GeneralList';
 
 class ProductListScreen extends React.PureComponent {
-    componentWillMount() {
-        this.props.fetchListItems(this.props.list);
+    constructor(props) {
+        super(props);
+
+        props.fetchListItems(props.list);
     }
 
-    componentWillReceiveProps({listId, list}) {
-        if (listId !== this.props.listId) {
+    componentWillReceiveProps({list}) {
+        if (list !== this.props.list) {
             this.props.fetchListItems(list);
         }
     }
 
     render() {
-        // todo create separate component that specifies Menu
-        // todo keep list of links for each screen somewhere
-
-        if (this.props.list.isNullObject()) {
-            return (
-                <div>
-                    <Sidebar/>
-                    <Header title={"Product list " + this.props.list.getName()} leftLinks={<MenuButton/>}/>
-                    {this.props.list.getName()}
-                </div>
-            );
-        }
-
-        // todo add item and recommendation links should be FAB
         return (
             <div>
                 <Sidebar/>
@@ -81,7 +69,6 @@ class ProductListScreen extends React.PureComponent {
 }
 
 ProductListScreen.propTypes = {
-    listId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     list: PropTypes.instanceOf(ListModel).isRequired,
     fetchListItems: PropTypes.func.isRequired,
     addItem: PropTypes.func.isRequired,
@@ -92,18 +79,9 @@ export default withRouter(connect(
     (state, {match}) => {
         const listId = parseInt(match.params.listId) || 0;
 
-        const list = listId ? getList(state, listId) : getFirstList(state);
-
-        if (
-            // todo list fetching request in progress
-        // todo maybe this list does not exist?
-        // todo unexisted list, redirect to user's default list
-            list.isNullObject()
-        ) {
-            return {listId: 0, list};
-        }
-
-        return {listId, list};
+        return {
+            list: listId ? getList(state, listId) : getFirstList(state)
+        };
     },
     (dispatch, {history}) => {
         return {

@@ -9,27 +9,32 @@ import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 
 import {getList, getFirstList} from 'Reducers/storage/list';
+import {redirectToDefaultList} from 'Services/BrowserHistory';
 
 import {fetchItemsForList} from 'Actions/listItem';
 
 import ListComponent from './components/RecommendationList';
 
 class RecommendationsScreen extends React.PureComponent {
-    componentWillMount() {
-        if (this.props.list.isNullObject()) {
-            this.props.redirectToDefaultList(this.props.listId);
-        }
+    constructor(props) {
+        super(props);
 
-        this.props.fetchListItems(this.props.list);
+        this.redirectToDefaultListIfNecessary(props);
+
+        props.fetchListItems(props.list);
     }
 
-    componentWillReceiveProps({listId, list}) {
-        if (list.isNullObject()) {
-            this.props.redirectToDefaultList(listId);
-        }
+    componentWillReceiveProps(nextProps) {
+        this.redirectToDefaultListIfNecessary(nextProps);
 
-        if (listId !== this.props.listId) {
-            this.props.fetchListItems(list);
+        if (nextProps.listId !== this.props.listId) {
+            nextProps.fetchListItems(nextProps.list);
+        }
+    }
+
+    redirectToDefaultListIfNecessary(props) {
+        if (props.listId !== props.list.getId() || props.list.isNullObject()) {
+            redirectToDefaultList();
         }
     }
 
@@ -47,7 +52,6 @@ class RecommendationsScreen extends React.PureComponent {
 RecommendationsScreen.propTypes = {
     listId: PropTypes.number.isRequired,
     list: PropTypes.instanceOf(ListModel).isRequired,
-    redirectToDefaultList: PropTypes.func.isRequired,
     fetchListItems: PropTypes.func.isRequired,
 };
 
@@ -55,13 +59,13 @@ export default withRouter(connect(
     (state, {match}) => {
         const listId = parseInt(match.params.listId) || 0;
 
-        const list = listId ? getList(state, listId) : getFirstList(state);
-
-        return {listId, list};
-    },
-    (dispatch, {history}) => {
         return {
-            redirectToDefaultList: (listId) => history.push('/product-list/' + listId),
+            listId,
+            list: listId ? getList(state, listId) : getFirstList(state)
+        };
+    },
+    (dispatch) => {
+        return {
             fetchListItems: (list) => fetchItemsForList(list)(dispatch)
         };
     }

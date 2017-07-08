@@ -6,7 +6,7 @@ export const fetchAll = () => (dispatch) => {
 
     // todo iteration if total count is large
     // todo custom redux middleware to fetch and process collections
-    dispatch({
+    return dispatch({
         [API_CALL]: {
             endpoint: '/translation',
             method: GET,
@@ -40,34 +40,27 @@ export const fetchAll = () => (dispatch) => {
 
 
 export const createGroup = (value) => (dispatch) => {
-    // todo refactor this, to not use promise
-    return new Promise((resolve, reject) => {
-        dispatch({
-            [API_CALL]: {
-                endpoint: '/translation',
-                method: POST,
-                types: [
-                    actionType.CREATE_GROUP_REQUEST,
-                    {
-                        type: actionType.CREATE_GROUP_SUCCESS,
-                        payload: (action, state, response) => {
-                            const group = new Group({
-                                id: response.data.id,
-                                name: response.data[state.storage.user.language] || response.data.en
-                            });
-
-                            resolve(group);
-
-                            return group;
-                        }
-                    },
-                    actionType.CREATE_GROUP_ERROR
-                ],
-                params: {
-                    type: 'group',
-                    value,
+    return dispatch({
+        [API_CALL]: {
+            endpoint: '/translation',
+            method: POST,
+            types: [
+                actionType.CREATE_GROUP_REQUEST,
+                {
+                    type: actionType.CREATE_GROUP_SUCCESS,
+                    payload: (action, state, response) => {
+                        return new Group({
+                            id: response.data.id,
+                            name: response.data[state.storage.user.language] || response.data.en
+                        });
+                    }
                 },
-            }
-        });
+                actionType.CREATE_GROUP_ERROR
+            ],
+            params: {
+                type: 'group',
+                value,
+            },
+        }
     });
 };

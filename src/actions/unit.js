@@ -5,7 +5,7 @@ import Unit from 'Models/Unit';
 export const fetchAll = () => (dispatch) => {
     // todo iteration if total count is large
     // todo custom redux middleware to fetch and process collections
-    dispatch({
+    return dispatch({
         [API_CALL]: {
             endpoint: '/unit',
             method: GET,

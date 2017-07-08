@@ -107,7 +107,6 @@ export default withRouter(connect(
         const listId = parseInt(match.params.listId);
         const productId = parseInt(match.params.productId);
 
-        // todo consider to use global state in selector instead of passing it as param
         const list = getList(state, listId);
         const product = getProduct(state, productId);
 

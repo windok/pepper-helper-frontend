@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Provider} from 'react-redux';
-import {Router, Switch, Route} from 'react-router-dom';
+import {Router, Switch, Route, Redirect} from 'react-router-dom';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import history from 'Services/BrowserHistory';
@@ -20,16 +20,17 @@ const Root = ({store}) => (
         <Provider store={store}>
             <Router history={history}>
                 <Switch>
+                    <Route exact path="/product-list" component={ProductListScreen}/>
+                    <Route exact path="/product-list/:listId" component={ProductListScreen}/>
                     <Route exact path="/product-list/add" component={AddListScreen}/>
                     <Route exact path="/product-list/:listId/edit" component={EditListScreen}/>
-                    <Route exact path="/product-list/:listId" component={ProductListScreen}/>
                     <Route exact path="/product-list/:listId/add-item/search" component={AddItemToListSearchStep}/>
                     <Route exact path="/product-list/:listId/add-item/save/:productId" component={AddItemToListSaveStep}/>
                     <Route exact path="/product-list/:listId/recommendations" component={RecommendationsScreen}/>
                     <Route exact path="/user" component={UserScreen}/>
                     <Route exact path="/about" component={AboutScreen}/>
 
-                    <Route component={ProductListScreen}/>
+                    <Redirect to="/product-list" push={false}/>
                 </Switch>
             </Router>
         </Provider>

@@ -17,7 +17,7 @@ export const fetchItemsForList = (list) => (dispatch) => {
 
     // todo iteration if total count is large
     // todo custom redux middleware to fetch and process collections
-    dispatch({
+    return dispatch({
         [API_CALL]: {
             endpoint: '/list-item',
             method: GET,
@@ -64,7 +64,7 @@ export const getTemplate = (list, product) => (dispatch) => {
         !list || !product
         || list.isNullObject() || product.isNullObject()
     ) {
-        return;
+        return Promise.resolve();
     }
 
     const matchingListItem = getListItem(Store.getState(), list, product);
@@ -75,7 +75,7 @@ export const getTemplate = (list, product) => (dispatch) => {
             payload: matchingListItem.clone()
         });
 
-        return;
+        return Promise.resolve();
     }
 
     if (product.isCustom()) {
@@ -98,10 +98,10 @@ export const getTemplate = (list, product) => (dispatch) => {
             payload: new CustomProductListItemTemplate(list.getId(), product.getId(), groupId, unitId, 0)
         });
 
-        return;
+        return Promise.resolve();
     }
 
-    dispatch({
+    return dispatch({
         [API_CALL]: {
             endpoint: '/list-item-template/' + product.getId() + '/' + list.getId(),
             method: GET,
@@ -131,7 +131,7 @@ export const saveItem = (listItem) => (dispatch) => {
     // 2017-06-03 20:55:26
     postData.date = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
 
-    dispatch({
+    return dispatch({
         [API_CALL]: {
             endpoint: '/list-item' + (listItem.getId() ? '/' + listItem.getId() : ''),
             method: listItem.getId() ? PUT : POST,
@@ -162,12 +162,12 @@ export const saveItem = (listItem) => (dispatch) => {
  */
 export const buyItem = (listItem) => (dispatch) => {
     if (listItem.getStatus() !== STATUS_DRAFT) {
-        return;
+        return Promise.reject();
     }
 
     listItem = new ListItem({...listItem.serialize(), status: STATUS_BOUGHT});
 
-    dispatch({
+    return dispatch({
         [API_CALL]: {
             endpoint: '/list-item/buy/' + listItem.getId(),
             method: PUT,
@@ -191,12 +191,12 @@ export const buyItem = (listItem) => (dispatch) => {
  */
 export const returnItem = (listItem) => (dispatch) => {
     if (listItem.getStatus() !== STATUS_BOUGHT) {
-        return;
+        return Promise.reject();
     }
 
     listItem = new ListItem({...listItem.serialize(), status: STATUS_DRAFT});
 
-    dispatch({
+    return dispatch({
         [API_CALL]: {
             endpoint: '/list-item/return/' + listItem.getId(),
             method: PUT,
