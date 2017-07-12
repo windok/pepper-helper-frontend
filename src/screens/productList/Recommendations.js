@@ -1,9 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types'
-import {withRouter, Link} from 'react-router-dom'
-import {connect} from 'react-redux'
+import PropTypes from 'prop-types';
+import {withRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
 
-import {List as ListModel, ListNullObject} from 'Models/List';
+import {List as ListModel} from 'Models/List';
 
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
@@ -13,7 +13,8 @@ import {redirectToDefaultList} from 'Services/BrowserHistory';
 
 import {fetchItemsForList} from 'Actions/listItem';
 
-import ListComponent from './components/RecommendationList';
+import ListComponent from './components/ListAggregatedByGroup';
+import RecommendedItem from './components/RecommendedItem';
 
 class RecommendationsScreen extends React.PureComponent {
     componentWillMount() {
@@ -49,7 +50,7 @@ class RecommendationsScreen extends React.PureComponent {
             <div>
                 <Header title={this.props.list.getName() + ": Recommendations"} leftLinks={<BackButton/>}/>
 
-                <ListComponent list={this.props.list}/>
+                <ListComponent list={this.props.list} itemComponent={RecommendedItem}/>
             </div>
         )
     }

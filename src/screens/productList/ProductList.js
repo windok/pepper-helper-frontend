@@ -1,9 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types'
-import {withRouter, Link} from 'react-router-dom'
-import {connect} from 'react-redux'
+import PropTypes from 'prop-types';
+import {withRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
 
-import {List as ListModel, ListNullObject} from 'Models/List';
+import {List as ListModel} from 'Models/List';
 
 import Sidebar from 'Components/Sidebar';
 import Header from 'Components/Header';
@@ -15,7 +15,8 @@ import {getList, getFirstList} from 'Reducers/storage/list';
 
 import {fetchItemsForList} from 'Actions/listItem';
 
-import ListComponent from './components/GeneralList';
+import ListComponent from './components/ListAggregatedByGroup';
+import DraftItem from './components/DraftItem';
 
 class ProductListScreen extends React.PureComponent {
     constructor(props) {
@@ -36,7 +37,7 @@ class ProductListScreen extends React.PureComponent {
                 <Sidebar/>
                 <Header title={this.props.list.getName()} leftLinks={<MenuButton/>}/>
 
-                <ListComponent list={this.props.list}/>
+                <ListComponent list={this.props.list} itemComponent={DraftItem}/>
 
                 <div style={{marginTop: '110px'}}></div>
 

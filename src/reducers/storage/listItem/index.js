@@ -65,6 +65,37 @@ export default (state = initialState, action) => {
  * @param {List} productList
  * @return {Map}
  */
+export const getGroupedItemForList = (state, productList) => {
+    // todo make prepared grouped item via reducer
+    // todo delete unsavedItem collection:
+    // todo generate id for created item and store it with others, when response from server comes replace with new id
+
+    const itemCollection = new Map();
+
+    if (productList.isNullObject()) {
+        return itemCollection;
+    }
+
+    const addItemToCollection = listItem => {
+        if (listItem.getListId() !== productList.getId()) {
+            return;
+        }
+
+        itemCollection.has(listItem.getGroupId()) || itemCollection.set(listItem.getGroupId(), new Map());
+
+        itemCollection.get(listItem.getGroupId()).set(listItem.getId(), listItem);
+    };
+
+    state.storage.listItem.items.forEach(addItemToCollection);
+    state.storage.listItem.unsavedItems.forEach(addItemToCollection);
+
+    return itemCollection;
+};
+/**
+ * @param state
+ * @param {List} productList
+ * @return {Map}
+ */
 export const getGeneralListItemsToDisplay = (state, productList) => {
     const itemCollection = new Map();
 
