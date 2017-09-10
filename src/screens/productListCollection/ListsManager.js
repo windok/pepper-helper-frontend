@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import history from 'Services/BrowserHistory';
 
-import {List as ListComponent, ListItem as ListItemComponent} from 'material-ui/List';
-import Divider from 'material-ui/Divider';
-import AddIcon from 'material-ui/svg-icons/content/create';
-import DoneIcon from 'material-ui/svg-icons/action/done';
+import List from 'react-md/lib/Lists/List';
+import ListItem from 'react-md/lib/Lists/ListItem';
+import Divider from 'react-md/lib/Dividers';
+import FontIcon from 'react-md/lib/FontIcons';
 
 import {getListCollection} from 'Reducers/storage/list';
 
@@ -16,25 +16,23 @@ class ListManager extends React.PureComponent {
     render() {
         const listElements = [];
         this.props.lists.forEach((list) => listElements.push(
-            <ListItemComponent key={list.getId()}
+            <ListItem key={list.getId()}
                                primaryText={list.getName()}
                                onTouchTap={() => this.props.editList(list)}/>
         ));
 
         return (
             <div>
-                Lists:
-                <Divider style={{marginTop: 10, marginBottom: 10}}/>
-                <ListComponent>
+                <List>
                     {listElements}
                     <Divider style={{marginTop: 10, marginBottom: 10}}/>
-                    <ListItemComponent primaryText="Add new"
-                                       leftIcon={<AddIcon/>}
+                    <ListItem primaryText="Add new"
+                                       leftIcon={<FontIcon>add</FontIcon>}
                                        onTouchTap={this.props.addList}/>
-                    <ListItemComponent primaryText="Done editing"
-                                       leftIcon={<DoneIcon/>}
+                    <ListItem primaryText="Done editing"
+                                       leftIcon={<FontIcon>done</FontIcon>}
                                        onTouchTap={this.props.disableListManagerMode}/>
-                </ListComponent>
+                </List>
             </div>
         );
     }

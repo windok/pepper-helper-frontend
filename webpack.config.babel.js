@@ -1,54 +1,182 @@
+/* eslint-env node */
+
 import path from 'path';
 import CircularDependencyPlugin from 'circular-dependency-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import autoprefixer from 'autoprefixer';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import OfflinePlugin from 'offline-plugin';
+import webpack from 'webpack';
 
-var isSourceMap = process.argv.indexOf('---devtool=source-map');
+const production = process.argv.indexOf('--env.development') === -1;
+const sourceMap = process.argv.indexOf('--env.source-map') === -1;
+
+const client = path.resolve(process.cwd(), 'src', 'index.js');
+const dist = path.resolve(process.cwd(), 'public');
+
+// --------------------------------------------------------
+
+const plugins = [];
+
+plugins.push(new webpack.DefinePlugin({
+    __DEV__: !production,
+    'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+}));
+
+plugins.push(new CircularDependencyPlugin());
+
+plugins.push(new webpack.LoaderOptionsPlugin({
+    options: {
+        eslint: {
+            failOnError: true,
+        },
+        context: '/',
+        debug: !production,
+        postcss: [autoprefixer],
+    },
+}));
+
+const extractStyles = new ExtractTextPlugin({
+    filename: `styles${production ? '-[hash].min' : ''}.css`,
+    allChunks: true,
+    disable: !production,
+});
+plugins.push(extractStyles);
+
+production && plugins.push(new OfflinePlugin({
+    safeToUseOptionalCaches: true,
+    responseStrategy: 'cache-first',
+    externals: [
+        'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CMaterial+Icons',
+    ],
+    ServiceWorker: {
+        events: true
+    },
+    AppCache: {
+        events: true
+    }
+}));
+
+plugins.push(new HtmlWebpackPlugin({
+    title: 'Pepper Helper',
+    inject: false,
+    template: path.resolve(process.cwd(), 'src', 'setup', 'htmlTemplate.js'),
+    appMountId: 'root',
+    favicon: path.resolve(process.cwd(), 'src', 'favicon.ico'),
+    externalCSS: [
+        'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CMaterial+Icons',
+    ],
+    externalJS: [
+        // any umd builds
+    ],
+}));
+
+production && plugins.push(new webpack.optimize.UglifyJsPlugin({
+    compress: {
+        screw_ie8: true,
+        warnings: false,
+        drop_console: true,
+    },
+    output: {comments: false},
+    sourceMap: sourceMap,
+}));
+
+production || plugins.push(new webpack.HotModuleReplacementPlugin());
+production || plugins.push(new webpack.NamedModulesPlugin());
+production || plugins.push(new webpack.NoEmitOnErrorsPlugin());
+
+// --------------------------------------------------------
+
+const developmentConfig = {
+    cache: true,
+    devtool: sourceMap ? 'eval-source-map' : undefined,
+    devServer: {
+        contentBase: dist,
+        compress: true,
+        inline: true,
+        hot: true,
+        port: 3000,
+        stats: 'errors-only',
+        historyApiFallback: true,
+    },
+    entry: [
+        'babel-polyfill',
+        'react-hot-loader/patch',
+        client
+    ]
+};
 
 export default {
-    entry: './src/index',
+    cache: false,
+    devtool: sourceMap ? 'hidden-source-map' : undefined,
+    entry: client,
     output: {
-        path: path.join(__dirname, 'public/static'),
-        filename: 'bundle.js'
-    },
-    resolve: {
-        alias: {
-            Actions: path.resolve(__dirname, 'src/actions/'),
-            Components: path.resolve(__dirname, 'src/components/'),
-            Reducers: path.resolve(__dirname, 'src/reducers/'),
-            Services: path.resolve(__dirname, 'src/services/'),
-            Screens: path.resolve(__dirname, 'src/screens/'),
-            Config: path.resolve(__dirname, 'src/config/index.js'),
-            Store: path.resolve(__dirname, 'src/store/'),
-            Models: path.resolve(__dirname, 'src/models/')
-        },
-        extensions: ['.js']
+        path: dist,
+        publicPath: '/',
+        filename: `[name]${production ? '-[hash].min' : ''}.js`,
+        chunkFilename: `[name]${production ? '-[chunkhash].min' : ''}.js`,
     },
     module: {
-        loaders: [
+        rules: [
             {
-                test: /\.js$/,
-                loaders: ['babel-loader'],
+                test: /\.js?$/,
                 exclude: /node_modules/,
-                include: __dirname,
-            },
-            {
-                test: /\.css$/,
-                loader: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                sourceMap: isSourceMap
-                            }
+                loader: 'babel-loader',
+            }, {
+                test: /\.scss$/,
+                exclude: /node_modules/,
+                loader: extractStyles.extract({
+                    use: [{
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: sourceMap,
+                        },
+                    }, {
+                        loader: 'postcss-loader',
+                        options: {
+                            sourceMap: sourceMap,
+                            importLoaders: 1
                         }
-                    ]
-                })
-            }
-        ]
+                    }, {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: sourceMap,
+                            sourceMapContents: true,
+                            outputStyle: production ? 'compressed' : 'expanded',
+                        },
+                    }],
+                    fallback: 'style-loader',
+                }),
+            }, {
+                test: /\.json$/,
+                exclude: /node_modules/,
+                loader: 'json-loader',
+            }, {
+                test: /\.(woff2?|ttf|eot|svg)$/,
+                loader: 'url-loader?limit=10000',
+                exclude: /node_modules|SVGIcon\/icons/,
+            }],
     },
-    plugins: [
-        new ExtractTextPlugin('bundle.css'),
-        new CircularDependencyPlugin()
-    ]
+    plugins,
+    resolve: {
+        alias: {
+            Actions: path.resolve(process.cwd(), 'src/actions/'),
+            Components: path.resolve(process.cwd(), 'src/components/'),
+            Reducers: path.resolve(process.cwd(), 'src/reducers/'),
+            Services: path.resolve(process.cwd(), 'src/services/'),
+            Screens: path.resolve(process.cwd(), 'src/screens/'),
+            Config: path.resolve(process.cwd(), 'src/config/index.js'),
+            Store: path.resolve(process.cwd(), 'src/store/'),
+            Models: path.resolve(process.cwd(), 'src/models/'),
+            globals: path.resolve(process.cwd(), 'src', '_globals.scss'),
+        },
+        extensions: ['.js'],
+        mainFiles: ['index', 'index.js'],
+        modules: [
+            'node_modules',
+            'src',
+        ],
+    },
+    stats: 'normal',
+    ...(production ? {} : developmentConfig)
 };

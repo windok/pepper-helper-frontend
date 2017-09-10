@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 
-import Subheader from 'material-ui/Subheader';
+import {ExpansionList, ExpansionPanel} from 'react-md/lib/ExpansionPanels';
 import ItemList from './ItemList';
 
 import {getGroupedItemForList} from 'Reducers/storage/listItem';
@@ -11,17 +11,18 @@ import {getGroupCollection} from 'Reducers/storage/group';
 class ListAggregatedByGroup extends React.PureComponent {
     render() {
         return (
-            <div>
+            <ExpansionList className="product-list-container">
                 {Array.from(this.props.items, (([groupId, itemsByGroup]) => (
-                        <div key={groupId}>
-                            <Subheader>
-                                {this.props.groups.has(groupId) ? this.props.groups.get(groupId).getName() : 'n/a'}
-                            </Subheader>
-                            <ItemList itemComponent={this.props.itemComponent} items={itemsByGroup}/>
-                        </div>
+                        <ExpansionPanel
+                            key={groupId}
+                            label={this.props.groups.has(groupId) ? this.props.groups.get(groupId).getName() : 'n/a'}
+                            secondaryLabel=""
+                            defaultExpanded
+                        ><ItemList itemComponent={this.props.itemComponent} items={itemsByGroup}/>
+                        </ExpansionPanel>
                     )
                 ))}
-            </div>
+            </ExpansionList>
         );
     }
 }

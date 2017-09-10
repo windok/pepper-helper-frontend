@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import history from 'Services/BrowserHistory';
 
-import {List as ListComponent, ListItem as ListItemComponent} from 'material-ui/List';
-import Divider from 'material-ui/Divider';
-import ManageIcon from 'material-ui/svg-icons/action/settings';
+import List from 'react-md/lib/Lists/List';
+import ListItem from 'react-md/lib/Lists/ListItem';
+import Divider from 'react-md/lib/Dividers';
+import FontIcon from 'react-md/lib/FontIcons';
 
 import {getListCollection} from 'Reducers/storage/list';
 
@@ -15,7 +16,7 @@ class ListCollection extends React.PureComponent {
     render() {
         const listElements = [];
         this.props.lists.forEach(list => listElements.push(
-            <ListItemComponent key={list.getId()}
+            <ListItem key={list.getId()}
                                primaryText={list.getName()}
                                onTouchTap={() => this.props.onListClick(list)}
             />
@@ -23,15 +24,15 @@ class ListCollection extends React.PureComponent {
 
         return (
             <div>
-                <ListComponent>
+                <List>
                     {listElements}
                     <Divider style={{marginTop: 10, marginBottom: 10}}/>
-                    <ListItemComponent key='listsManager'
+                    <ListItem key='listsManager'
                                        primaryText='Manage lists'
-                                       leftIcon={<ManageIcon/>}
+                                       leftIcon={<FontIcon>settings</FontIcon>}
                                        onTouchTap={() => this.props.enableListManagerMode()}
                     />
-                </ListComponent>
+                </List>
             </div>
         );
     }

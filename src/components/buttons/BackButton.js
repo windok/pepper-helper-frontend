@@ -5,13 +5,13 @@ import {connect} from 'react-redux';
 import history from 'Services/BrowserHistory';
 
 import Button from './Button';
-import BackIcon from 'material-ui/svg-icons/navigation/arrow-back';
+import FontIcon from 'react-md/lib/FontIcons';
 
 const BackButton = connect(
-    (state) => {return {
-        icon: <BackIcon/>,
+    (state, props) => ({
+        icon: <FontIcon>{props.iconType || 'chevron_left'}</FontIcon>,
         tooltip: 'Back'
-    }},
+    }),
     (dispatch, {onTouchTap}) => {
         return {
             onTouchTap: (event) => {
@@ -23,6 +23,7 @@ const BackButton = connect(
 )(Button);
 
 BackButton.propTypes = {
+    iconType: PropTypes.string,
     onTouchTap: PropTypes.func
 };
 

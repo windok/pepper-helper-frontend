@@ -8,8 +8,7 @@ import {List as ListModel} from 'Models/List';
 import Sidebar from 'Components/Sidebar';
 import Header from 'Components/Header';
 import MenuButton from 'Components/buttons/MenuButton';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
+import Button from 'react-md/lib/Buttons';
 
 import {getList, getFirstList} from 'Reducers/storage/list';
 
@@ -35,35 +34,25 @@ class ProductListScreen extends React.PureComponent {
         return (
             <div>
                 <Sidebar/>
-                <Header title={this.props.list.getName()} leftLinks={<MenuButton/>}/>
+                <Header title={this.props.list.getName()} leftLinks={<MenuButton key="void" />}/>
 
                 <ListComponent list={this.props.list} itemComponent={DraftItem}/>
 
                 <div style={{marginTop: '110px'}}></div>
 
-                <FloatingActionButton onTouchTap={() => this.props.showRecommendations(this.props.list)}
-                                      secondary={true}
-                                      mini={true}
-                                      style={{
-                                          bottom: 70,
-                                          position: 'fixed',
-                                          margin: '1em',
-                                          right: '0px',
-                                          zIndex: 999
-                                      }}>
-                    <strong>R</strong>
-                </FloatingActionButton>
+                <Button onTouchTap={() => this.props.showRecommendations(this.props.list)}
+                        floating
+                        fixed
+                        secondary
+                        mini
+                        style={{
+                            bottom: 90
+                        }}>
+                    help
+                </Button>
 
-                <FloatingActionButton onTouchTap={() => this.props.addItem(this.props.list)}
-                                      style={{
-                                          bottom: 0,
-                                          position: 'fixed',
-                                          margin: '1em',
-                                          right: '0px',
-                                          zIndex: 989
-                                      }}>
-                    <ContentAdd />
-                </FloatingActionButton>
+                <Button onTouchTap={() => this.props.addItem(this.props.list)}
+                        floating fixed primary>add</Button>
             </div>
         )
     }

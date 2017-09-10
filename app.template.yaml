@@ -9,17 +9,8 @@ default_expiration: "10m"
 handlers:
 
 - url: /
-  static_files: public/index.html
-  upload: public/index.html
-  secure: always
-
-- url: /images
-  static_dir: public/images
+  static_dir: public
   expiration: "1h"
-  secure: always
-
-- url: /static
-  static_dir: public/static
   secure: always
 
 - url: /favicon.ico

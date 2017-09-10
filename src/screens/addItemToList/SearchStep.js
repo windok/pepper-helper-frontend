@@ -1,18 +1,20 @@
 import React from 'react';
-import PropTypes from 'prop-types'
-import {withRouter, Link} from 'react-router-dom'
-import {connect} from 'react-redux'
+import PropTypes from 'prop-types';
+import {withRouter, Link} from 'react-router-dom';
+import {connect} from 'react-redux';
 
-import {List as ListModel, ListNullObject} from 'Models/List';
+import {List as ListModel} from 'Models/List';
 
 import {searchProduct, createProduct} from 'Actions/product';
 import {getList, getFirstList} from 'Reducers/storage/list';
 import {findProductByName} from 'Reducers/storage/product';
 
+import Divider from 'react-md/lib/Dividers';
+
 import Header from 'Components/Header';
-import Input from 'Components/form/Input';
+import TextField from 'react-md/lib/TextFields';
 import BackButton from 'Components/buttons/BackButton';
-import {ForwardButton} from 'Components/buttons/Button';
+import Button from 'react-md/lib/Buttons';
 
 import ProductSearchResultList from './components/ProductSearchResultList';
 
@@ -38,7 +40,7 @@ class AddItemToListSearchStep extends React.PureComponent {
 
         const listId = this.props.listId;
 
-        const forwardToSaveButton = <ForwardButton onTouchTap={() => {
+        const forwardToSaveButton = <Button flat onTouchTap={() => {
             if (this.state.query.trim().length === 0) {
                 return;
             }
@@ -51,20 +53,30 @@ class AddItemToListSearchStep extends React.PureComponent {
 
             this.props.createProduct(this.state.query)
                 .then(product => this.props.postToSaveStep(product));
-        }}/>;
+        }}>Add</Button>;
 
         return (
             <div>
                 <Header
-                    title={"Add item to " + this.props.list.getName()}
+                    title={"Add item to `" + this.props.list.getName() + "`"}
                     leftLinks={<BackButton/>}
                     rightLinks={forwardToSaveButton}
                 />
 
-                <Input label="Search"
-                       defaultValue={this.state.query}
-                       onChange={(value) => this.onQueryChange(value)}/>
-                <ProductSearchResultList listId={listId} query={this.state.query}/>
+                <form className="md-grid">
+                    <TextField
+                        id="query"
+                        label="Search"
+                        className="md-cell md-cell--12"
+                        defaultValue={this.state.query}
+                        autoComplete="off"
+                        onChange={(value) => this.onQueryChange(value)}
+                    />
+
+                    <Divider style={{marginTop: 10, marginBottom: 10}}/>
+
+                    <ProductSearchResultList listId={listId} query={this.state.query}/>
+                </form>
             </div>
         )
     }

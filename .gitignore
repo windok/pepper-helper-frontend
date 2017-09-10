@@ -3,10 +3,8 @@
 *.log
 
 /node_modules/
+/package-lock.json
+/yarn.lock
 
 /src/config/index.js
-
-/public/static/*.js
-/public/static/*.css
-/public/static/*.map
-
+/public/

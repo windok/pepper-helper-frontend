@@ -1,38 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import IconButton from 'material-ui/IconButton';
+import Button from 'react-md/lib/Buttons';
+import FontIcon from 'react-md/lib/FontIcons';
 
-import SaveIcon from 'material-ui/svg-icons/content/send';
-import ForwardIcon from 'material-ui/svg-icons/content/forward';
-
-class Button extends React.PureComponent {
+class IconButton extends React.PureComponent {
     render() {
         return (
-            <IconButton
+            <Button
+                icon
                 onTouchTap={this.props.onTouchTap}
-                tooltip={this.props.tooltip}
-            >
-                {this.props.icon}
-            </IconButton>
+            >{this.props.icon}</Button>
         );
     }
 }
 
-Button.propTypes = {
+IconButton.propTypes = {
     icon: PropTypes.element.isRequired,
     onTouchTap: PropTypes.func,
     tooltip: PropTypes.string
 };
 
-export default Button;
+export default IconButton;
 
 const SaveButton = (props) => (
-    <Button icon={<SaveIcon/>} {...props}/>
+    <Button flat onTouchTap={props.onTouchTap}>Save</Button>
 );
 
-const ForwardButton = (props) => (
-    <Button icon={<ForwardIcon/>} {...props}/>
-);
-
-export {Button, SaveButton, ForwardButton};
+export {IconButton, SaveButton};

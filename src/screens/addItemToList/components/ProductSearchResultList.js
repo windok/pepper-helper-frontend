@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router-dom';
+import history from 'Services/BrowserHistory';
 import {connect} from 'react-redux';
+
+import Chip from 'react-md/lib/Chips';
+import Avatar from 'react-md/lib/Avatars';
 
 import {getProductCollection, findBestSearchResults} from 'Reducers/storage/product';
 
@@ -12,14 +15,23 @@ class ProductSearchResultList extends React.PureComponent {
         }
 
         return (
-            <div>
-                <ul>
-                    {this.props.searchResults.map((productId) =>
-                        <Link to={"/product-list/" + this.props.listId + "/item/save/" + productId} key={productId}>
-                            <button>{this.props.productCollection.get(productId).getName()}</button>
-                        </Link>
-                    )}
-                </ul>
+            <div className="chips__list">
+                {this.props.searchResults.map((productId) => {
+                        const label = this.props.productCollection.get(productId).getName();
+                        const link = `/product-list/${this.props.listId}/item/save/${productId}`;
+                        return (
+                            <Chip
+                                key={productId}
+                                label={label}
+                                avatar={<Avatar random>{label[0]}</Avatar>}
+                                onClick={() => this.props.addItem(link)}
+                            />
+                        );
+                    }
+                    // <Link to={} key={productId}>
+                    //     <button></button>
+                    // </Link>
+                )}
             </div>
         )
     }
@@ -39,6 +51,10 @@ export default connect(
             query,
             productCollection: getProductCollection(state),
             searchResults: findBestSearchResults(state, query)
+        }
+    }, {
+        addItem: link => {
+            history.push(link);
         }
     }
 )(ProductSearchResultList);

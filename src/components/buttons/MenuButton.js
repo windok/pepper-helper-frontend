@@ -5,11 +5,11 @@ import {connect} from 'react-redux';
 import {toggleMenu} from 'Actions/ui';
 
 import Button from './Button';
-import MenuIcon from 'material-ui/svg-icons/navigation/menu';
+import FontIcon from 'react-md/lib/FontIcons';
 
 const MenuButton = connect(
     (state) => {return {
-        icon: <MenuIcon/>,
+        icon: <FontIcon>menu</FontIcon>,
         tooltip: 'Menu'
     }},
     (dispatch, {onTouchTap}) => {

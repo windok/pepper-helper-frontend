@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types'
-import Select from 'Components/form/Select';
+import SelectField from 'react-md/lib/SelectFields';
 import {connect} from 'react-redux';
 
 import {getUnitCollection} from 'Reducers/storage/unit';
@@ -17,9 +17,12 @@ class UnitSelect extends React.PureComponent {
         });
 
         return (
-        <Select label="Unit"
+            <SelectField
+                id="unitId"
+                label="Unit"
+                className={this.props.className}
                 defaultValue={this.props.unitId}
-                options={options}
+                menuItems={options}
                 onChange={this.props.onUnitChange}/>
         )
     }

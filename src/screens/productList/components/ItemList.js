@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {ListItem, STATUS_DRAFT, STATUS_BOUGHT, TYPE_GENERAL, TYPE_RECOMMENDED} from 'Models/ListItem';
+import {STATUS_DRAFT, STATUS_BOUGHT, TYPE_GENERAL, TYPE_RECOMMENDED} from 'Models/ListItem';
 
-import {List as ListComponent} from 'material-ui/List';
+import List from 'react-md/lib/Lists/List';
 
 import DraftItem from './DraftItem';
 import BoughtItem from './BoughtItem';
@@ -26,17 +26,19 @@ class ItemList extends React.PureComponent {
             correspondingItemComponent = RecommendedItem;
         }
 
-        return this.props.itemComponent === correspondingItemComponent ? correspondingItemComponent : InvisibleItem;
+        return correspondingItemComponent;
+        // TODO hide non-target items
+        //this.props.itemComponent === correspondingItemComponent ? correspondingItemComponent : InvisibleItem;
     }
 
     render() {
         return (
-            <ListComponent>
+            <List>
                 {Array.from(this.props.items, ([itemId, item]) => {
                     const ItemComponent = this.getItemComponent(item);
                     return <ItemComponent key={item.getId()} item={item}/>
                 })}
-            </ListComponent>
+            </List>
         );
     }
 }

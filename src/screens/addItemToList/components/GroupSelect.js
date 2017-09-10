@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types'
-import Select from 'Components/form/Select';
+import SelectField from 'react-md/lib/SelectFields';
 import {connect} from 'react-redux';
 
 import {getGroupCollection} from 'Reducers/storage/group';
@@ -15,10 +15,13 @@ class GroupSelect extends React.PureComponent {
         ));
 
         return (
-            <Select label="Group"
-                    defaultValue={this.props.groupId}
-                    options={options}
-                    onChange={this.props.onGroupChange}/>
+            <SelectField
+                id="group"
+                label="Group"
+                className={this.props.className}
+                defaultValue={this.props.groupId}
+                menuItems={options}
+                onChange={this.props.onGroupChange}/>
         )
     }
 }

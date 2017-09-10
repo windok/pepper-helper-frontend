@@ -7,8 +7,8 @@ import ListModel from 'Models/List';
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 import {SaveButton} from 'Components/buttons/Button';
-import TextField from 'material-ui/TextField';
-import MenuItem from 'material-ui/MenuItem';
+import TextField from 'react-md/lib/TextFields';
+import MenuItem from 'react-md/lib/Lists/ListItem';
 
 import {getList, getFirstList} from 'Reducers/storage/list';
 import {updateList, deleteList} from 'Actions/list';
@@ -32,7 +32,7 @@ class EditList extends React.PureComponent {
             return (
                 <div>
                     <Header title={"Edit product list"}
-                            leftLinks={<BackButton onTouchTap={this.props.cancel}/>}/>
+                            leftLinks={<BackButton iconType="clear" onTouchTap={this.props.cancel}/>}/>
                 </div>
             )
         }
@@ -44,16 +44,20 @@ class EditList extends React.PureComponent {
         return (
             <div>
                 <Header title={"Edit product list"}
-                        leftLinks={<BackButton onTouchTap={this.props.cancel}/>}
+                        leftLinks={<BackButton iconType="clear" onTouchTap={this.props.cancel}/>}
                         rightLinks={[<SaveButton key="save" onTouchTap={() => this.props.save(this.props.list, this.state.name)}/>]}
                         options={options}/>
 
-                <TextField
-                    hintText="List name"
-                    floatingLabelText="List name"
-                    defaultValue={this.state.name}
-                    onChange={(event) => this.setState({name: event.target.value})}/>
-
+                <form className="md-grid">
+                    <TextField
+                        id="listName"
+                        label="List name"
+                        customSize="title"
+                        required
+                        defaultValue={this.state.name}
+                        className="md-cell md-cell--12"
+                        onChange={(value) => this.setState({name: value})}/>
+                </form>
             </div>
         );
     }

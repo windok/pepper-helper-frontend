@@ -2,12 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {showMenu, hideMenu, toggleMenu} from 'Actions/ui';
+import {toggleMenu} from 'Actions/ui';
 
 import {isSidebarOpened, getListManagerMode} from 'Reducers/ui';
 
-import Drawer from 'material-ui/Drawer';
-import Divider from 'material-ui/Divider';
+import Drawer from 'react-md/lib/Drawers';
+import Toolbar from 'react-md/lib/Toolbars';
+import Button from 'react-md/lib/Buttons/Button';
+import Avatar from 'react-md/lib/Avatars';
+import Divider from 'react-md/lib/Dividers';
 import UserSidebarWidget from 'Screens/user';
 import ListCollection from 'Screens/productListCollection/ListCollection';
 import ListsManager from 'Screens/productListCollection/ListsManager';
@@ -15,19 +18,36 @@ import ListsManager from 'Screens/productListCollection/ListsManager';
 
 class Sidebar extends React.PureComponent {
     render() {
+
+        const header = <Toolbar
+            nav={<div><Avatar>J</Avatar> John Doe</div>}
+            title="My lists"
+            prominentTitle
+            actions={<Button icon onClick={this.props.toggleMenu}>close</Button>}
+            className="md-divider-border md-divider-border--bottom"
+        >
+
+        </Toolbar>;
+
         return (
             <Drawer
-                docked={false}
-                width={300}
-                open={this.props.isOpened}
-                onRequestChange={this.props.toggleMenu}
+                autoclose
+                mobileMinWidth={300}
+                position="left"
+                overlay
+                clickableDesktopOverlay
+                visible={this.props.isOpened}
+                onVisibilityChange={() => {}}
+                type={Drawer.DrawerTypes.TEMPORARY}
+                header={header}
             >
                 {this.props.listManagerModeEnabled
                     ? (<ListsManager/>)
                     : (
                         <div>
-                            <UserSidebarWidget/>
-                            <Divider style={{marginTop: 10, marginBottom: 10}}/>
+                            {/*<UserSidebarWidget/>*/}
+                            {/*<h3>My lists</h3>*/}
+                            {/*<Divider style={{marginTop: 10, marginBottom: 10}}/>*/}
                             <ListCollection/>
                         </div>
                     )}

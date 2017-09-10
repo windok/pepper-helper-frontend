@@ -7,20 +7,19 @@ npm i
 
 Start dev server:
 ```
-npm start
+npm start:dev
 ```
 
 Start webpack watching:
 ```
-npm run watch
+npm run watch:dev
+```
+with source maps
+```
+npm run watch:dev:map
 ```
 
 Build with webpack once:
 ```
 npm run build
-```
-
-Start json server as backend:
-```
-npm run fake-server
 ```

@@ -2,11 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {ListItem} from 'Models/ListItem';
+import {ListItem as ListItemModel} from 'Models/ListItem';
 
-import {ListItem as ListItemComponent} from 'material-ui/List';
-import IconButton from 'material-ui/IconButton';
-import ReturnIcon from 'material-ui/svg-icons/content/undo';
+import ListItem from 'react-md/lib/Lists/ListItem';
+import Icon from 'react-md/lib/FontIcons';
 import ItemLabel from './ItemLabel';
 
 import {returnItem} from 'Actions/listItem';
@@ -14,21 +13,23 @@ import {returnItem} from 'Actions/listItem';
 class BoughtItem extends React.PureComponent {
     render() {
         const returnButton = (
-            <IconButton tooltip="return" onTouchTap={() => this.props.returnItem(this.props.item)}>
-                <ReturnIcon/>
-            </IconButton>
+            <Icon onTouchTap={(e) => {
+                e.stopPropagation();
+                e.nativeEvent.stopImmediatePropagation();
+                this.props.returnItem(this.props.item);
+            }}> undo </Icon>
         );
 
+        const label = <ItemLabel item={this.props.item} style={{textDecoration: 'line-through'}}/>;
+
         return (
-            <ListItemComponent rightIconButton={returnButton}>
-                <ItemLabel item={this.props.item} style={{textDecoration: 'line-through'}}/>
-            </ListItemComponent>
+            <ListItem primaryText={label} rightIcon={returnButton}/>
         )
     }
 }
 
 BoughtItem.propTypes = {
-    item: PropTypes.instanceOf(ListItem).isRequired,
+    item: PropTypes.instanceOf(ListItemModel).isRequired,
     returnItem: PropTypes.func.isRequired
 };
 
@@ -42,3 +43,4 @@ export default connect(
         }
     }
 )(BoughtItem);
+

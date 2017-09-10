@@ -1,0 +1,17 @@
+@import '~react-md/src/scss/react-md';
+
+.product-list-container .md-expansion-panel {
+  .md-panel-content {
+    padding: 0;
+  }
+  // TODO find the other way to hide buttons in expansion panel
+  footer {
+    display: none;
+  }
+}
+
+.chips__list {
+  .md-chip {
+    margin: 0.3em;
+  }
+}

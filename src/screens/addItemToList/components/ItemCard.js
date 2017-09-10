@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types'
 
-import Input from 'Components/form/Input';
+import TextField from 'react-md/lib/TextFields';
 
 import UnitSelect from './UnitSelect';
 import GroupSelect from './GroupSelect';
@@ -10,17 +10,38 @@ class ItemCard extends React.PureComponent {
     render() {
         return this.props.listItem ?
             (
-                <div>
-                    <GroupSelect groupId={this.props.listItem.groupId}
-                                 onGroupChange={(groupId) => this.props.onListItemFieldChange('groupId', groupId)}/>
+                <form className="md-grid">
 
-                    <UnitSelect unitId={this.props.listItem.unitId}
-                                onUnitChange={(unitId) => this.props.onListItemFieldChange('unitId', unitId)}/>
+                    <TextField
+                        disabled
+                        id="name"
+                        label="Product"
+                        size="title"
+                        className="md-cell md-cell--12"
+                        defaultValue={this.props.listItem.name}
+                    />
 
-                    <Input label="Quantity"
-                           defaultValue={this.props.listItem.quantity}
-                           onChange={(value) => this.props.onListItemFieldChange('quantity', value)}/>
-                </div>
+                    <GroupSelect
+                        className="md-cell md-cell--12"
+                        groupId={this.props.listItem.groupId}
+                        onGroupChange={(groupId) => this.props.onListItemFieldChange('groupId', groupId)}
+                    />
+
+                    <TextField
+                        id="quantity"
+                        label="Quantity"
+                        className="md-cell md-cell--6 md-cell--4-tablet md-cell--2-phone"
+                        defaultValue={this.props.listItem.quantity}
+                        onChange={(value) => this.props.onListItemFieldChange('quantity', value)}
+                    />
+
+                    <UnitSelect
+                        className="md-cell md-cell--6 md-cell--4-tablet md-cell--2-phone"
+                        unitId={this.props.listItem.unitId}
+                        onUnitChange={(unitId) => this.props.onListItemFieldChange('unitId', unitId)}
+                    />
+
+                </form>
             )
             : (<div></div>);
     }
@@ -28,6 +49,7 @@ class ItemCard extends React.PureComponent {
 
 ItemCard.propTypes = {
     listItem: PropTypes.shape({
+        name: PropTypes.isRequired,
         groupId: PropTypes.isRequired,
         unitId: PropTypes.isRequired,
         quantity: PropTypes.isRequired,

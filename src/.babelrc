@@ -1,0 +1,30 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "targets": {
+          "node": "current",
+          "browsers": [
+            "last 2 versions",
+            "safari >= 7"
+          ]
+        },
+        "modules": false
+      }
+    ],
+    [
+      "es2015",
+      {
+        "modules": false
+      }
+    ],
+    "react",
+    "stage-1"
+  ],
+  "plugins": [
+    "react-hot-loader/babel",
+    "syntax-dynamic-import",
+    "transform-object-rest-spread"
+  ]
+}

@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 import {SaveButton} from 'Components/buttons/Button';
-import TextField from 'material-ui/TextField';
+import TextField from 'react-md/lib/TextFields';
 
 import {create as createList} from 'Actions/list';
 import {showMenu} from 'Actions/ui';
@@ -23,13 +23,16 @@ class AddList extends React.PureComponent {
                 <Header title={"Create product list"}
                         leftLinks={<BackButton onTouchTap={this.props.cancel}/>}
                         rightLinks={<SaveButton onTouchTap={() => this.props.save(this.state.name)}/>}/>
-
-                <TextField
-                    hintText="List name"
-                    floatingLabelText="List name"
-                    value={this.state.name}
-                    onChange={(event) => this.setState({name: event.target.value})}/>
-
+                <form className="md-grid">
+                    <TextField
+                        id="listName"
+                        label="List name"
+                        customSize="title"
+                        required
+                        defaultValue={this.state.name}
+                        className="md-cell md-cell--12"
+                        onChange={(value) => this.setState({name: value})}/>
+                </form>
             </div>
         );
     }

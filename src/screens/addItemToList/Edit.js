@@ -5,11 +5,12 @@ import {connect} from 'react-redux'
 
 import {editItem} from 'Actions/listItem';
 
-import {ListItem, ListItemNullObject, STATUS_DRAFT} from 'Models/ListItem';
+import {ListItem} from 'Models/ListItem';
 import {List} from 'Models/List';
 
 import {getList} from 'Reducers/storage/list';
 import {getListItem} from 'Reducers/storage/listItem';
+import {getProduct} from 'Reducers/storage/product';
 
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
@@ -23,7 +24,7 @@ class EditListItem extends React.PureComponent {
         super(props);
 
         this.state = {
-            listItem: props.listItem.serialize()
+            listItem: {...props.listItem.serialize(), name: props.product.getName()}
         };
     }
 
@@ -59,7 +60,7 @@ class EditListItem extends React.PureComponent {
             <div>
                 <Header
                     title={'Edit item'}
-                    leftLinks={<BackButton/>}
+                    leftLinks={<BackButton iconType="clear" />}
                     rightLinks={<SaveButton onTouchTap={() => this.props.saveItemHandler(this.state.listItem)}/>}
                 />
 
@@ -85,7 +86,11 @@ export default withRouter(connect(
         const listItem = getListItem(state, parseInt(match.params.itemId) || 0);
         const list = getList(state, parseInt(match.params.listId) || 0);
 
-        return {listItem, list}
+        return {
+            product: getProduct(state, listItem.getProductId()),
+            listItem,
+            list
+        }
     },
     (dispatch, {history}) => {
         return {

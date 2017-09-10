@@ -24,7 +24,10 @@ class AddItemToListSaveStep extends React.PureComponent {
         super(props);
 
         this.state = {
-            template: this.props.template ? this.props.template.serialize() : null
+            template:
+                this.props.template
+                    ? {...this.props.template.serialize(), name: props.product.getName()}
+                    : null
         };
     }
 
@@ -78,15 +81,18 @@ class AddItemToListSaveStep extends React.PureComponent {
         return (
             <div>
                 <Header
-                    title={"Add item to " + this.props.list.getName()}
+                    title={"Add item to `" + this.props.list.getName() + "`"}
                     leftLinks={<BackButton/>}
                     rightLinks={<SaveButton onTouchTap={() => this.props.saveItemHandler(this.state.template)}/>}
                 />
 
                 {this.state.template
-                && <ItemCard listItem={this.state.template}
-                             onListItemFieldChange={this.onTemplateFieldChange.bind(this)}
-                />}
+                &&
+                <ItemCard
+                    listItem={this.state.template}
+                    onListItemFieldChange={this.onTemplateFieldChange.bind(this)}
+                />
+                }
             </div>
         )
     }
@@ -103,7 +109,7 @@ AddItemToListSaveStep.propTypes = {
 };
 
 export default withRouter(connect(
-    (state, {match, history}) => {
+    (state, {match}) => {
         const listId = parseInt(match.params.listId);
         const productId = parseInt(match.params.productId);
 
