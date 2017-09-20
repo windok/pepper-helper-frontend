@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import SelectField from 'react-md/lib/SelectFields';
 import {connect} from 'react-redux';
 
-import {getGroupCollection} from 'Reducers/storage/group';
+import {getGroupCollection} from 'Reducers/group';
 
 class GroupSelect extends React.PureComponent {
     render() {

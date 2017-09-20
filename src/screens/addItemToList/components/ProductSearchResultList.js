@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 import Chip from 'react-md/lib/Chips';
 import Avatar from 'react-md/lib/Avatars';
 
-import {getProductCollection, findBestSearchResults} from 'Reducers/storage/product';
+import {getProductCollection, findBestSearchResults} from 'Reducers/product';
 
 class ProductSearchResultList extends React.PureComponent {
     render() {

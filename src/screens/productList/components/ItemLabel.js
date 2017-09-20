@@ -6,8 +6,8 @@ import {ListItem} from 'Models/ListItem';
 import {Product} from 'Models/Product';
 import {Unit} from 'Models/Unit';
 
-import {getProduct} from 'Reducers/storage/product';
-import {getUnit} from 'Reducers/storage/unit';
+import {getProduct} from 'Reducers/product';
+import {getUnit} from 'Reducers/unit';
 
 class ItemLabel extends React.PureComponent {
     render() {

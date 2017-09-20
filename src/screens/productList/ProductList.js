@@ -10,7 +10,7 @@ import Header from 'Components/Header';
 import MenuButton from 'Components/buttons/MenuButton';
 import Button from 'react-md/lib/Buttons';
 
-import {getList, getFirstList} from 'Reducers/storage/list';
+import {getList, getFirstList} from 'Reducers/list';
 
 import {fetchItemsForList} from 'Actions/listItem';
 

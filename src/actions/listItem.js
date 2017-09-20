@@ -6,6 +6,7 @@ import {ListItem, CustomProductListItemTemplate,
     TYPE_GENERAL, TYPE_RECOMMENDED} from 'Models/ListItem';
 
 import Store from 'Store';
+import uuid from 'uuid/v4';
 
 export const fetchItemsForList = (list) => (dispatch) => {
 
@@ -26,7 +27,9 @@ export const fetchItemsForList = (list) => (dispatch) => {
 
                         (response.data.items || []).forEach(listItemData => {
                             const listItem = new ListItem({
-                                ...listItemData, productId: listItemData.translationId
+                                ...listItemData,
+                                tmpId: listItemData.tmpId || '',
+                                productId: listItemData.translationId
                             });
 
                             return items.set(listItem.getId(), listItem);
@@ -55,13 +58,13 @@ export const getTemplate = (list, product) => (dispatch) => {
     }
 
     if (product.isCustom()) {
-        let groupId = Store.getState().storage.group.items.keys().next().value || 0;
-        let unitId = Store.getState().storage.unit.items.keys().next().value || 0;
+        let groupId = Store.getState().group.items.keys().next().value || 0;
+        let unitId = Store.getState().unit.items.keys().next().value || 0;
 
         dispatch({
             type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
             meta: {list, product},
-            payload: new CustomProductListItemTemplate(list.getId(), product.getId(), groupId, unitId, 0)
+            payload: new CustomProductListItemTemplate(uuid(), list.getId(), product.getId(), groupId, unitId, 0)
         });
 
         return Promise.resolve();
@@ -79,6 +82,7 @@ export const getTemplate = (list, product) => (dispatch) => {
                     payload: (action, state, response) => new ListItem({
                         ...response.data,
                         id: response.data.id || 0,
+                        tmpId: uuid(),
                         date: response.data.date || new Date(),
                         productId: response.data.translationId
                     })

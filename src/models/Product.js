@@ -5,12 +5,16 @@ import {Nullable, NotNullable} from 'Models/NullableInterface';
 class Product extends NotNullable(Entity) {
     constructor(entity) {
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['id', 'name', 'defaultName', 'userId'])
+            (entity) => entityStructureFilter(entity, ['id', 'tmpId', 'name', 'defaultName', 'userId'])
         ]);
     }
 
     getId() {
         return this.entity.id;
+    }
+
+    getTmpId() {
+        return this.entity.tmpId;
     }
 
     getName() {
@@ -28,7 +32,13 @@ class Product extends NotNullable(Entity) {
 
 class ProductNullObject extends Nullable(Product) {
     constructor() {
-        super({id: 0, name: 'n/a', defaultName: 'n/a', userId: 0});
+        super({
+            id: 0,
+            tmpId: '',
+            name: 'n/a',
+            defaultName: 'n/a',
+            userId: 0
+        });
     }
 }
 

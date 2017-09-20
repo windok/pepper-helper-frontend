@@ -6,8 +6,8 @@ import {connect} from 'react-redux';
 import {List as ListModel} from 'Models/List';
 
 import {searchProduct, createProduct} from 'Actions/product';
-import {getList, getFirstList} from 'Reducers/storage/list';
-import {findProductByName} from 'Reducers/storage/product';
+import {getList, getFirstList} from 'Reducers/list';
+import {findProductByName} from 'Reducers/product';
 
 import Divider from 'react-md/lib/Dividers';
 

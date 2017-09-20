@@ -8,7 +8,7 @@ import ListItem from 'react-md/lib/Lists/ListItem';
 import Divider from 'react-md/lib/Dividers';
 import FontIcon from 'react-md/lib/FontIcons';
 
-import {getListCollection} from 'Reducers/storage/list';
+import {getListCollection} from 'Reducers/list';
 
 import {hideMenu, enableListManagerMode} from 'Actions/ui';
 

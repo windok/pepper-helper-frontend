@@ -1,20 +1,22 @@
-import {createStore, applyMiddleware} from 'redux';
-import thunk from 'redux-thunk';
-import { apiMiddleware } from './api-middleware';
+import {createStore, applyMiddleware, compose} from 'redux';
+
 import reducers from 'Reducers';
 
-const configureStore = () => {
-    const middleWares = [
-        thunk,
-        apiMiddleware
-    ];
+import thunk from 'redux-thunk';
+import {apiMiddleware} from './api-middleware';
 
-    return applyMiddleware(...middleWares)(createStore)(
-        reducers,
-        // {}, // todo initial state
-        // todo add this options only in dev environment
-        window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-    );
-};
+import {offline} from 'redux-offline';
+import getOfflineConfig from './offlineConfig';
 
-export default configureStore();
+const middleware = [
+    thunk,
+    apiMiddleware
+];
+
+const store = createStore(reducers, compose(
+    applyMiddleware(...middleware),
+    offline(getOfflineConfig()),
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+));
+
+export default store;

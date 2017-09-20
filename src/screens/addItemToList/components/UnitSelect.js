@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import SelectField from 'react-md/lib/SelectFields';
 import {connect} from 'react-redux';
 
-import {getUnitCollection} from 'Reducers/storage/unit';
+import {getUnitCollection} from 'Reducers/unit';
 
 class UnitSelect extends React.PureComponent {
     render() {

@@ -25,9 +25,7 @@ class Sidebar extends React.PureComponent {
             prominentTitle
             actions={<Button icon onClick={this.props.toggleMenu}>close</Button>}
             className="md-divider-border md-divider-border--bottom"
-        >
-
-        </Toolbar>;
+        />;
 
         return (
             <Drawer

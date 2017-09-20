@@ -8,10 +8,10 @@ import {AppContainer} from 'react-hot-loader'
 import OfflinePlugin from 'offline-plugin/runtime';
 
 OfflinePlugin.install({
-    onUpdateReady: function() {
+    onUpdateReady: function () {
         OfflinePlugin.applyUpdate();
     },
-    onUpdated: function() {
+    onUpdated: function () {
         window.location.reload();
     }
 });
@@ -19,27 +19,23 @@ OfflinePlugin.install({
 injectTapEventPlugin();
 import './styles.scss';
 
-// todo fetch list collection somewhere else
-import {fetchAll as fetchProductListCollection} from 'Actions/list';
-import {fetchAll as fetchProductCollection} from 'Actions/product';
-import {fetchAll as fetchUnitCollection} from 'Actions/unit';
-import {fetchAll as fetchGroupCollection} from 'Actions/group';
+// todo define variable value from env
+const hotModuleReplacement = false;
 
-const renderApp = (Component = Root) =>
-    render(
-        <AppContainer>
-            <Component store={store}/>
-        </AppContainer>,
-        document.getElementById('root')
-    );
+let renderApp;
+if (hotModuleReplacement) {
+    renderApp = (Component = Root) =>
+        render(
+            <AppContainer>
+                <Component store={store}/>
+            </AppContainer>,
+            document.getElementById('root')
+        );
 
+    // Hot Module Replacement API
+    module.hot && module.hot.accept('./Root', () => renderApp());
+} else {
+    renderApp = (Component = Root) => render(<Component store={store}/>, document.getElementById('root'));
+}
 
-Promise.all([
-    fetchProductListCollection()(store.dispatch),
-    fetchProductCollection()(store.dispatch),
-    fetchUnitCollection()(store.dispatch),
-    fetchGroupCollection()(store.dispatch)
-]).then(() => renderApp());
-
-// Hot Module Replacement API
-module.hot && module.hot.accept('./Root', () => renderApp());
+renderApp();

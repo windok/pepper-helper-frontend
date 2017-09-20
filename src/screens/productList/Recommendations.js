@@ -8,7 +8,7 @@ import {List as ListModel} from 'Models/List';
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 
-import {getList, getFirstList} from 'Reducers/storage/list';
+import {getList, getFirstList} from 'Reducers/list';
 import {redirectToDefaultList} from 'Services/BrowserHistory';
 
 import {fetchItemsForList} from 'Actions/listItem';

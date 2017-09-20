@@ -169,6 +169,7 @@ export default {
             Store: path.resolve(process.cwd(), 'src/store/'),
             Models: path.resolve(process.cwd(), 'src/models/'),
             globals: path.resolve(process.cwd(), 'src', '_globals.scss'),
+            'redux-offline': path.resolve(process.cwd(), 'node_modules/@redux-offline/redux-offline/'),
         },
         extensions: ['.js'],
         mainFiles: ['index', 'index.js'],

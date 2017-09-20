@@ -5,8 +5,8 @@ import {connect} from 'react-redux'
 import {ExpansionList, ExpansionPanel} from 'react-md/lib/ExpansionPanels';
 import ItemList from './ItemList';
 
-import {getGroupedItemForList} from 'Reducers/storage/listItem';
-import {getGroupCollection} from 'Reducers/storage/group';
+import {getGroupedItemForList} from 'Reducers/listItem';
+import {getGroupCollection} from 'Reducers/group';
 
 class ListAggregatedByGroup extends React.PureComponent {
     render() {

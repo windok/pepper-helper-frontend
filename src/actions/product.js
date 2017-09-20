@@ -18,7 +18,8 @@ export const fetchAll = () => (dispatch) => {
                             productTranslation.id,
                             new Product({
                                 ...productTranslation,
-                                name: productTranslation[state.storage.user.language],
+                                tmpId: productTranslation.tmpId || '',
+                                name: productTranslation[state.user.language],
                                 defaultName: productTranslation.en
                             })
                         ));

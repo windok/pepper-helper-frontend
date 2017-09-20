@@ -15,50 +15,57 @@ const initialState = {
     template: null,
 };
 
-export default (state = initialState, action) => {
-    switch (action.type) {
-        case actionType.FETCH_ITEMS_FOR_LIST_SUCCESS:
-            return {
-                ...state,
-                items: new Map([...state.items, ...action.payload]),
-            };
+export default Object.assign(
+    (state = initialState, action) => {
+        switch (action.type) {
+            case actionType.FETCH_ITEMS_FOR_LIST_SUCCESS:
+                return {
+                    ...state,
+                    items: new Map([...state.items, ...action.payload]),
+                };
 
-        case actionType.GET_ITEM_TEMPLATE_SUCCESS:
-            return {
-                ...state,
-                template: action.payload.clone()
-            };
+            case actionType.GET_ITEM_TEMPLATE_SUCCESS:
+                return {
+                    ...state,
+                    template: action.payload.clone()
+                };
 
-        case actionType.CREATE_ITEM_REQUEST:
-            return {
-                ...state,
-                unsavedItems: new Map([...state.unsavedItems]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
-                template: null
-            };
+            case actionType.CREATE_ITEM_REQUEST:
+                return {
+                    ...state,
+                    unsavedItems: new Map([...state.unsavedItems]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
+                    template: null
+                };
 
-        case actionType.CREATE_ITEM_SUCCESS: {
-            const unsavedItems = new Map([...state.unsavedItems]);
-            unsavedItems.delete(action.meta.listItem.getId());
+            case actionType.CREATE_ITEM_SUCCESS: {
+                const unsavedItems = new Map([...state.unsavedItems]);
+                unsavedItems.delete(action.meta.listItem.getId());
 
-            return {
-                ...state,
-                items: new Map([...state.items]).set(action.payload.getId(), action.payload.clone()),
-                unsavedItems,
-                template: null
-            };
+                return {
+                    ...state,
+                    items: new Map([...state.items]).set(action.payload.getId(), action.payload.clone()),
+                    unsavedItems,
+                    template: null
+                };
+            }
+
+            case actionType.EDIT_ITEM_REQUEST:
+            case actionType.BUY_ITEM_REQUEST:
+            case actionType.RETURN_ITEM_REQUEST:
+                return {
+                    ...state,
+                    items: new Map([...state.items]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
+                };
         }
 
-        case actionType.EDIT_ITEM_REQUEST:
-        case actionType.BUY_ITEM_REQUEST:
-        case actionType.RETURN_ITEM_REQUEST:
-            return {
-                ...state,
-                items: new Map([...state.items]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
-            };
+        return state;
+    },
+    {
+        persist: () => {
+            return {}
+        }
     }
-
-    return state;
-};
+);
 
 /**
  * @param state
@@ -86,8 +93,8 @@ export const getGroupedItemForList = (state, productList) => {
         itemCollection.get(listItem.getGroupId()).set(listItem.getId(), listItem);
     };
 
-    state.storage.listItem.items.forEach(addItemToCollection);
-    state.storage.listItem.unsavedItems.forEach(addItemToCollection);
+    state.listItem.items.forEach(addItemToCollection);
+    state.listItem.unsavedItems.forEach(addItemToCollection);
 
     return itemCollection;
 };
@@ -111,8 +118,8 @@ export const getGeneralListItemsToDisplay = (state, productList) => {
         itemCollection.set(listItem.getId(), listItem);
     };
 
-    state.storage.listItem.items.forEach(addItemToCollection);
-    state.storage.listItem.unsavedItems.forEach(addItemToCollection);
+    state.listItem.items.forEach(addItemToCollection);
+    state.listItem.unsavedItems.forEach(addItemToCollection);
 
     return itemCollection;
 };
@@ -125,7 +132,7 @@ export const getGeneralListItemsToDisplay = (state, productList) => {
 export const getRecommendedListItems = (state, productList) => {
     const itemCollection = new Map();
 
-    state.storage.listItem.items.forEach(listItem => {
+    state.listItem.items.forEach(listItem => {
         if (
             listItem.getListId() !== productList.getId()
             || listItem.getType() !== TYPE_RECOMMENDED
@@ -145,7 +152,7 @@ export const getRecommendedListItems = (state, productList) => {
  * @return {ListItem}
  */
 export const getListItem = (state, itemId) => {
-    return state.storage.listItem.items.get(itemId) || new ListItemNullObject();
+    return state.listItem.items.get(itemId) || new ListItemNullObject();
 };
 
 /**
@@ -155,7 +162,7 @@ export const getListItem = (state, itemId) => {
  * @return {ListItem}
  */
 export const getListItemByListAndProduct = (state, list, product) => {
-    for (let listItem of state.storage.listItem.items.values()) {
+    for (let listItem of state.listItem.items.values()) {
         if (listItem.getListId() === list.getId() && listItem.getProductId() === product.getId()) {
             return listItem;
         }
@@ -171,7 +178,7 @@ export const getListItemByListAndProduct = (state, list, product) => {
  * @return {ListItem}
  */
 export const getTemplate = (state, list, product) => {
-    const template = state.storage.listItem.template;
+    const template = state.listItem.template;
 
     if (!template || template.getProductId() !== product.getId() || template.getListId() !== list.getId()) {
         return null;

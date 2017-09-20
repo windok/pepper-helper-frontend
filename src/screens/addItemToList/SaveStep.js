@@ -9,9 +9,9 @@ import {List, ListNullObject} from 'Models/List';
 import {ListItem, ListItemNullObject, STATUS_DRAFT} from 'Models/ListItem';
 import {Product, ProductNullObject} from 'Models/Product';
 
-import {getList} from 'Reducers/storage/list';
-import {getProduct} from 'Reducers/storage/product';
-import {getTemplate as getListItemTemplate, getListItemByListAndProduct} from 'Reducers/storage/listItem';
+import {getList} from 'Reducers/list';
+import {getProduct} from 'Reducers/product';
+import {getTemplate as getListItemTemplate, getListItemByListAndProduct} from 'Reducers/listItem';
 
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';

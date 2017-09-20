@@ -1,6 +1,7 @@
 import * as actionType from 'Actions';
 import {API_CALL, GET, POST, PUT, DELETE} from 'Store/api-middleware/RSAA';
 import List from 'Models/List';
+import uuid from 'uuid/v4';
 
 
 export const fetchAll = () => (dispatch) => {
@@ -16,7 +17,9 @@ export const fetchAll = () => (dispatch) => {
                     payload: (action, state, response) => {
                         const listCollection = new Map();
 
-                        (response.data.items || []).forEach(list => listCollection.set(list.id, new List(list)));
+                        (response.data.items || []).forEach(listData => {
+                            listCollection.set(listData.id, new List({...listData, tmpId: listData.tmpId || ''}))
+                        });
 
                         return listCollection;
                     }
@@ -35,7 +38,7 @@ export const create = (listName) => (dispatch) => {
         return Promise.reject();
     }
 
-    const list = new List({id: 0, name: listName});
+    const list = new List({id: 0, tmpId: uuid(), name: listName});
 
     return dispatch({
         [API_CALL]: {
@@ -61,7 +64,7 @@ export const create = (listName) => (dispatch) => {
 };
 
 export const updateList = (oldList, newListName) => (dispatch) => {
-
+    // todo update by tmpId
     if (oldList.isNullObject()) {
         return;
     }

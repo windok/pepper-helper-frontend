@@ -1,24 +1,25 @@
 import {combineReducers} from 'redux';
 
+import app from './app';
 import ui from './ui';
 
-import list from './storage/list';
-import listItem from './storage/listItem';
-import product from './storage/product';
-import unit from './storage/unit';
-import group from './storage/group';
-import user from './storage/user';
+import list from './list';
+import listItem from './listItem';
+import product from './product';
+import group from './group';
+import unit from './unit';
+import user from './user';
 
-const storage = combineReducers({
+export const transformers = {
+    app,
+    ui,
+
     list,
     listItem,
     product,
-    unit,
     group,
-    user
-});
+    unit,
+    user,
+};
 
-export default combineReducers({
-    storage,
-    ui
-});
+export default combineReducers(transformers);

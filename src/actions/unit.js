@@ -14,7 +14,9 @@ export const fetchAll = () => (dispatch) => {
                     payload: (action, state, response) => {
                         const unitCollection = new Map();
 
-                        (response.data.items || []).forEach(unit => unitCollection.set(unit.id, new Unit(unit)));
+                        (response.data.items || []).forEach(unitData => {
+                            unitCollection.set(unitData.id, new Unit({...unitData, tmpId: unitData.tmpId || ''}))
+                        });
 
                         return unitCollection;
                     }

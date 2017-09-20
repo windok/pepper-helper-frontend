@@ -19,7 +19,8 @@ export const fetchAll = () => (dispatch) => {
                             groupTranslation.id,
                             new Group({
                                 id: groupTranslation.id,
-                                name: groupTranslation[state.storage.user.language] || groupTranslation.en
+                                tmpId: groupTranslation.tmpId || '',
+                                name: groupTranslation[state.user.language] || groupTranslation.en
                             })
                         ));
 
@@ -49,7 +50,7 @@ export const createGroup = (value) => (dispatch) => {
                     payload: (action, state, response) => {
                         return new Group({
                             id: response.data.id,
-                            name: response.data[state.storage.user.language] || response.data.en
+                            name: response.data[state.user.language] || response.data.en
                         });
                     }
                 },

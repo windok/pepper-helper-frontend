@@ -10,7 +10,7 @@ import {SaveButton} from 'Components/buttons/Button';
 import TextField from 'react-md/lib/TextFields';
 import MenuItem from 'react-md/lib/Lists/ListItem';
 
-import {getList, getFirstList} from 'Reducers/storage/list';
+import {getList, getFirstList} from 'Reducers/list';
 import {updateList, deleteList} from 'Actions/list';
 import {showMenu} from 'Actions/ui';
 

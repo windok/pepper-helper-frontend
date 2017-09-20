@@ -80,34 +80,39 @@ const apiMiddleware = (store) => {
             ...{
                 'PH-TOKEN': 'test',
                 'Content-Type': 'application/json',
-                'Accept-Language': store.getState().storage.user.language,
+                'Accept-Language': store.getState().user.language,
             },
             ...(action[API_CALL].headers || {})
         };
 
-        next(createActionForNext(requestType, action, store));
+        try {
 
-        return RestClient[method](endpoint, params, headers)
-            .then(
-                (response) => {
-                    const actionForNext = createActionForNext(successType, action, store, response);
+            next(createActionForNext(requestType, action, store));
 
-                    next(actionForNext);
+            return RestClient[method](endpoint, params, headers)
+                .then(
+                    (response) => {
+                        const actionForNext = createActionForNext(successType, action, store, response);
 
-                    return Promise.resolve(actionForNext.payload);
-                },
-                (error) => {
-                    // todo error payload and meta wrapping
-                    const actionForNext = {
-                        type: failureType,
-                        error
-                    };
+                        next(actionForNext);
 
-                    next(actionForNext);
+                        return Promise.resolve(actionForNext.payload);
+                    },
+                    (error) => {
+                        // todo error payload and meta wrapping
+                        const actionForNext = {
+                            type: failureType,
+                            error
+                        };
 
-                    return Promise.reject(actionForNext.error);
-                }
-            );
+                        next(actionForNext);
+
+                        return Promise.reject(actionForNext.error);
+                    }
+                );
+        } catch (e) {
+            console.error(e);
+        }
     }
 };
 

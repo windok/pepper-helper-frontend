@@ -13,7 +13,7 @@ class ListItem extends NotNullable(Entity) {
 
     constructor(entity) {
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['id', 'status', 'listId', 'productId', 'unitId', 'groupId', 'quantity', 'type', 'date']),
+            (entity) => entityStructureFilter(entity, ['id', 'tmpId', 'status', 'listId', 'productId', 'unitId', 'groupId', 'quantity', 'type', 'date']),
             (entity) => allowedValuesValidator(entity, 'status', [STATUS_DRAFT, STATUS_BOUGHT, STATUS_SUSPENDED]),
             (entity) => allowedValuesValidator(entity, 'type', [TYPE_GENERAL, TYPE_RECOMMENDED]),
             (entity) => numberConverter(entity, ['id', 'listId', 'productId', 'unitId', 'groupId', 'quantity']),
@@ -23,6 +23,10 @@ class ListItem extends NotNullable(Entity) {
 
     getId() {
         return this.entity.id;
+    }
+
+    getTmpId() {
+        return this.entity.tmpId;
     }
 
     getStatus() {
@@ -73,6 +77,7 @@ class ListItemNullObject extends Nullable(ListItem) {
     constructor() {
         super({
             id: 0,
+            tmpId: '',
             status: STATUS_DRAFT,
             listId: 0,
             productId: 0,
@@ -86,9 +91,10 @@ class ListItemNullObject extends Nullable(ListItem) {
 }
 
 class CustomProductListItemTemplate extends NotNullable(ListItem) {
-    constructor(listId, productId, groupId, unitId, quantity) {
+    constructor(tmpId, listId, productId, groupId, unitId, quantity) {
         super({
             id: 0,
+            tmpId,
             status: STATUS_DRAFT,
             listId,
             productId,

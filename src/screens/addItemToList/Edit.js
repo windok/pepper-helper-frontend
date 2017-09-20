@@ -8,9 +8,9 @@ import {editItem} from 'Actions/listItem';
 import {ListItem} from 'Models/ListItem';
 import {List} from 'Models/List';
 
-import {getList} from 'Reducers/storage/list';
-import {getListItem} from 'Reducers/storage/listItem';
-import {getProduct} from 'Reducers/storage/product';
+import {getList} from 'Reducers/list';
+import {getListItem} from 'Reducers/listItem';
+import {getProduct} from 'Reducers/product';
 
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
