@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import {ListItem as ListItemModel} from 'Models/ListItem';
 
 import ListItem from 'react-md/lib/Lists/ListItem';
-import ItemLabel from './ItemLabel';
+import ItemLabel from './Item';
 
 import history from 'Services/BrowserHistory';
 

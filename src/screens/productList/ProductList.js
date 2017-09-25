@@ -9,6 +9,7 @@ import Sidebar from 'Components/Sidebar';
 import Header from 'Components/Header';
 import MenuButton from 'Components/buttons/MenuButton';
 import Button from 'react-md/lib/Buttons';
+import SVGIcon from 'react-md/lib/SVGIcons';
 
 import {getList, getFirstList} from 'Reducers/list';
 
@@ -16,6 +17,8 @@ import {fetchItemsForList} from 'Actions/listItem';
 
 import ListComponent from './components/ListAggregatedByGroup';
 import DraftItem from './components/DraftItem';
+
+import pepperLogo from 'Assets/hot-pepper.svg';
 
 class ProductListScreen extends React.PureComponent {
     constructor(props) {
@@ -33,26 +36,31 @@ class ProductListScreen extends React.PureComponent {
     render() {
         return (
             <div>
-                <Sidebar/>
-                <Header title={this.props.list.getName()} leftLinks={<MenuButton key="void" />}/>
+                <Sidebar currentList={this.props.list}/>
+                <Header
+                    title={this.props.list.getName()}
+                    leftLinks={<MenuButton key="void"/>}
+                    rightLinks={<Button icon key="edit-list" onTouchTap={() => this.props.editList(this.props.list)}>settings</Button>}
+                />
 
                 <ListComponent list={this.props.list} itemComponent={DraftItem}/>
 
-                <div style={{marginTop: '110px'}}></div>
+                <div style={{marginTop: '180px'}}/>
 
                 <Button onTouchTap={() => this.props.showRecommendations(this.props.list)}
                         floating
                         fixed
                         secondary
-                        mini
                         style={{
                             bottom: 90
                         }}>
-                    help
+                    <SVGIcon use={pepperLogo.url} style={{fill: 'white'}}/>
                 </Button>
 
-                <Button onTouchTap={() => this.props.addItem(this.props.list)}
-                        floating fixed primary>add</Button>
+                <Button
+                    onTouchTap={() => this.props.addItem(this.props.list)}
+                    floating fixed primary
+                >add</Button>
             </div>
         )
     }
@@ -62,6 +70,7 @@ ProductListScreen.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
     fetchListItems: PropTypes.func.isRequired,
     addItem: PropTypes.func.isRequired,
+    editList: PropTypes.func.isRequired,
     showRecommendations: PropTypes.func.isRequired,
 };
 
@@ -77,6 +86,7 @@ export default withRouter(connect(
         return {
             fetchListItems: (list) => fetchItemsForList(list)(dispatch),
             addItem: (list) => history.push('/product-list/' + list.getId() + '/item/search'),
+            editList: (list) => history.push('/product-list/' + list.getId() + '/edit'),
             showRecommendations: (list) => history.push('/product-list/' + list.getId() + '/recommendations')
         };
     }

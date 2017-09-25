@@ -1,17 +1,149 @@
 @import '~react-md/src/scss/react-md';
 
-.product-list-container .md-expansion-panel {
-  .md-panel-content {
-    padding: 0;
-  }
-  // TODO find the other way to hide buttons in expansion panel
-  footer {
-    display: none;
+$md-primary-color: $md-light-blue-600;
+$md-secondary-color: $md-red-500;
+
+.text-with-icon {
+  line-height: 48px;
+  .md-icon {
+    vertical-align: middle;
+    margin-right: 1ex;
   }
 }
 
-.chips__list {
+.folder-list {
+  svg {
+    fill: #555;
+  }
+}
+
+.product-list-container {
+
+  .item-container {
+    overflow: hidden;
+    border-bottom: 1px solid #EEE;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .md-panel-header {
+    background: #E1E1E1;
+    border-top: 1px solid #BBB;
+    height: 40px;
+    .md-text {
+      color: rgba(black, 0.6);
+    }
+  }
+
+  .md-list {
+    padding: 0 !important;
+  }
+
+  .md-expansion-panel--expanded {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+
+    .md-panel-header {
+      height: 40px;
+    }
+  }
+
   .md-chip {
-    margin: 0.3em;
+    background: rgba(black, 0.05);
+  }
+
+  .md-list-tile--avatar {
+    height: 64px;
+  }
+
+  .md-expansion-panel {
+    .md-panel-content {
+      padding: 0;
+    }
+    // TODO find the other way to hide buttons in expansion panel
+    footer {
+      display: none;
+    }
+  }
+
+  .chips__list {
+    .md-chip {
+      margin: 0.3em;
+    }
+  }
+}
+
+// SWIPEOUT
+.stro-container {
+  width: 300%;
+  margin-left: -100%;
+  position: relative;
+
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+
+  &.transition-back {
+    transition: all .4s ease;
+  }
+
+  &.show-right-buttons,
+  &.show-left-buttons {
+    &, .stro-button {
+      transition: all .3s ease;
+    }
+  }
+}
+
+.stro-left,
+.stro-content,
+.stro-right {
+  flex: 2;
+  position: relative;
+  width: 33.33333333%;
+  vertical-align: top;
+}
+
+.stro-button {
+
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  span {
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    display: block;
+  }
+
+  &.stro-right-button {
+    left: 0;
+    span {
+      left: 0;
+      text-align: center;
+    }
+  }
+  &.stro-left-button {
+    right: 0;
+    span {
+      right: 0;
+      text-align: center;
+    }
+  }
+
+  &.item-suspend {
+    color: #FFF;
+    background: #c05400;
+  }
+
+  &.item-buy {
+    color: #FFF;
+    background: #0db500;
+  }
+
+  &.item-return {
+    color: #FFF;
+    background: #3498db;
   }
 }

@@ -17,17 +17,3 @@ export const toggleMenu = () => (dispatch) => {
         type: actionType.UI_SIDEBAR_TOGGLE
     });
 };
-
-export const enableListManagerMode = () => (dispatch) => {
-    dispatch({
-        type: actionType.UI_SIDEBAR_LIST_MANAGER_MODE,
-        payload: true
-    });
-};
-
-export const disableListManagerMode = () => (dispatch) => {
-    dispatch({
-        type: actionType.UI_SIDEBAR_LIST_MANAGER_MODE,
-        payload: false
-    });
-};

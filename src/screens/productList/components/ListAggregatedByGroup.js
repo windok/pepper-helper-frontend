@@ -16,6 +16,7 @@ class ListAggregatedByGroup extends React.PureComponent {
                         <ExpansionPanel
                             key={groupId}
                             label={this.props.groups.has(groupId) ? this.props.groups.get(groupId).getName() : 'n/a'}
+                            headerStyle={{backgroundColor: this.props.groups.has(groupId) ? this.props.groups.get(groupId).getColor() : 'transparent'}}
                             secondaryLabel=""
                             defaultExpanded
                         ><ItemList itemComponent={this.props.itemComponent} items={itemsByGroup}/>

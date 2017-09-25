@@ -5,6 +5,7 @@ import CircularDependencyPlugin from 'circular-dependency-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import autoprefixer from 'autoprefixer';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import SpriteLoaderPlugin from 'svg-sprite-loader/plugin';
 import OfflinePlugin from 'offline-plugin';
 import webpack from 'webpack';
 
@@ -24,6 +25,7 @@ plugins.push(new webpack.DefinePlugin({
 }));
 
 plugins.push(new CircularDependencyPlugin());
+plugins.push(new SpriteLoaderPlugin());
 
 plugins.push(new webpack.LoaderOptionsPlugin({
     options: {
@@ -152,15 +154,26 @@ export default {
                 exclude: /node_modules/,
                 loader: 'json-loader',
             }, {
-                test: /\.(woff2?|ttf|eot|svg)$/,
+                test: /\.(woff2?|ttf|eot)$/,
                 loader: 'url-loader?limit=10000',
                 exclude: /node_modules|SVGIcon\/icons/,
+            }, {
+                test: /\.(svg)$/i,
+                include: path.resolve(process.cwd(), 'src/assets'),
+                loaders: [{
+                    loader: 'svg-sprite-loader',
+                    options: {
+                        extract: true,
+                        spriteFilename: 'icon-sprites.[hash:8].svg',
+                    },
+                }, 'svgo-loader']
             }],
     },
     plugins,
     resolve: {
         alias: {
             Actions: path.resolve(process.cwd(), 'src/actions/'),
+            Assets: path.resolve(process.cwd(), 'src/assets/'),
             Components: path.resolve(process.cwd(), 'src/components/'),
             Reducers: path.resolve(process.cwd(), 'src/reducers/'),
             Services: path.resolve(process.cwd(), 'src/services/'),

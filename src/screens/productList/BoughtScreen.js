@@ -1,0 +1,79 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import {withRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
+
+import {List as ListModel} from 'Models/List';
+
+import Header from 'Components/Header';
+import BackButton from 'Components/buttons/BackButton';
+
+import {getList, getFirstList} from 'Reducers/list';
+import {redirectToDefaultList} from 'Services/BrowserHistory';
+
+import {fetchItemsForList} from 'Actions/listItem';
+
+import ListComponent from './components/ListAggregatedByGroup';
+import BoughtItem from "./components/BoughtItem";
+
+class BoughtScreen extends React.PureComponent {
+    componentWillMount() {
+        if (this.redirectToDefaultListIfNecessary(this.props.listId, this.props.list)) {
+            return;
+        }
+
+        this.props.fetchListItems(this.props.list);
+    }
+
+    componentWillReceiveProps({listId, list}) {
+        if (this.redirectToDefaultListIfNecessary(listId, list)) {
+            return;
+        }
+
+        if (listId !== this.props.listId) {
+            this.props.fetchListItems(list);
+        }
+    }
+
+    redirectToDefaultListIfNecessary(listId, list) {
+        if (listId === list.getId() && !list.isNullObject()) {
+            return false;
+        }
+
+        redirectToDefaultList();
+
+        return true;
+    }
+
+    render() {
+        return (
+            <div>
+                <Header title={this.props.list.getName() + ": Bought"} leftLinks={<BackButton/>}/>
+
+                <ListComponent list={this.props.list} itemComponent={BoughtItem}/>
+            </div>
+        )
+    }
+}
+
+BoughtScreen.propTypes = {
+    listId: PropTypes.number.isRequired,
+    list: PropTypes.instanceOf(ListModel).isRequired,
+    fetchListItems: PropTypes.func.isRequired,
+};
+
+export default withRouter(connect(
+    (state, {match}) => {
+        const listId = parseInt(match.params.listId) || 0;
+
+        return {
+            listId,
+            list: listId ? getList(state, listId) : getFirstList(state)
+        };
+    },
+    (dispatch) => {
+        return {
+            fetchListItems: (list) => fetchItemsForList(list)(dispatch)
+        };
+    }
+)(BoughtScreen));

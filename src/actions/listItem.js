@@ -3,7 +3,7 @@ import {API_CALL, GET, POST, PUT} from 'Store/api-middleware/RSAA';
 import {SOCKET_CALL} from 'Store/socket-middleware';
 
 import {ListItem, CustomProductListItemTemplate,
-    STATUS_DRAFT, STATUS_BOUGHT, STATUS_SUSPENDED,
+    STATUS_DRAFT, STATUS_BOUGHT,
     TYPE_GENERAL, TYPE_RECOMMENDED} from 'Models/ListItem';
 
 import Store from 'Store';
@@ -120,6 +120,38 @@ export const createItem = (listItem) => (dispatch) => {
                     })
                 },
                 actionType.CREATE_ITEM_ERROR
+            ],
+            params: {
+                ...listItem.serialize(),
+                translationId: listItem.getProductId()
+            },
+        }
+    });
+};
+
+export const suspendItem = (listItem, date) => (dispatch) => {
+    // todo convert recommended item in general one in corresponding component
+    listItem = new ListItem({...listItem.serialize(), date: new Date(), type: TYPE_GENERAL});
+
+    return dispatch({
+        [API_CALL]: {
+            endpoint: '/suspend-item/' + listItem.getId() + '/',
+            method: PUT,
+            types: [
+                {
+                    type: actionType.SUSPEND_ITEM_REQUEST,
+                    meta: {listItem}
+                },
+                {
+                    type: actionType.SUSPEND_ITEM_SUCCESS,
+                    meta: {listItem},
+                    payload: (action, state, response) => new ListItem({
+                        ...response.data,
+                        date: response.data.date || new Date(),
+                        productId: response.data.translationId
+                    })
+                },
+                actionType.SUSPEND_ITEM_ERROR
             ],
             params: {
                 ...listItem.serialize(),

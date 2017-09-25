@@ -27,6 +27,7 @@ export const fetchAll = () => (dispatch) => {
                             new Group({
                                 ...groupData,
                                 tmpId: groupData.tmpId || '',
+                                color: groupData.img || '',
                                 name: groupData[getUserLanguage(state)] || groupData.en
                             })
                         ));

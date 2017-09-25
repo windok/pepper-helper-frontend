@@ -2,9 +2,6 @@ import * as actionType from 'Actions';
 import {
     ListItem,
     ListItemNullObject,
-    STATUS_DRAFT,
-    STATUS_BOUGHT,
-    STATUS_SUSPENDED,
     TYPE_GENERAL,
     TYPE_RECOMMENDED
 } from 'Models/ListItem';
@@ -50,6 +47,7 @@ export default Object.assign(
             }
 
             case actionType.EDIT_ITEM_REQUEST:
+            case actionType.SUSPEND_ITEM_REQUEST:
             case actionType.BUY_ITEM_REQUEST:
             case actionType.RETURN_ITEM_REQUEST:
                 return {

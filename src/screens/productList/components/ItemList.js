@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {STATUS_DRAFT, STATUS_BOUGHT, TYPE_GENERAL, TYPE_RECOMMENDED} from 'Models/ListItem';
+import {STATUS_DRAFT, STATUS_BOUGHT, TYPE_RECOMMENDED} from 'Models/ListItem';
 
 import List from 'react-md/lib/Lists/List';
 
 import DraftItem from './DraftItem';
 import BoughtItem from './BoughtItem';
+import SuspendedItem from './SuspendedItem';
 import RecommendedItem from './RecommendedItem';
 import InvisibleItem from './InvisibleItem';
 
@@ -14,21 +15,27 @@ class ItemList extends React.PureComponent {
     getItemComponent(listItem) {
         let correspondingItemComponent = InvisibleItem;
 
-        if (listItem.getStatus() === STATUS_DRAFT && listItem.getType() === TYPE_GENERAL) {
-            correspondingItemComponent = DraftItem;
+        const today = new Date();
+        const nextDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+        const isItemActual = listItem.getDate() < nextDay;
+
+        switch (listItem.getType()) {
+            case TYPE_RECOMMENDED:
+                correspondingItemComponent = isItemActual ? RecommendedItem : InvisibleItem;
+                break;
+            default:
+                switch (listItem.getStatus()) {
+                    case STATUS_DRAFT:
+                        correspondingItemComponent = isItemActual ? DraftItem : SuspendedItem;
+                        break;
+                    case STATUS_BOUGHT:
+                        correspondingItemComponent = BoughtItem;
+                        break;
+                }
+                break;
         }
 
-        if (listItem.getStatus() === STATUS_BOUGHT && listItem.getType() === TYPE_GENERAL) {
-            correspondingItemComponent = BoughtItem;
-        }
-
-        if (listItem.getStatus() === STATUS_DRAFT && listItem.getType() === TYPE_RECOMMENDED) {
-            correspondingItemComponent = RecommendedItem;
-        }
-
-        return correspondingItemComponent;
-        // TODO hide non-target items
-        //this.props.itemComponent === correspondingItemComponent ? correspondingItemComponent : InvisibleItem;
+        return this.props.itemComponent === correspondingItemComponent ? correspondingItemComponent : InvisibleItem;
     }
 
     render() {

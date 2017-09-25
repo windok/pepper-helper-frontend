@@ -1,34 +1,50 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-
-import {ListItem as ListItemModel} from 'Models/ListItem';
-
-import ListItem from 'react-md/lib/Lists/ListItem';
-import Icon from 'react-md/lib/FontIcons';
-import ItemLabel from './ItemLabel';
-
-import {buyItem} from 'Actions/listItem';
-
 import history from 'Services/BrowserHistory';
 
+import {ListItem as ListItemModel} from 'Models/ListItem';
+import Item from './Item';
+import ItemAction from './ItemAction';
+import {buyItem} from 'Actions/listItem';
+
 class DraftItem extends React.PureComponent {
+
+    constructor(params) {
+        super(params);
+        this.state = {suspendDialog: false};
+    }
+
+    showSuspendDialog = () => {
+        this.setState({suspendDialog: true});
+    };
+
+    hideSuspendDialog = () => {
+        this.setState({suspendDialog: false});
+    };
+
     render() {
-        const buyButton = (
-            <Icon onTouchTap={(e) => {
-                e.stopPropagation();
-                e.nativeEvent.stopImmediatePropagation();
-                this.props.buyItem(this.props.item);
-            }}> done </Icon>
+
+        const leftAction = new ItemAction(
+            this.props.buyItem.bind(this),
+            'done',
+            'Buy',
+            'item-buy'
         );
 
-        const label = <ItemLabel item={this.props.item}/>;
+        const rightAction = new ItemAction(
+            this.showSuspendDialog.bind(this),
+            'schedule',
+            'Snooze',
+            'item-suspend'
+        );
 
         return (
-            <ListItem
-                primaryText={label}
-                onTouchTap={() => this.props.editItem(this.props.item)}
-                rightIcon={buyButton}
+            <Item
+                leftAction={leftAction}
+                rightAction={rightAction}
+                item={this.props.item}
+                onClick={this.props.editItem.bind(this)}
             />
         )
     }
@@ -42,7 +58,9 @@ DraftItem.propTypes = {
 
 export default connect(
     (state, {item}) => {
-        return {item}
+        return {
+            item
+        }
     },
     (dispatch) => {
         return {

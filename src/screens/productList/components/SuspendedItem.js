@@ -6,29 +6,34 @@ import {ListItem as ListItemModel} from 'Models/ListItem';
 import Item from './Item';
 import ItemAction from './ItemAction';
 
-import {returnItem} from 'Actions/listItem';
-
-class BoughtItem extends React.PureComponent {
+class SuspendedItem extends React.PureComponent {
     render() {
 
         const leftAction = new ItemAction(
-            this.props.returnItem.bind(this),
+            () => {},
             'undo',
-            'Return',
+            'To list',
             'item-return'
+        );
+
+        const rightAction = new ItemAction(
+            () => {},
+            'schedule',
+            'Reschedule',
+            'item-suspend'
         );
 
         return (
             <Item
                 leftAction={leftAction}
-                rightAction={leftAction}
+                rightAction={rightAction}
                 item={this.props.item}
             />
         );
     }
 }
 
-BoughtItem.propTypes = {
+SuspendedItem.propTypes = {
     item: PropTypes.instanceOf(ListItemModel).isRequired,
     returnItem: PropTypes.func.isRequired
 };
@@ -42,5 +47,5 @@ export default connect(
             returnItem: (listItem) => returnItem(listItem)(dispatch)
         }
     }
-)(BoughtItem);
+)(SuspendedItem);
 

@@ -5,7 +5,7 @@ import {Nullable, NotNullable} from 'Models/NullableInterface';
 class Group extends NotNullable(Entity) {
     constructor(entity) {
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['id', 'tmpId', 'name'])
+            (entity) => entityStructureFilter(entity, ['id', 'tmpId', 'name', 'color'])
         ]);
     }
 
@@ -19,6 +19,10 @@ class Group extends NotNullable(Entity) {
 
     getName() {
         return this.entity.name;
+    }
+
+    getColor() {
+        return this.entity.color;
     }
 }
 

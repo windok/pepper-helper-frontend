@@ -66,7 +66,7 @@ class AddItemToListSearchStep extends React.PureComponent {
                 <form className="md-grid">
                     <TextField
                         id="query"
-                        label="Search"
+                        label="Search for products"
                         className="md-cell md-cell--12"
                         defaultValue={this.state.query}
                         autoComplete="off"

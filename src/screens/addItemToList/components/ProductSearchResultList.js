@@ -4,6 +4,7 @@ import history from 'Services/BrowserHistory';
 import {connect} from 'react-redux';
 
 import Chip from 'react-md/lib/Chips';
+import FontIcon from 'react-md/lib/FontIcons';
 import Avatar from 'react-md/lib/Avatars';
 
 import {getProductCollection, findBestSearchResults} from 'Reducers/product';
@@ -11,7 +12,9 @@ import {getProductCollection, findBestSearchResults} from 'Reducers/product';
 class ProductSearchResultList extends React.PureComponent {
     render() {
         if (this.props.searchResults.length === 0) {
-            return (<div>No items were found. </div>);
+            return (<div className="md-text-center md-cell--12" style={{color: '#888'}}>
+                <span className="text-with-icon"><FontIcon>error_outline</FontIcon>No items were found.</span>
+            </div>);
         }
 
         return (
@@ -28,9 +31,6 @@ class ProductSearchResultList extends React.PureComponent {
                             />
                         );
                     }
-                    // <Link to={} key={productId}>
-                    //     <button></button>
-                    // </Link>
                 )}
             </div>
         )

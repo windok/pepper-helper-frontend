@@ -8,7 +8,6 @@ import {SaveButton} from 'Components/buttons/Button';
 import TextField from 'react-md/lib/TextFields';
 
 import {create as createList} from 'Actions/list';
-import {showMenu} from 'Actions/ui';
 
 class AddList extends React.PureComponent {
     constructor(params) {
@@ -49,11 +48,11 @@ export default connect(
     },
     (dispatch, {history}) => {
         return {
-            cancel: () => showMenu()(dispatch),
+            cancel: () => history.goBack(),
             save: (listName) => {
-                createList(listName)(dispatch);
-                history.goBack();
-                showMenu()(dispatch);
+                createList(listName)(dispatch).then((list) => {
+                    history.push('/product-list/' + list.getId());
+                });
             }
         }
     }

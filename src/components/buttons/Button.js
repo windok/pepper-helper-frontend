@@ -10,6 +10,7 @@ class IconButton extends React.PureComponent {
             <Button
                 icon
                 onTouchTap={this.props.onTouchTap}
+                className={this.props.className}
             >{this.props.icon}</Button>
         );
     }

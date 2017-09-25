@@ -8,17 +8,19 @@ import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 import {SaveButton} from 'Components/buttons/Button';
 import TextField from 'react-md/lib/TextFields';
-import MenuItem from 'react-md/lib/Lists/ListItem';
+import Divider from 'react-md/lib/Dividers';
+import Button from 'react-md/lib/Buttons';
+import FontIcon from 'react-md/lib/FontIcons';
+import DialogContainer from 'react-md/lib/Dialogs';
 
 import {getList, getFirstList} from 'Reducers/list';
 import {updateList, deleteList} from 'Actions/list';
-import {showMenu} from 'Actions/ui';
 
 class EditList extends React.PureComponent {
     constructor(params) {
         super(params);
 
-        this.state = params.list.serialize();
+        this.state = {deleteDialog: false, ...params.list.serialize()};
     }
 
     componentWillReceiveProps({list}) {
@@ -27,26 +29,33 @@ class EditList extends React.PureComponent {
         }
     }
 
-    render() {
-        if (this.props.list.isNullObject()) {
-            return (
-                <div>
-                    <Header title={"Edit product list"}
-                            leftLinks={<BackButton iconType="clear" onTouchTap={this.props.cancel}/>}/>
-                </div>
-            )
-        }
+    showDeleteDialog = () => {
+        this.setState({deleteDialog: true});
+    };
 
-        const options = this.props.isDeleteAllowed
-            ? [<MenuItem key="delete" primaryText="Delete" onTouchTap={() => this.props.delete(this.props.list)}/>]
-            : [];
+    hideDeleteDialog = () => {
+        this.setState({deleteDialog: false});
+    };
+
+    render() {
+
+        const actions = [];
+        actions.push({secondary: true, children: 'Cancel', onClick: this.hideDeleteDialog});
+        actions.push(<Button flat primary onClick={() => {
+            this.hideDeleteDialog();
+            this.props.delete(this.props.list);
+        }}>Confirm</Button>);
 
         return (
             <div>
-                <Header title={"Edit product list"}
-                        leftLinks={<BackButton iconType="clear" onTouchTap={this.props.cancel}/>}
-                        rightLinks={[<SaveButton key="save" onTouchTap={() => this.props.save(this.props.list, this.state.name)}/>]}
-                        options={options}/>
+                <Header
+                    title={"Edit product list"}
+                    leftLinks={<BackButton iconType="clear" />}
+                    rightLinks={[<SaveButton
+                        key="save"
+                        onTouchTap={() => this.props.save(this.props.list, this.state.name)}
+                    />]}
+                />
 
                 <form className="md-grid">
                     <TextField
@@ -56,8 +65,30 @@ class EditList extends React.PureComponent {
                         required
                         defaultValue={this.state.name}
                         className="md-cell md-cell--12"
-                        onChange={(value) => this.setState({name: value})}/>
+                        onChange={(value) => this.setState({name: value})}
+                    />
                 </form>
+
+                <Divider style={{marginTop: 40, marginBottom: 40}}/>
+
+                <div className="md-grid">
+                    <Button
+                        raised
+                        secondary
+                        iconBefore={false}
+                        iconEl={<FontIcon>delete</FontIcon>}
+                        onTouchTap={this.showDeleteDialog}
+                        className="md-cell--right"
+                    >Delete list</Button>
+                </div>
+
+                <DialogContainer
+                    id="delete-list-dialog"
+                    visible={this.state.deleteDialog}
+                    onHide={this.hideDeleteDialog}
+                    actions={actions}
+                    title="Are you sure to delete?"
+                />
             </div>
         );
     }
@@ -66,7 +97,6 @@ class EditList extends React.PureComponent {
 EditList.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
     isDeleteAllowed: PropTypes.bool.isRequired,
-    cancel: PropTypes.func.isRequired,
     save: PropTypes.func.isRequired,
     delete: PropTypes.func.isRequired,
 };
@@ -82,16 +112,13 @@ export default connect(
     },
     (dispatch, {history}) => {
         return {
-            cancel: () => showMenu()(dispatch),
-            save: (oldList, newListName) => {
-                updateList(oldList, newListName)(dispatch);
-                history.goBack();
-                showMenu()(dispatch);
+            save: (list, newListName) => {
+                updateList(list, newListName)(dispatch);
+                history.push('/product-list/' + list.getId());
             },
             delete: (list) => {
                 deleteList(list)(dispatch);
                 history.push('/');
-                showMenu()(dispatch);
             }
         }
     }
