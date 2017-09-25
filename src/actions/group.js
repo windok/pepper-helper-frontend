@@ -1,13 +1,20 @@
 import * as actionType from 'Actions';
 import {API_CALL, GET, POST} from 'Store/api-middleware/RSAA';
+import {SOCKET_CALL} from 'Store/socket-middleware';
 import Group from 'Models/Group';
+import store from 'Store';
+import {getUserLanguage} from 'Reducers/user';
+import uuid from 'uuid/v4';
 
 export const fetchAll = () => (dispatch) => {
 
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/translation',
-            method: GET,
+        [SOCKET_CALL]: {
+            action: 'translation-load',
+            payload: {
+                type: 'group',
+                limit: 1000
+            },
             types: [
                 actionType.FETCH_GROUP_COLLECTION_REQUEST,
                 {
@@ -15,12 +22,12 @@ export const fetchAll = () => (dispatch) => {
                     payload: (action, state, response) => {
                         const groupCollection = new Map();
 
-                        (response.data.items || []).forEach(groupTranslation => groupCollection.set(
-                            groupTranslation.id,
+                        (response.items || []).forEach(groupData => groupCollection.set(
+                            groupData.id,
                             new Group({
-                                id: groupTranslation.id,
-                                tmpId: groupTranslation.tmpId || '',
-                                name: groupTranslation[state.user.language] || groupTranslation.en
+                                ...groupData,
+                                tmpId: groupData.tmpId || '',
+                                name: groupData[getUserLanguage(state)] || groupData.en
                             })
                         ));
 
@@ -29,37 +36,43 @@ export const fetchAll = () => (dispatch) => {
                 },
                 actionType.FETCH_GROUP_COLLECTION_ERROR
             ],
-            params: {
-                type: 'group',
-                limit: 1000
-            },
         }
     });
 };
 
 
 export const createGroup = (value) => (dispatch) => {
+    const group = new Group({
+        id: 0,
+        tmpId: uuid(),
+        name: value
+    });
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/translation',
-            method: POST,
+        [SOCKET_CALL]: {
+            action: 'translation-create',
+            payload: {
+                ...group.serialize(),
+                type: 'group',
+                language: getUserLanguage(store.getState()),
+                value
+            },
             types: [
-                actionType.CREATE_GROUP_REQUEST,
+                {
+                    type: actionType.CREATE_GROUP_REQUEST,
+                    payload: {group}
+                },
                 {
                     type: actionType.CREATE_GROUP_SUCCESS,
                     payload: (action, state, response) => {
                         return new Group({
-                            id: response.data.id,
-                            name: response.data[state.user.language] || response.data.en
+                            ...response,
+                            tmpId: response.tmpId || '',
+                            name: response[getUserLanguage(state)] || response.en
                         });
                     }
                 },
                 actionType.CREATE_GROUP_ERROR
             ],
-            params: {
-                type: 'group',
-                value,
-            },
         }
     });
 };

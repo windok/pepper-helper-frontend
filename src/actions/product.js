@@ -1,12 +1,18 @@
 import * as actionType from 'Actions';
-import {API_CALL, GET, POST} from 'Store/api-middleware/RSAA';
+import {SOCKET_CALL} from 'Store/socket-middleware';
 import Product from 'Models/Product';
+import {getUserLanguage} from 'Reducers/user';
+import store from 'Store';
+import uuid from 'uuid/v4';
 
 export const fetchAll = () => (dispatch) => {
-    dispatch({
-        [API_CALL]: {
-            endpoint: '/translation',
-            method: GET,
+    return dispatch({
+        [SOCKET_CALL]: {
+            action: 'translation-load',
+            payload: {
+                type: 'product',
+                limit: 1000
+            },
             types: [
                 actionType.FETCH_PRODUCT_COLLECTION_REQUEST,
                 {
@@ -14,13 +20,13 @@ export const fetchAll = () => (dispatch) => {
                     payload: (action, state, response) => {
                         const productCollection = new Map();
 
-                        (response.data.items || []).forEach(productTranslation => productCollection.set(
-                            productTranslation.id,
+                        (response.items || []).forEach(productData => productCollection.set(
+                            productData.id,
                             new Product({
-                                ...productTranslation,
-                                tmpId: productTranslation.tmpId || '',
-                                name: productTranslation[state.user.language],
-                                defaultName: productTranslation.en
+                                ...productData,
+                                tmpId: productData.tmpId || '',
+                                name: productData[getUserLanguage(state)],
+                                defaultName: productData.en
                             })
                         ));
 
@@ -29,10 +35,6 @@ export const fetchAll = () => (dispatch) => {
                 },
                 actionType.FETCH_PRODUCT_COLLECTION_ERROR
             ],
-            params: {
-                type: 'product',
-                limit: 1000
-            },
         }
     });
 };
@@ -43,49 +45,62 @@ export const searchProduct = (query) => (dispatch) => {
     }
 
     dispatch({
-        [API_CALL]: {
-            endpoint: '/translation/search',
-            method: GET,
+        [SOCKET_CALL]: {
+            action: 'translation-search',
+            payload: {
+                value: query,
+                type: 'product',
+                language: getUserLanguage(store.getState())
+            },
             types: [
                 actionType.SEARCH_PRODUCT_REQUEST,
                 {
                     type: actionType.SEARCH_PRODUCT_SUCCESS,
                     meta: {query},
-                    payload: (action, state, response) => response.data.items.map(product => product.id)
+                    payload: (action, state, response) => response.items.map(product => product.id)
                 },
                 actionType.SEARCH_PRODUCT_ERROR
             ],
-            params: {
-                value: query,
-                type: 'product'
-            },
         }
     });
 };
 
 export const createProduct = (value) => (dispatch) => {
+    // todo set appropriate userId
+    const product = new Product({
+        id: 0,
+        tmpId: uuid(),
+        name: value,
+        defaultValue: value,
+        userId: 1
+    });
+
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/translation',
-            method: POST,
+        [SOCKET_CALL]: {
+            action: 'translation-create',
+            payload: {
+                ...product.serialize(),
+                value: value,
+                type: 'product',
+                language: getUserLanguage(store.getState())
+            },
             types: [
-                actionType.CREATE_PRODUCT_REQUEST,
+                {
+                    type: actionType.CREATE_PRODUCT_REQUEST,
+                    payload: {product}
+                },
                 {
                     type: actionType.CREATE_PRODUCT_SUCCESS,
                     payload: (action, state, response) => {
                         return new Product({
-                            ...response.data,
-                            name: response.data.value,
-                            defaultName: response.data.value
+                            ...response,
+                            name: response.value,
+                            defaultName: response.value
                         });
                     }
                 },
                 actionType.CREATE_PRODUCT_ERROR
             ],
-            params: {
-                type: 'product',
-                value,
-            },
         }
     });
 };

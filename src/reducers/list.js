@@ -8,19 +8,10 @@ const initialState = {
 export default Object.assign(
     (state = initialState, action) => {
         switch (action.type) {
-            // case actionType.FETCH_LIST_COLLECTION_REQUEST:
-            // case actionType.FETCH_LIST_COLLECTION_ERROR:
-            //     return {...state};
-
             case actionType.FETCH_LIST_COLLECTION_SUCCESS:
                 return {...state, items: new Map([...state.items, ...action.payload])};
 
             case actionType.CREATE_LIST_REQUEST:
-                return {
-                    ...state,
-                    items: new Map([...state.items]).set(action.meta.list.getTmpId(), action.meta.list.clone())
-                };
-
             case actionType.EDIT_LIST_REQUEST: {
                 const id = action.meta.list.getId() || action.meta.list.getTmpId();
 
@@ -33,7 +24,7 @@ export default Object.assign(
             case actionType.CREATE_LIST_SUCCESS:
             case actionType.EDIT_LIST_SUCCESS: {
                 const items = new Map([...state.items]);
-                items.delete(action.meta.list.getTmpId());
+                items.delete(action.payload.list.getTmpId());
                 items.set(action.payload.getId(), action.payload.clone());
 
                 return {...state, items};
@@ -41,8 +32,8 @@ export default Object.assign(
 
             case actionType.DELETE_LIST_REQUEST: {
                 const items = new Map([...state.items]);
-                items.delete(action.meta.list.getId());
-                items.delete(action.meta.list.getTmpId());
+                items.delete(action.payload.list.getId());
+                items.delete(action.payload.list.getTmpId());
 
                 return {...state, items};
             }

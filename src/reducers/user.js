@@ -11,3 +11,7 @@ export default Object.assign(
             return {};
         }
     });
+
+export const getUserLanguage = (state) => {
+    return state.user.language
+};

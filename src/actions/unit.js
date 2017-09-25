@@ -1,12 +1,14 @@
 import * as actionType from 'Actions';
-import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+import {SOCKET_CALL} from 'Store/socket-middleware';
 import Unit from 'Models/Unit';
 
 export const fetchAll = () => (dispatch) => {
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/unit',
-            method: GET,
+        [SOCKET_CALL]: {
+            action: 'unit-load',
+            payload: {
+                limit: 1000
+            },
             types: [
                 actionType.FETCH_UNIT_COLLECTION_REQUEST,
                 {
@@ -14,18 +16,19 @@ export const fetchAll = () => (dispatch) => {
                     payload: (action, state, response) => {
                         const unitCollection = new Map();
 
-                        (response.data.items || []).forEach(unitData => {
-                            unitCollection.set(unitData.id, new Unit({...unitData, tmpId: unitData.tmpId || ''}))
-                        });
+                        (response.items || []).forEach(unitData => unitCollection.set(
+                            unitData.id,
+                            new Unit({
+                                ...unitData,
+                                tmpId: unitData.tmpId || ''
+                            })
+                        ));
 
                         return unitCollection;
                     }
                 },
                 actionType.FETCH_UNIT_COLLECTION_ERROR
             ],
-            params: {
-                limit: 1000
-            },
         }
     });
 };

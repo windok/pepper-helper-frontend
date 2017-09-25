@@ -23,9 +23,41 @@ const storeTransform = createTransform(
     }
 );
 
+import uuid from 'uuid/v4';
+import SocketClient from 'Services/SocketClient';
+import SocketRequest from 'Models/SocketRequest';
+import SyncAction from 'Models/SyncAction';
+
 export default () => {
     return {
         ...offlineDefaultConfig,
+        effect: (effect, action) => {
+            // console.log('effect', effect);
+            // console.log('action', action);
+
+            const actionId = uuid();
+            const syncAction = new SyncAction({
+                id: actionId,
+                name: effect.action,
+                payload: effect.payload || {}
+            });
+
+            const socketRequest = new SocketRequest({
+                id: uuid(),
+                actions: [syncAction]
+            });
+
+            return SocketClient.send(socketRequest)
+                .then(socketResponse => {
+                    let actionResponse = socketResponse.getAction(actionId);
+
+                    if (action.meta.offline.commit && action.meta.offline.commit.payload) {
+                        actionResponse = action.meta.offline.commit.payload(actionResponse);
+                    }
+
+                    return actionResponse;
+                });
+        },
         persistOptions: {
             transforms: [storeTransform],
         }

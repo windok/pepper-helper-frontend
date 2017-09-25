@@ -7,6 +7,7 @@ import store from 'Store';
 import {AppContainer} from 'react-hot-loader'
 import OfflinePlugin from 'offline-plugin/runtime';
 
+
 OfflinePlugin.install({
     onUpdateReady: function () {
         OfflinePlugin.applyUpdate();

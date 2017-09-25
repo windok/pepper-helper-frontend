@@ -1,5 +1,6 @@
 import * as actionType from 'Actions';
 import {API_CALL, GET, POST, PUT, DELETE} from 'Store/api-middleware/RSAA';
+import {SOCKET_CALL} from 'Store/socket-middleware';
 import List from 'Models/List';
 import uuid from 'uuid/v4';
 
@@ -7,9 +8,11 @@ import uuid from 'uuid/v4';
 export const fetchAll = () => (dispatch) => {
 
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/product-list',
-            method: GET,
+        [SOCKET_CALL]: {
+            action: 'product-list-load',
+            payload: {
+                limit: 1000
+            },
             types: [
                 actionType.FETCH_LIST_COLLECTION_REQUEST,
                 {
@@ -17,18 +20,19 @@ export const fetchAll = () => (dispatch) => {
                     payload: (action, state, response) => {
                         const listCollection = new Map();
 
-                        (response.data.items || []).forEach(listData => {
-                            listCollection.set(listData.id, new List({...listData, tmpId: listData.tmpId || ''}))
-                        });
+                        (response.items || []).forEach(listData => listCollection.set(
+                            listData.id,
+                            new List({
+                                ...listData,
+                                tmpId: listData.tmpId || ''
+                            })
+                        ));
 
                         return listCollection;
                     }
                 },
                 actionType.FETCH_LIST_COLLECTION_ERROR
             ],
-            params: {
-                limit: 1000
-            },
         }
     });
 };
@@ -41,80 +45,66 @@ export const create = (listName) => (dispatch) => {
     const list = new List({id: 0, tmpId: uuid(), name: listName});
 
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/product-list',
-            method: POST,
-            types: [
-                {
-                    type: actionType.CREATE_LIST_REQUEST,
-                    meta: {list}
+        type: actionType.CREATE_LIST_REQUEST,
+        payload: {list},
+        meta: {
+            offline: {
+                effect: {
+                    action: 'product-list-create',
+                    payload: list.serialize(),
                 },
-                {
+                commit: {
                     type: actionType.CREATE_LIST_SUCCESS,
-                    meta: {list},
-                    payload: (action, state, response) => {
-                        return new List(response.data);
+                    payload: (response) => {
+                        return new List(response);
                     }
-                },
-                actionType.CREATE_LIST_ERROR
-            ],
-            params: {...list.serialize()},
+                }
+            }
         }
     });
 };
 
-export const updateList = (oldList, newListName) => (dispatch) => {
+export const updateList = (list, newListName) => (dispatch) => {
     // todo update by tmpId
-    if (oldList.isNullObject()) {
-        return;
-    }
+    // todo rollback if error happened
+    const list = new List({...list.serialize(), name: newListName});
 
-    const list = new List({...oldList.serialize(), name: newListName});
-
-    dispatch({
-        [API_CALL]: {
-            endpoint: '/product-list/' + list.getId(),
-            method: PUT,
-            types: [
-                {
-                    type: actionType.EDIT_LIST_REQUEST,
-                    meta: {list}
+    return dispatch({
+        type: actionType.EDIT_LIST_REQUEST,
+        payload: {list},
+        meta: {
+            offline: {
+                effect: {
+                    action: 'product-list-update',
+                    payload: list.serialize(),
                 },
-                {
+                commit: {
                     type: actionType.EDIT_LIST_SUCCESS,
-                    meta: {list},
-                    payload: (action, state, response) => {
-                        return new List(response.data);
+                    payload: (response) => {
+                        return new List(response);
                     }
-                },
-                actionType.EDIT_LIST_ERROR
-            ],
-            params: {...list.serialize()},
+                }
+            }
         }
     });
 };
 
 export const deleteList = (list) => (dispatch) => {
+    // todo delete by tmpId
+    // todo process rollback
 
-    if (list.isNullObject()) {
-        return;
-    }
-
-    dispatch({
-        [API_CALL]: {
-            endpoint: '/product-list/' + list.getId(),
-            method: DELETE,
-            types: [
-                {
-                    type: actionType.DELETE_LIST_REQUEST,
-                    meta: {list}
-                },
-                {
-                    type: actionType.DELETE_LIST_SUCCESS,
-                    meta: {list},
-                },
-                actionType.DELETE_LIST_ERROR
-            ]
+    return dispatch({
+        type: actionType.DELETE_LIST_REQUEST,
+        payload: {list},
+        meta: {
+            offline: {
+                effect: {
+                    action: 'product-list-delete',
+                    payload: {
+                        id: list.getId()
+                    },
+                }
+            }
         }
     });
 };

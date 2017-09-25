@@ -1,5 +1,6 @@
 import * as actionType from 'Actions';
 import {API_CALL, GET, POST, PUT} from 'Store/api-middleware/RSAA';
+import {SOCKET_CALL} from 'Store/socket-middleware';
 
 import {ListItem, CustomProductListItemTemplate,
     STATUS_DRAFT, STATUS_BOUGHT, STATUS_SUSPENDED,
@@ -7,6 +8,7 @@ import {ListItem, CustomProductListItemTemplate,
 
 import Store from 'Store';
 import uuid from 'uuid/v4';
+import {getUserLanguage} from 'Reducers/user';
 
 export const fetchItemsForList = (list) => (dispatch) => {
 
@@ -15,9 +17,8 @@ export const fetchItemsForList = (list) => (dispatch) => {
     }
 
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/list-item',
-            method: GET,
+        [SOCKET_CALL]: {
+            action: 'list-item-load',
             types: [
                 actionType.FETCH_ITEMS_FOR_LIST_REQUEST,
                 {
@@ -25,7 +26,7 @@ export const fetchItemsForList = (list) => (dispatch) => {
                     payload: (action, state, response) => {
                         const items = new Map();
 
-                        (response.data.items || []).forEach(listItemData => {
+                        (response.items || []).forEach(listItemData => {
                             const listItem = new ListItem({
                                 ...listItemData,
                                 tmpId: listItemData.tmpId || '',
@@ -71,20 +72,24 @@ export const getTemplate = (list, product) => (dispatch) => {
     }
 
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/list-item-template/' + product.getId() + '/' + list.getId(),
-            method: GET,
+        [SOCKET_CALL]: {
+            action: 'list-item-getTemplate',
+            payload: {
+                translationId: product.getId(),
+                language: getUserLanguage(Store.getState()),
+                listId: list.getId(),
+            },
             types: [
                 actionType.GET_ITEM_TEMPLATE_REQUEST,
                 {
                     type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
                     meta: {list, product},
                     payload: (action, state, response) => new ListItem({
-                        ...response.data,
-                        id: response.data.id || 0,
-                        tmpId: uuid(),
-                        date: response.data.date || new Date(),
-                        productId: response.data.translationId
+                        ...response,
+                        id: response.id || 0,
+                        tmpId: response.tmpId || uuid(),
+                        date: response.date || new Date(),
+                        productId: response.translationId
                     })
                 },
                 actionType.GET_ITEM_TEMPLATE_ERROR
@@ -142,6 +147,7 @@ export const editItem = (listItem) => (dispatch) => {
                     meta: {listItem},
                     payload: (action, state, response) => new ListItem({
                         ...response.data,
+                        tmpId: response.data.tmpId || '',
                         date: response.data.date || new Date(),
                         productId: response.data.translationId
                     })

@@ -52,7 +52,8 @@ export default connect(
             productCollection: getProductCollection(state),
             searchResults: findBestSearchResults(state, query)
         }
-    }, {
+    },
+    {
         addItem: link => {
             history.push(link);
         }
