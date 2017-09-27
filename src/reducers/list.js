@@ -13,18 +13,18 @@ export default Object.assign(
 
             case actionType.CREATE_LIST_REQUEST:
             case actionType.EDIT_LIST_REQUEST: {
-                const id = action.meta.list.getId() || action.meta.list.getTmpId();
+                const id = action.payload.list.getId() || action.payload.list.getTmpId();
 
                 return {
                     ...state,
-                    items: new Map([...state.items]).set(id, action.meta.list.clone())
+                    items: new Map([...state.items]).set(id, action.payload.list.clone())
                 };
             }
 
             case actionType.CREATE_LIST_SUCCESS:
             case actionType.EDIT_LIST_SUCCESS: {
                 const items = new Map([...state.items]);
-                items.delete(action.payload.list.getTmpId());
+                items.delete(action.payload.getTmpId());
                 items.set(action.payload.getId(), action.payload.clone());
 
                 return {...state, items};

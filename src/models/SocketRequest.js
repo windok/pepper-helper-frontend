@@ -39,7 +39,11 @@ class SocketRequest extends NotNullable(Entity) {
         this.getActions().forEach(action => {
             actions[action.getId()] = {
                 type: action.getName(),
-                payload: action.getPayload()
+                payload: {
+                    ...action.getPayload(),
+            // todo refactor authentication
+                    PH_TOKEN: 'test'
+                }
             }
         });
 

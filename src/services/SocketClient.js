@@ -31,7 +31,7 @@ const connect = () => {
             connectionPromise = null;
             socket = null;
 
-            setTimeout(connect, 10000);
+            setTimeout(connect, 1000);
         };
 
         socket.onmessage = function (event) {
@@ -59,19 +59,20 @@ const connect = () => {
     return connectionPromise;
 };
 
-const send = (request) => connect().then(socket => {
-    console.log('send request', request);
+const send = (request) => connect()
+    .then((socket) => {
+        console.log('send request', request);
 
-    return new Promise((resolve, reject) => {
-        requests.set(request.getId(), {request, resolve, reject});
+        return new Promise((resolve, reject) => {
+            requests.set(request.getId(), {request, resolve, reject});
 
-        setTimeout(() => {
-            requests.delete(request.getId());
-            reject('Socket response timeout');
-        }, request.getTimeout());
+            setTimeout(() => {
+                requests.delete(request.getId());
+                reject('Socket response timeout');
+            }, request.getTimeout());
 
-        socket.send(request.toJSON());
-    });
+            socket.send(request.toJSON());
+        });
 });
 
 const SocketClient = {

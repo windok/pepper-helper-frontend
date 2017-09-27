@@ -55,9 +55,7 @@ export const create = (listName) => (dispatch) => {
                 },
                 commit: {
                     type: actionType.CREATE_LIST_SUCCESS,
-                    payload: (response) => {
-                        return new List(response);
-                    }
+                    payload: (listData) => new List({...listData, tmpId: listData.tmpId || ''})
                 }
             }
         }
@@ -67,22 +65,20 @@ export const create = (listName) => (dispatch) => {
 export const updateList = (list, newListName) => (dispatch) => {
     // todo update by tmpId
     // todo rollback if error happened
-    const list = new List({...list.serialize(), name: newListName});
+    const listUpdated = new List({...list.serialize(), name: newListName});
 
     return dispatch({
         type: actionType.EDIT_LIST_REQUEST,
-        payload: {list},
+        payload: {list: listUpdated},
         meta: {
             offline: {
                 effect: {
                     action: 'product-list-update',
-                    payload: list.serialize(),
+                    payload: listUpdated.serialize(),
                 },
                 commit: {
                     type: actionType.EDIT_LIST_SUCCESS,
-                    payload: (response) => {
-                        return new List(response);
-                    }
+                    payload: (listData) => new List({...listData, tmpId: listData.tmpId || ''})
                 }
             }
         }
