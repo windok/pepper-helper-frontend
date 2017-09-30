@@ -3,6 +3,9 @@ import SocketClient from 'Services/SocketClient';
 import SocketRequest from 'Models/SocketRequest';
 import SyncAction from 'Models/SyncAction';
 
+// todo refactor:
+import {getUser} from 'Reducers/user';
+
 
 export const SOCKET_CALL = Symbol('Call Pepper Helper Socket API action');
 
@@ -65,11 +68,16 @@ const socketMiddleware = (store) => {
 
             next(createActionForNext(requestType, action, store));
 
+            const user = getUser(store.getState());
+
             const actionId = uuid();
             const syncAction = new SyncAction({
                 id: actionId,
                 name: socketAction,
-                payload
+                payload: {
+                    ...payload,
+                    PH_TOKEN: user.getToken()
+                }
             });
 
             return SocketClient.send(new SocketRequest({

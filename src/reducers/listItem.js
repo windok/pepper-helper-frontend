@@ -54,6 +54,9 @@ export default Object.assign(
                     ...state,
                     items: new Map([...state.items]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
                 };
+
+            case actionType.USER_LOGOUT:
+                return {...initialState}
         }
 
         return state;

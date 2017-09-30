@@ -76,7 +76,8 @@ ProductListScreen.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const listId = parseInt(match.params.listId) || 0;
+        // todo dirty hack to redirect to new list, consider another way
+        const listId = (/^[0-9]+$/.test(match.params.listId) ? parseInt(match.params.listId) : match.params.listId) || 0;
 
         return {
             list: listId ? getList(state, listId) : getFirstList(state)

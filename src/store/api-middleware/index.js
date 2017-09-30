@@ -1,6 +1,10 @@
 import RestClient from './RestClient';
 import {API_CALL} from './RSAA';
 
+// todo refactor setting token
+import {getUser} from 'Reducers/user';
+
+
 const isRSAA = (action) => {
     return action[API_CALL] !== undefined;
 };
@@ -76,12 +80,20 @@ const apiMiddleware = (store) => {
             ? action[API_CALL].params(action, store.getState())
             : action[API_CALL].params || {};
 
-        const headers = {
-            ...{
-                'PH-TOKEN': 'test',
-                'Content-Type': 'application/json',
-                'Accept-Language': store.getState().user.language,
-            },
+
+        let headers = {
+            'Content-Type': 'application/json',
+        };
+
+        // todo refactor user specific headers
+        const user = getUser(store.getState());
+        if (user) {
+            headers['PH-TOKEN'] = user.getToken();
+            headers['Accept-Language'] = user.getLanguage();
+        }
+
+        headers = {
+            ...headers,
             ...(action[API_CALL].headers || {})
         };
 

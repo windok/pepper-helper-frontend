@@ -41,8 +41,6 @@ class SocketRequest extends NotNullable(Entity) {
                 type: action.getName(),
                 payload: {
                     ...action.getPayload(),
-            // todo refactor authentication
-                    PH_TOKEN: 'test'
                 }
             }
         });

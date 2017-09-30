@@ -17,16 +17,33 @@ class Screen extends React.PureComponent {
         super(props);
 
         this.state = {
-            rehydrationCompleted: false,
+            rehydrationCompleted: props.isRehydrationCompleted,
+            resourcesRequested: false,
             resourcesLoaded: false
         };
+
+        if (this.state.rehydrationCompleted) {
+            this.state.resourcesRequested = true;
+            this.props.loadResources().then(() => this.setState({resourcesLoaded: true}));
+        }
+    }
+
+    loadResources() {
+
     }
 
     componentWillReceiveProps({isRehydrationCompleted}) {
         if (!this.state.rehydrationCompleted && isRehydrationCompleted) {
             this.setState({rehydrationCompleted: true});
-            this.props.loadResources().then(() => this.setState({resourcesLoaded: true}));
         }
+
+        if (this.state.resourcesRequested || !this.state.rehydrationCompleted) {
+            return;
+        }
+
+        this.setState({resourcesRequested: true});
+        this.props.loadResources().then(() => this.setState({resourcesLoaded: true}));
+
     }
 
     render() {
@@ -63,4 +80,3 @@ export default connect(
         }
     }
 )(Screen);
-

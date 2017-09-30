@@ -51,7 +51,7 @@ export default connect(
             cancel: () => history.goBack(),
             save: (listName) => {
                 createList(listName)(dispatch).then((list) => {
-                    history.push('/product-list/' + list.getId());
+                    history.push('/product-list/' + list.getTmpId());
                 });
             }
         }

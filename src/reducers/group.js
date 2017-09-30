@@ -14,6 +14,8 @@ export default Object.assign(
             case actionType.FETCH_GROUP_COLLECTION_SUCCESS:
                 return {...state, items: new Map([...state.items, ...action.payload])};
 
+            case actionType.USER_LOGOUT:
+                return {...initialState}
         }
 
         return state;

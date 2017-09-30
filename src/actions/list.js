@@ -4,6 +4,8 @@ import {SOCKET_CALL} from 'Store/socket-middleware';
 import List from 'Models/List';
 import uuid from 'uuid/v4';
 
+import store from 'Store';
+import {getUser} from 'Reducers/user';
 
 export const fetchAll = () => (dispatch) => {
 
@@ -44,14 +46,18 @@ export const create = (listName) => (dispatch) => {
 
     const list = new List({id: 0, tmpId: uuid(), name: listName});
 
-    return dispatch({
+    dispatch({
         type: actionType.CREATE_LIST_REQUEST,
         payload: {list},
         meta: {
             offline: {
                 effect: {
                     action: 'product-list-create',
-                    payload: list.serialize(),
+                    payload: {
+                        ...list.serialize(),
+                        // todo refactor setting auth token
+                        PH_TOKEN: getUser(store.getState()).getToken()
+                    },
                 },
                 commit: {
                     type: actionType.CREATE_LIST_SUCCESS,
@@ -60,6 +66,8 @@ export const create = (listName) => (dispatch) => {
             }
         }
     });
+
+    return Promise.resolve(list);
 };
 
 export const updateList = (list, newListName) => (dispatch) => {
@@ -67,14 +75,18 @@ export const updateList = (list, newListName) => (dispatch) => {
     // todo rollback if error happened
     const listUpdated = new List({...list.serialize(), name: newListName});
 
-    return dispatch({
+    dispatch({
         type: actionType.EDIT_LIST_REQUEST,
         payload: {list: listUpdated},
         meta: {
             offline: {
                 effect: {
                     action: 'product-list-update',
-                    payload: listUpdated.serialize(),
+                    payload: {
+                        ...listUpdated.serialize(),
+                        // todo refactor setting auth token
+                        PH_TOKEN: getUser(store.getState()).getToken()
+                    },
                 },
                 commit: {
                     type: actionType.EDIT_LIST_SUCCESS,
@@ -97,7 +109,8 @@ export const deleteList = (list) => (dispatch) => {
                 effect: {
                     action: 'product-list-delete',
                     payload: {
-                        id: list.getId()
+                        id: list.getId(),
+                        PH_TOKEN: getUser(store.getState()).getToken()
                     },
                 }
             }

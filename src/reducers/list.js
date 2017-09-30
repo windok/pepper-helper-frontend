@@ -37,6 +37,9 @@ export default Object.assign(
 
                 return {...state, items};
             }
+
+            case actionType.USER_LOGOUT:
+                return {...initialState}
         }
 
         return state;
@@ -62,7 +65,18 @@ export default Object.assign(
  * @return {List}
  */
 export const getList = (state, id) => {
-    return state.list.items.get(id) || new ListNullObject();
+    return state.list.items.get(id) || getListByTmpId(state, id) || new ListNullObject();
+};
+
+/**
+ * @param state
+ * @param tmpId
+ * @return {List}
+ */
+export const getListByTmpId = (state, tmpId) => {
+    return state.list.items.get(tmpId)
+        || Array.from(state.list.items.values()).filter(list => list.getTmpId() === tmpId)[0]
+        || new ListNullObject()
 };
 
 /**

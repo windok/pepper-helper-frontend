@@ -27,6 +27,9 @@ export default Object.assign(
                     ...state,
                     items: (new Map([...state.items])).set(action.payload.getId(), action.payload.clone())
                 }
+
+            case actionType.USER_LOGOUT:
+                return {...initialState}
         }
 
         return state;

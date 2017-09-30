@@ -7,21 +7,11 @@ import {hideMenu, showMenu} from 'Actions/ui';
 import {isSidebarOpened} from 'Reducers/ui';
 
 import Drawer from 'react-md/lib/Drawers';
-import Toolbar from 'react-md/lib/Toolbars';
-import Button from 'react-md/lib/Buttons/Button';
-import Avatar from 'react-md/lib/Avatars';
 import ListCollection from 'Screens/productListCollection/ListCollection';
+import UserSidebarHeader from 'Screens/user/UserSidebarHeader';
 
 class Sidebar extends React.PureComponent {
     render() {
-
-        const header = <Toolbar
-            nav={<div><Avatar>J</Avatar> John Doe</div>}
-            prominentTitle
-            actions={<Button icon onClick={this.props.hideMenu}>close</Button>}
-            className="md-divider-border md-divider-border--bottom"
-        />;
-
         return (
             <Drawer
                 autoclose
@@ -34,7 +24,7 @@ class Sidebar extends React.PureComponent {
                     visible ? this.props.showMenu() : this.props.hideMenu();
                 }}
                 type={Drawer.DrawerTypes.TEMPORARY}
-                header={header}
+                header={<UserSidebarHeader/>}
             >
                 <ListCollection currentList={this.props.currentList}/>
             </Drawer>
