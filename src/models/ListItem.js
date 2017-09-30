@@ -108,7 +108,7 @@ class CustomProductListItemTemplate extends NotNullable(ListItem) {
     clone() {
         const template = this.serialize();
 
-        return new this.constructor(template.listId, template.productId, template.groupId, template.unitId, template.quantity);
+        return new this.constructor(template.tmpId, template.listId, template.productId, template.groupId, template.unitId, template.quantity);
     }
 }
 

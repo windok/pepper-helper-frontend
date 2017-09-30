@@ -71,7 +71,7 @@ export const createProduct = (value) => (dispatch) => {
         id: 0,
         tmpId: uuid(),
         name: value,
-        defaultValue: value,
+        defaultName: value,
         userId: 1
     });
 
