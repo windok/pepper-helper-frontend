@@ -15,10 +15,11 @@ const middleware = [
     socketApiMiddleware
 ];
 
-const store = createStore(reducers, compose(
+const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore(reducers, composeEnhancer(
     applyMiddleware(...middleware),
     offline(getOfflineConfig()),
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 ));
 
 export default store;

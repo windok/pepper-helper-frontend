@@ -5,7 +5,7 @@ import {Nullable, NotNullable} from 'Models/NullableInterface';
 class User extends NotNullable(Entity) {
     constructor(entity) {
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['email', 'token', 'tokenLifeTime', 'name', 'defaultProductListId', 'avatar',])
+            (entity) => entityStructureFilter(entity, ['email', 'token', 'tokenLifeTime', 'language', 'name', 'defaultProductListId', 'avatar',])
         ]);
     }
 
@@ -26,7 +26,7 @@ class User extends NotNullable(Entity) {
     }
 
     getLanguage() {
-        return (navigator.language || navigator.userLanguage).split('-')[0];
+        return this.entity.language;
     }
 
     getDefaultProductListId() {

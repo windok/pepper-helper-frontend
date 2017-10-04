@@ -1,7 +1,8 @@
 import * as actionType from 'Actions';
 
 const initialState = {
-    rehydrateCompleted: false
+    rehydrateCompleted: false,
+    availableLanguages: ['en', 'ru']
 };
 
 export default Object.assign(
@@ -21,4 +22,8 @@ export default Object.assign(
 
 export const isRehydrationCompleted = (state) => {
     return state.app.rehydrateCompleted
+};
+
+export const getAvailableLanguages = (state) => {
+    return state.app.availableLanguages
 };

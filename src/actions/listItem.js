@@ -65,7 +65,7 @@ export const getTemplate = (list, product) => (dispatch) => {
         dispatch({
             type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
             meta: {list, product},
-            payload: new CustomProductListItemTemplate(uuid(), list.getId(), product.getId(), groupId, unitId, 0)
+            payload: new CustomProductListItemTemplate(uuid(), list.getId(), product.getId(), groupId, unitId, 1)
         });
 
         return Promise.resolve();
@@ -89,7 +89,8 @@ export const getTemplate = (list, product) => (dispatch) => {
                         id: response.id || 0,
                         tmpId: response.tmpId || uuid(),
                         date: response.date || new Date(),
-                        productId: response.translationId
+                        productId: response.translationId,
+                        quantity: parseInt(response.quantity) || 1
                     })
                 },
                 actionType.GET_ITEM_TEMPLATE_ERROR

@@ -3,7 +3,7 @@ import {API_CALL, POST, PUT} from 'Store/api-middleware/RSAA';
 import User from 'Models/User';
 
 export const register = (user) => (dispatch) => {
-    user.avatar = user.avatar || '';
+    user.avatar = user.avatar || 'imgUrl';
 
     if (!user.name) {
         delete user.name;
@@ -16,6 +16,9 @@ export const register = (user) => (dispatch) => {
             params: {
                 ...user
             },
+            headers: {
+                'Accept-Language': user.language
+            },
             types: [
                 actionType.USER_REGISTER_REQUEST,
                 {
@@ -23,7 +26,8 @@ export const register = (user) => (dispatch) => {
                     payload: (action, state, response) => new User({
                         ...response.data,
                         name: response.data.name || '',
-                        avatar: response.data.avatar || ''
+                        avatar: response.data.avatar || '',
+                        language: response.data.language || 'en'
                     })
                 },
                 actionType.USER_REGISTER_ERROR
@@ -45,7 +49,8 @@ export const signIn = (email, password) => (dispatch) => {
                     payload: (action, state, response) => new User({
                         ...response.data,
                         name: response.data.name || '',
-                        avatar: response.data.avatar || ''
+                        avatar: response.data.avatar || '',
+                        language: response.data.language || 'en'
                     })
                 },
                 actionType.USER_SIGN_IN_ERROR

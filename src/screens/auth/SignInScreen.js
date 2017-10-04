@@ -9,6 +9,8 @@ import Button from 'react-md/lib/Buttons';
 
 import RegistrationScreen from './RegistrationScreen';
 
+import {redirectToDefaultList} from 'Services/BrowserHistory';
+
 
 class SignInScreen extends React.PureComponent {
     constructor(props) {
@@ -87,7 +89,10 @@ export default connect(
     },
     (dispatch) => {
         return {
-            signIn: (email, password) => signIn(email, password)(dispatch)
+            signIn: (email, password) => {
+                signIn(email, password)(dispatch);
+                redirectToDefaultList();
+            }
         };
     }
 )(SignInScreen);
