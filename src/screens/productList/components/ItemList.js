@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Moment from 'moment';
+
 import {STATUS_DRAFT, STATUS_BOUGHT, TYPE_RECOMMENDED} from 'Models/ListItem';
 
 import List from 'react-md/lib/Lists/List';
@@ -15,9 +17,9 @@ class ItemList extends React.PureComponent {
     getItemComponent(listItem) {
         let correspondingItemComponent = InvisibleItem;
 
-        const today = new Date();
-        const nextDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-        const isItemActual = listItem.getDate() < nextDay;
+        const today = Moment.utc();
+        const nextDay = Moment.utc(today.add(1, 'day').format('YYYY-MM-DD'), 'YYYY-MM-DD');
+        const isItemActual = nextDay.isAfter(listItem.getDate());
 
         switch (listItem.getType()) {
             case TYPE_RECOMMENDED:

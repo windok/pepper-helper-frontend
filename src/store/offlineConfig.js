@@ -1,6 +1,13 @@
 import {createTransform} from 'redux-persist';
 import offlineDefaultConfig from 'redux-offline/lib/defaults';
 
+import uuid from 'uuid/v4';
+import SocketClient from 'Services/SocketClient';
+import SocketRequest from 'Models/SocketRequest';
+import SyncAction from 'Models/SyncAction';
+
+import ErrorHandler from 'Services/ErrorHandler';
+
 import {transformers} from 'Reducers';
 
 const storeTransform = createTransform(
@@ -23,40 +30,26 @@ const storeTransform = createTransform(
     }
 );
 
-import uuid from 'uuid/v4';
-import SocketClient from 'Services/SocketClient';
-import SocketRequest from 'Models/SocketRequest';
-import SyncAction from 'Models/SyncAction';
 
 export default () => {
     return {
         ...offlineDefaultConfig,
         effect: (effect, action) => {
-            // console.log('effect', effect);
-            // console.log('action', action);
-
-            const actionId = uuid();
             const syncAction = new SyncAction({
-                id: actionId,
+                id: uuid(),
                 name: effect.action,
                 payload: effect.payload || {}
             });
 
-            const socketRequest = new SocketRequest({
-                id: uuid(),
-                actions: [syncAction]
-            });
-
-            return SocketClient.send(socketRequest)
-                .then(socketResponse => {
-                    let actionResponse = socketResponse.getAction(actionId);
-
+            return SocketClient.sendAction(syncAction)
+                .then(actionResponse => {
                     if (action.meta.offline.commit && action.meta.offline.commit.payload) {
                         actionResponse = action.meta.offline.commit.payload(actionResponse);
                     }
 
                     return actionResponse;
-                });
+                })
+                .catch(e => ErrorHandler.handle(e));
         },
         persistOptions: {
             transforms: [storeTransform],

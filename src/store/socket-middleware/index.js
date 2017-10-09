@@ -3,6 +3,9 @@ import SocketClient from 'Services/SocketClient';
 import SocketRequest from 'Models/SocketRequest';
 import SyncAction from 'Models/SyncAction';
 
+import ErrorHandler from 'Services/ErrorHandler';
+import UnauthorizedError from 'Errors/UnauthorizedError';
+
 // todo refactor:
 import {getUser} from 'Reducers/user';
 
@@ -10,7 +13,7 @@ import {getUser} from 'Reducers/user';
 export const SOCKET_CALL = Symbol('Call Pepper Helper Socket API action');
 
 const isSocketRSAA = (action) => {
-    return action[SOCKET_CALL] !== undefined;
+    return action && action.hasOwnProperty(SOCKET_CALL);
 };
 
 const validateRSAA = (action) => {
@@ -52,57 +55,50 @@ const createActionForNext = (typeDescriptor, action, store, response) => {
 
 const socketMiddleware = (store) => {
     return (next) => (action) => {
-        try {
 
-            if (!isSocketRSAA(action)) {
-                return next(action);
-            }
-
-            validateRSAA(action);
-
-            const socketAction = action[SOCKET_CALL].action;
-            const [requestType, successType, failureType] = action[SOCKET_CALL].types;
-            const payload = typeof action[SOCKET_CALL].payload === 'function'
-                ? action[SOCKET_CALL].payload(action, store.getState())
-                : action[SOCKET_CALL].payload || {};
-
-            next(createActionForNext(requestType, action, store));
-
-            const user = getUser(store.getState());
-
-            const actionId = uuid();
-            const syncAction = new SyncAction({
-                id: actionId,
-                name: socketAction,
-                payload: {
-                    ...payload,
-                    PH_TOKEN: user.getToken()
-                }
-            });
-
-            return SocketClient.send(new SocketRequest({
-                id: uuid(),
-                actions: [syncAction]
-            })).then(
-                (response) => {
-                    const socketActionResponse = response.getAction(actionId);
-
-                    const actionForNext = createActionForNext(successType, action, store, socketActionResponse);
-                    next(actionForNext);
-
-                    return Promise.resolve(actionForNext.payload);
-                },
-                (error) => {
-                    const actionForNext = createActionForNext(failureType, action, store, error);
-                    next(actionForNext);
-
-                    return Promise.reject(actionForNext.payload);
-                }
-            );
-
-        } catch (e) {
-            console.error(e);
+        if (!isSocketRSAA(action)) {
+            return next(action);
         }
+
+        validateRSAA(action);
+
+        const socketAction = action[SOCKET_CALL].action;
+        const [requestType, successType, failureType] = action[SOCKET_CALL].types;
+        const payload = typeof action[SOCKET_CALL].payload === 'function'
+            ? action[SOCKET_CALL].payload(action, store.getState())
+            : action[SOCKET_CALL].payload || {};
+
+        next(createActionForNext(requestType, action, store));
+
+        const user = getUser(store.getState());
+
+        const syncAction = new SyncAction({
+            id: uuid(),
+            name: socketAction,
+            payload: {
+                ...payload,
+                PH_TOKEN: user.getToken()
+            }
+        });
+
+        return SocketClient.sendAction(syncAction).then(
+            (response) => {
+                const actionForNext = createActionForNext(successType, action, store, response);
+                next(actionForNext);
+
+                return Promise.resolve(actionForNext.payload);
+            },
+            (error) => {
+                if (error === "Authorization error: User that you reference is not authorized!") {
+                    throw new UnauthorizedError();
+                }
+
+                const actionForNext = createActionForNext(failureType, action, store, error);
+                next(actionForNext);
+
+                return Promise.reject(actionForNext.payload);
+            }
+        ).catch(e => ErrorHandler.handle(e));
     }
 };
 

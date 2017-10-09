@@ -1,3 +1,5 @@
+import Moment from 'moment';
+
 import Entity from './Entity';
 import {Nullable, NotNullable} from 'Models/NullableInterface';
 import {entityStructureFilter, dateConverter} from './entityProcessors';
@@ -7,7 +9,7 @@ class SocketRequest extends NotNullable(Entity) {
         super(
             {
                 ...entityData,
-                date: {...entityData.date} || new Date,
+                date: entityData.date || Moment.utc(),
                 timeout: entityData.timeout || 2000
             },
             [

@@ -1,5 +1,6 @@
 import * as actionType from 'Actions';
 import {List, ListNullObject} from 'Models/List';
+import {getUser} from 'Reducers/user';
 
 const initialState = {
     items: new Map(),
@@ -45,16 +46,12 @@ export default Object.assign(
         return state;
     },
     {
-        persist: (state) => {
-            return {
-                items: Array.from(state.items.entries(), ([listId, list]) => [listId, list.serialize()])
-            }
-        },
-        rehydrate: (persistedState) => {
-            return {
-                items: new Map(persistedState.items.map(([listId, listData]) => [listId, new List(listData)]))
-            }
-        }
+        persist: (state) => ({
+            items: Array.from(state.items.entries(), ([listId, list]) => [listId, list.serialize()])
+        }),
+        rehydrate: (persistedState) => ({
+            items: new Map(persistedState.items.map(([listId, listData]) => [listId, new List(listData)]))
+        })
     }
 );
 
@@ -84,7 +81,11 @@ export const getListByTmpId = (state, tmpId) => {
  * @return {List}
  */
 export const getFirstList = (state) => {
-    return state.list.items.values().next().value || new ListNullObject();
+    const user = getUser(state);
+
+    return (user && state.list.items.get(user.getDefaultProductListId()))
+        || state.list.items.values().next().value
+        || new ListNullObject();
 };
 
 /**

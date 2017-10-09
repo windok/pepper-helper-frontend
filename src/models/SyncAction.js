@@ -1,3 +1,5 @@
+import Moment from 'moment';
+
 import Entity from './Entity';
 import {Nullable, NotNullable} from 'Models/NullableInterface';
 import {entityStructureFilter, dateConverter} from './entityProcessors';
@@ -8,7 +10,7 @@ class SyncAction extends NotNullable(Entity) {
             {
                 ...entityData,
                 payload: {...entityData.payload} || {},
-                date: {...entityData.date} || new Date
+                date: entityData.date || Moment.utc()
             },
             [
                 (entity) => entityStructureFilter(entity, ['id', 'name', 'payload', 'date']),

@@ -1,11 +1,12 @@
 import Entity from './Entity';
-import {entityStructureFilter} from './entityProcessors';
+import {entityStructureFilter, dateConverter} from './entityProcessors';
 import {Nullable, NotNullable} from 'Models/NullableInterface';
 
 class User extends NotNullable(Entity) {
     constructor(entity) {
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['email', 'token', 'tokenLifeTime', 'language', 'name', 'defaultProductListId', 'avatar',])
+            (entity) => entityStructureFilter(entity, ['email', 'token', 'tokenLifeTime', 'language', 'name', 'defaultProductListId', 'avatar',]),
+            (entity) => dateConverter(entity, ['tokenLifeTime']),
         ]);
     }
 

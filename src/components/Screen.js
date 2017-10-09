@@ -18,18 +18,13 @@ class Screen extends React.PureComponent {
 
         this.state = {
             rehydrationCompleted: props.isRehydrationCompleted,
-            resourcesRequested: false,
+            resourcesLoadingPromise: null,
             resourcesLoaded: false
         };
 
         if (this.state.rehydrationCompleted) {
-            this.state.resourcesRequested = true;
-            this.props.loadResources().then(() => this.setState({resourcesLoaded: true}));
+            this.state.resourcesLoadingPromise = this.loadResources();
         }
-    }
-
-    loadResources() {
-
     }
 
     componentWillReceiveProps({isRehydrationCompleted}) {
@@ -37,13 +32,22 @@ class Screen extends React.PureComponent {
             this.setState({rehydrationCompleted: true});
         }
 
-        if (this.state.resourcesRequested || !this.state.rehydrationCompleted) {
+        if (this.state.resourcesLoaded || this.state.resourcesLoadingPromise || !this.state.rehydrationCompleted) {
             return;
         }
 
-        this.setState({resourcesRequested: true});
-        this.props.loadResources().then(() => this.setState({resourcesLoaded: true}));
+        this.setState({resourcesLoadingPromise: this.loadResources()});
+    }
 
+    componentWillUnmount() {
+        // todo cancel resourceLoadingPromise
+    }
+
+    loadResources() {
+        return this.props.loadResources().then(() => this.setState({
+            resourcesLoadingPromise: null,
+            resourcesLoaded: true
+        }));
     }
 
     render() {

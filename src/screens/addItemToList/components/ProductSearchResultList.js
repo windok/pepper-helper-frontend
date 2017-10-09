@@ -45,17 +45,15 @@ ProductSearchResultList.propTypes = {
 };
 
 export default connect(
-    (state, {listId, query}) => {
-        return {
-            listId,
-            query,
-            productCollection: getProductCollection(state),
-            searchResults: findBestSearchResults(state, query)
-        }
-    },
-    {
+    (state, {listId, query}) => ({
+        listId,
+        query,
+        productCollection: getProductCollection(state),
+        searchResults: findBestSearchResults(state, query)
+    }),
+    (dispatch) => ({
         addItem: link => {
             history.push(link);
         }
-    }
+    })
 )(ProductSearchResultList);

@@ -1,3 +1,5 @@
+import Moment from 'moment';
+
 import Entity from './Entity';
 import {entityStructureFilter, allowedValuesValidator, numberConverter, dateConverter} from './entityProcessors';
 import {Nullable, NotNullable} from 'Models/NullableInterface';
@@ -64,9 +66,7 @@ class ListItem extends NotNullable(Entity) {
         const serializedData = super.serialize();
 
         // 2017-06-03 20:55:26
-        serializedData.date =
-            this.getDate().getUTCFullYear() + '-' + (this.getDate().getUTCMonth() + 1) + '-' + this.getDate().getUTCDate() + ' '
-            + this.getDate().getUTCHours() + ':' + this.getDate().getUTCMinutes() + ':' + this.getDate().getUTCSeconds();
+        serializedData.date = this.getDate().format('YYYY-MM-DD HH:mm:ss');
 
         return serializedData;
     }
@@ -84,7 +84,7 @@ class ListItemNullObject extends Nullable(ListItem) {
             unitId: 0,
             quantity: 0,
             type: TYPE_GENERAL,
-            date: new Date()
+            date: Moment.utc()
         });
     }
 }
@@ -101,7 +101,7 @@ class CustomProductListItemTemplate extends NotNullable(ListItem) {
             unitId,
             quantity,
             type: TYPE_GENERAL,
-            date: new Date()
+            date: Moment.utc()
         });
     }
 

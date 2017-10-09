@@ -1,3 +1,5 @@
+import Moment from 'moment';
+
 const entityStructureFilter = (entity, requiredFields) => {
     const filteredEntity = {};
 
@@ -37,7 +39,7 @@ const numberConverter = (entity, numericFields = []) => {
 };
 
 const dateConverter = (entity, numericFields = []) => {
-    return fieldConverter(entity, numericFields, fieldValue => new Date(Date.parse(fieldValue)));
+    return fieldConverter(entity, numericFields, fieldValue => fieldValue instanceof Moment ? fieldValue : Moment.utc(fieldValue));
 };
 
 export {

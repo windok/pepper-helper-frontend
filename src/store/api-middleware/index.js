@@ -1,12 +1,13 @@
 import RestClient from './RestClient';
 import {API_CALL} from './RSAA';
+import ErrorHandler from 'Services/ErrorHandler';
 
 // todo refactor setting token
 import {getUser} from 'Reducers/user';
 
 
 const isRSAA = (action) => {
-    return action[API_CALL] !== undefined;
+    return action && action.hasOwnProperty(API_CALL);
 };
 
 const validateRSAA = (action) => {
@@ -97,34 +98,30 @@ const apiMiddleware = (store) => {
             ...(action[API_CALL].headers || {})
         };
 
-        try {
+        next(createActionForNext(requestType, action, store));
 
-            next(createActionForNext(requestType, action, store));
+        return RestClient[method](endpoint, params, headers)
+            .then(
+                (response) => {
+                    const actionForNext = createActionForNext(successType, action, store, response);
 
-            return RestClient[method](endpoint, params, headers)
-                .then(
-                    (response) => {
-                        const actionForNext = createActionForNext(successType, action, store, response);
+                    next(actionForNext);
 
-                        next(actionForNext);
+                    return Promise.resolve(actionForNext.payload);
+                },
+                (error) => {
+                    // todo error payload and meta wrapping
+                    const actionForNext = {
+                        type: failureType,
+                        error
+                    };
 
-                        return Promise.resolve(actionForNext.payload);
-                    },
-                    (error) => {
-                        // todo error payload and meta wrapping
-                        const actionForNext = {
-                            type: failureType,
-                            error
-                        };
+                    next(actionForNext);
 
-                        next(actionForNext);
-
-                        return Promise.reject(actionForNext.error);
-                    }
-                );
-        } catch (e) {
-            console.error(e);
-        }
+                    return Promise.reject(actionForNext.error);
+                }
+            )
+            .catch(e => ErrorHandler.handle(e));
     }
 };
 

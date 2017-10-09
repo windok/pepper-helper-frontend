@@ -1,5 +1,8 @@
 import config from 'Config';
-import SocketReponse from 'Models/SocketResponse';
+
+import uuid from 'uuid/v4';
+import SocketRequest from 'Models/SocketRequest';
+import SocketResponse from 'Models/SocketResponse';
 
 let connectionPromise = null;
 let socket = null;
@@ -42,7 +45,7 @@ const connect = () => {
                 console.log('decoded response', response);
 
                 if (requests.has(response.requestId)) {
-                    requests.get(response.requestId).resolve(new SocketReponse({
+                    requests.get(response.requestId).resolve(new SocketResponse({
                         id: response.requestId,
                         actions: response.actions
                     }));
@@ -61,6 +64,8 @@ const connect = () => {
 
 const send = (request) => connect()
     .then((socket) => {
+        // todo wait to send after reconnect when socket is closing state
+
         console.log('send request', request);
 
         return new Promise((resolve, reject) => {
@@ -75,9 +80,28 @@ const send = (request) => connect()
         });
 });
 
+const sendAction = (action) => {
+    return send(new SocketRequest({
+        id: uuid(),
+        actions: [action]
+    })).then(
+        (response) => {
+            const socketActionResponse = response.getAction(action.getId());
+
+            if (socketActionResponse.error) {
+                return Promise.reject(socketActionResponse.error);
+            }
+
+            return Promise.resolve(socketActionResponse);
+        },
+        (error) => Promise.reject(error)
+    );
+};
+
 const SocketClient = {
     connect,
-    send
+    send,
+    sendAction
 };
 
 export default SocketClient;

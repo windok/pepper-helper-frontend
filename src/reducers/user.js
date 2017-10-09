@@ -1,5 +1,8 @@
+import Moment from 'moment';
+
 import * as actionType from 'Actions';
 import User from 'Models/User';
+import UnauthorizedError from 'Errors/UnauthorizedError';
 
 const initialState = {
     model: null
@@ -25,8 +28,15 @@ export default Object.assign(
             };
         },
         rehydrate: (savedState) => {
+            const user = savedState.model && new User(savedState.model);
+
+            if (user && Moment.utc().isAfter(user.getTokenLifeTime())) {
+                // todo process this exception
+                throw new UnauthorizedError();
+            }
+
             return {
-                model: savedState.model ? new User(savedState.model) : null
+                model: user
             }
         }
     });

@@ -1,13 +1,17 @@
+import uuid from 'uuid/v4';
+import Moment from 'moment';
+
 import * as actionType from 'Actions';
 import {API_CALL, GET, POST, PUT} from 'Store/api-middleware/RSAA';
 import {SOCKET_CALL} from 'Store/socket-middleware';
 
-import {ListItem, CustomProductListItemTemplate,
+import {
+    ListItem, CustomProductListItemTemplate,
     STATUS_DRAFT, STATUS_BOUGHT,
-    TYPE_GENERAL, TYPE_RECOMMENDED} from 'Models/ListItem';
+    TYPE_GENERAL, TYPE_RECOMMENDED
+} from 'Models/ListItem';
 
 import Store from 'Store';
-import uuid from 'uuid/v4';
 import {getUserLanguage} from 'Reducers/user';
 
 export const fetchItemsForList = (list) => (dispatch) => {
@@ -88,7 +92,7 @@ export const getTemplate = (list, product) => (dispatch) => {
                         ...response,
                         id: response.id || 0,
                         tmpId: response.tmpId || uuid(),
-                        date: response.date || new Date(),
+                        date: response.date ? Moment.utc(response.date) : Moment.utc(),
                         productId: response.translationId,
                         quantity: parseInt(response.quantity) || 1
                     })
@@ -100,12 +104,17 @@ export const getTemplate = (list, product) => (dispatch) => {
 };
 
 export const createItem = (listItem) => (dispatch) => {
-    listItem = new ListItem({...listItem.serialize(), date: new Date()});
+    listItem = new ListItem({...listItem.serialize(), date: Moment.utc()});
 
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/list-item',
+        [SOCKET_CALL]: {
+            action: 'list-item-create',
             method: POST,
+            payload: {
+                ...listItem.serialize(),
+                language: getUserLanguage(Store.getState()),
+                translationId: listItem.getProductId(),
+            },
             types: [
                 {
                     type: actionType.CREATE_ITEM_REQUEST,
@@ -115,24 +124,20 @@ export const createItem = (listItem) => (dispatch) => {
                     type: actionType.CREATE_ITEM_SUCCESS,
                     meta: {listItem},
                     payload: (action, state, response) => new ListItem({
-                        ...response.data,
-                        date: response.data.date || new Date(),
-                        productId: response.data.translationId
+                        ...response,
+                        date: response.date ? Moment.utc(response.date) : Moment.utc(),
+                        productId: response.translationId
                     })
                 },
                 actionType.CREATE_ITEM_ERROR
             ],
-            params: {
-                ...listItem.serialize(),
-                translationId: listItem.getProductId()
-            },
         }
     });
 };
 
 export const suspendItem = (listItem, date) => (dispatch) => {
     // todo convert recommended item in general one in corresponding component
-    listItem = new ListItem({...listItem.serialize(), date: new Date(), type: TYPE_GENERAL});
+    listItem = new ListItem({...listItem.serialize(), date: Moment.utc(), type: TYPE_GENERAL});
 
     return dispatch({
         [API_CALL]: {
@@ -148,7 +153,7 @@ export const suspendItem = (listItem, date) => (dispatch) => {
                     meta: {listItem},
                     payload: (action, state, response) => new ListItem({
                         ...response.data,
-                        date: response.data.date || new Date(),
+                        date: response.data.date ? Moment.utc(response.data.date) : Moment.utc(),
                         productId: response.data.translationId
                     })
                 },
@@ -164,7 +169,7 @@ export const suspendItem = (listItem, date) => (dispatch) => {
 
 export const editItem = (listItem) => (dispatch) => {
     // todo convert recommended item in general one in corresponding component
-    listItem = new ListItem({...listItem.serialize(), date: new Date(), type: TYPE_GENERAL});
+    listItem = new ListItem({...listItem.serialize(), date: Moment.utc(), type: TYPE_GENERAL});
 
     return dispatch({
         [API_CALL]: {
@@ -177,11 +182,10 @@ export const editItem = (listItem) => (dispatch) => {
                 },
                 {
                     type: actionType.EDIT_ITEM_SUCCESS,
-                    meta: {listItem},
                     payload: (action, state, response) => new ListItem({
                         ...response.data,
                         tmpId: response.data.tmpId || '',
-                        date: response.data.date || new Date(),
+                        date: response.data.date ? Moment.utc(response.data.date) : Moment.utc(),
                         productId: response.data.translationId
                     })
                 },

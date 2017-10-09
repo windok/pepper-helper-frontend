@@ -8,7 +8,6 @@ import {
 
 const initialState = {
     items: new Map(),
-    unsavedItems: new Map(),
     template: null,
 };
 
@@ -30,18 +29,18 @@ export default Object.assign(
             case actionType.CREATE_ITEM_REQUEST:
                 return {
                     ...state,
-                    unsavedItems: new Map([...state.unsavedItems]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
+                    items: new Map([...state.items]).set(action.meta.listItem.getTmpId(), action.meta.listItem.clone()),
                     template: null
                 };
 
             case actionType.CREATE_ITEM_SUCCESS: {
-                const unsavedItems = new Map([...state.unsavedItems]);
-                unsavedItems.delete(action.meta.listItem.getId());
+                const items = new Map([...state.items]);
+                items.delete(action.payload.getTmpId());
+                items.set(action.payload.getId(), action.payload.clone());
 
                 return {
                     ...state,
-                    items: new Map([...state.items]).set(action.payload.getId(), action.payload.clone()),
-                    unsavedItems,
+                    items,
                     template: null
                 };
             }
@@ -55,6 +54,12 @@ export default Object.assign(
                     items: new Map([...state.items]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
                 };
 
+            case actionType.EDIT_ITEM_SUCCESS:
+                return {
+                    ...state,
+                    items: new Map([...state.items]).set(action.payload.getId(), action.payload.clone()),
+                };
+
             case actionType.USER_LOGOUT:
                 return {...initialState}
         }
@@ -62,9 +67,12 @@ export default Object.assign(
         return state;
     },
     {
-        persist: () => {
-            return {}
-        }
+        persist: (state) => ({
+            items: Array.from(state.items.entries(), ([itemId, listItem]) => [itemId, listItem.serialize()])
+        }),
+        rehydrate: (persistedState) => ({
+            items: new Map(persistedState.items.map(([itemId, listItemData]) => [itemId, new ListItem(listItemData)]))
+        })
     }
 );
 
@@ -75,8 +83,6 @@ export default Object.assign(
  */
 export const getGroupedItemForList = (state, productList) => {
     // todo make prepared grouped item via reducer
-    // todo delete unsavedItem collection:
-    // todo generate id for created item and store it with others, when response from server comes replace with new id
 
     const itemCollection = new Map();
 
@@ -84,7 +90,7 @@ export const getGroupedItemForList = (state, productList) => {
         return itemCollection;
     }
 
-    const addItemToCollection = listItem => {
+    state.listItem.items.forEach(listItem => {
         if (listItem.getListId() !== productList.getId()) {
             return;
         }
@@ -92,10 +98,7 @@ export const getGroupedItemForList = (state, productList) => {
         itemCollection.has(listItem.getGroupId()) || itemCollection.set(listItem.getGroupId(), new Map());
 
         itemCollection.get(listItem.getGroupId()).set(listItem.getId(), listItem);
-    };
-
-    state.listItem.items.forEach(addItemToCollection);
-    state.listItem.unsavedItems.forEach(addItemToCollection);
+    });
 
     return itemCollection;
 };
@@ -111,16 +114,13 @@ export const getGeneralListItemsToDisplay = (state, productList) => {
         return itemCollection;
     }
 
-    const addItemToCollection = listItem => {
+    state.listItem.items.forEach(listItem => {
         if (listItem.getListId() !== productList.getId() || listItem.getType() !== TYPE_GENERAL) {
             return;
         }
 
         itemCollection.set(listItem.getId(), listItem);
-    };
-
-    state.listItem.items.forEach(addItemToCollection);
-    state.listItem.unsavedItems.forEach(addItemToCollection);
+    });
 
     return itemCollection;
 };

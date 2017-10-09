@@ -7,6 +7,10 @@ import store from 'Store';
 import {AppContainer} from 'react-hot-loader'
 import OfflinePlugin from 'offline-plugin/runtime';
 
+import ErrorHandler from 'Services/ErrorHandler';
+import UnauthorizedErrorHandler from 'Services/ErrorHandler/UnauthorizedErrorHandler';
+import LoggingErrorHandler from 'Services/ErrorHandler/LoggingErrorHandler';
+
 
 OfflinePlugin.install({
     onUpdateReady: function () {
@@ -16,6 +20,11 @@ OfflinePlugin.install({
         window.location.reload();
     }
 });
+
+ErrorHandler.addHandlers([
+    LoggingErrorHandler,
+    UnauthorizedErrorHandler
+]);
 
 injectTapEventPlugin();
 import './styles.scss';
