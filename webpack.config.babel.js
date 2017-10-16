@@ -10,7 +10,7 @@ import OfflinePlugin from 'offline-plugin';
 import webpack from 'webpack';
 
 const production = process.argv.indexOf('--env.development') === -1;
-const sourceMap = process.argv.indexOf('--env.source-map') === -1;
+const sourceMap = process.argv.indexOf('--env.source-map') !== -1;
 
 const currentPath = path.dirname(__filename);
 const client = path.resolve(currentPath, 'src', 'index.js');
