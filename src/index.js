@@ -11,6 +11,9 @@ import ErrorHandler from 'Services/ErrorHandler';
 import UnauthorizedErrorHandler from 'Services/ErrorHandler/UnauthorizedErrorHandler';
 import LoggingErrorHandler from 'Services/ErrorHandler/LoggingErrorHandler';
 
+import persistConfig from 'Services/ReduxPersistConfig';
+import {persistStore} from 'redux-persist';
+
 
 OfflinePlugin.install({
     onUpdateReady: function () {
@@ -28,6 +31,8 @@ ErrorHandler.addHandlers([
 
 injectTapEventPlugin();
 import './styles.scss';
+
+persistStore(store, persistConfig);
 
 // todo define variable value from env
 const hotModuleReplacement = false;

@@ -103,7 +103,8 @@ EditList.propTypes = {
 
 export default connect(
     (state, {match}) => {
-        const list = getList(state, parseInt(match.params.listId) || 0);
+
+        const list = getList(state, match.params.listId || 0);
 
         return {
             list,

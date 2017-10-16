@@ -93,8 +93,7 @@ const sendAction = (action) => {
             }
 
             return Promise.resolve(socketActionResponse);
-        },
-        (error) => Promise.reject(error)
+        }
     );
 };
 

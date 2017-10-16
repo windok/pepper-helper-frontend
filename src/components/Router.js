@@ -9,7 +9,7 @@ import RecommendationsScreen from 'screens/productList/RecommendationsScreen';
 import AddItemToListSearchStep from 'Screens/addItemToList/SearchStep';
 import AddItemToListSaveStep from 'Screens/addItemToList/SaveStep';
 import EditItemScreen from 'Screens/addItemToList/Edit';
-import UserScreen from 'Screens/user';
+import UserScreen from 'Screens/user/Profile';
 import AboutScreen from 'Screens/about';
 import BoughtScreen from "../screens/productList/BoughtScreen";
 import SuspendedScreen from "../screens/productList/SuspendedScreen";

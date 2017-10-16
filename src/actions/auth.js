@@ -1,6 +1,9 @@
 import * as actionType from 'Actions';
 import {API_CALL, POST, PUT} from 'Store/api-middleware/RSAA';
+
 import User from 'Models/User';
+
+import {isTokenExpired} from 'Reducers/user'
 
 export const register = (user) => (dispatch) => {
     user.avatar = user.avatar || 'imgUrl';
@@ -59,8 +62,9 @@ export const signIn = (email, password) => (dispatch) => {
     });
 };
 
-export const logout = () => (dispatch) => {
-    return dispatch({
-        type: actionType.USER_LOGOUT
-    });
-};
+export const logout = () => ({type: actionType.USER_LOGOUT});
+
+export const logoutEpic = (action$, store) => action$
+    .filter(() => isTokenExpired(store.getState()))
+    .do(() => console.log('logout'))
+    .map(logout);

@@ -1,12 +1,12 @@
 import store from 'Store';
-import {logout} from 'actions/user';
+import {logout} from 'actions/auth';
 import UnauthorizedError from 'Errors/UnauthorizedError';
 
 export default {
     onError: (error) => {
 
         if (error instanceof UnauthorizedError) {
-            logout()(store.dispatch);
+            store.dispatch(logout());
         }
 
         return true;

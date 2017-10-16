@@ -13,7 +13,6 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@redux-offline/redux-offline": "^2.1.0",
     "axios": "^0.16.2",
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.2.5",
@@ -35,8 +34,10 @@
     "react-swipe-to-reveal-options": "^0.3.6",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.7.2",
+    "redux-observable": "^0.16.0",
     "redux-persist": "^4.9.1",
     "redux-thunk": "^2.2.0",
+    "rxjs": "^5.4.3",
     "uuid": "^3.1.0"
   },
   "devDependencies": {

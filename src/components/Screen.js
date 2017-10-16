@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import LinearProgress from 'react-md/lib/Progress/LinearProgress';
-import Router from './Router';
+import CircularProgress from 'react-md/lib/Progress/CircularProgress';
 
-import {isRehydrationCompleted} from 'Reducers/app';
+import Router from './Router';
 
 import {fetchAll as fetchProductListCollection} from 'Actions/list';
 import {fetchAll as fetchProductCollection} from 'Actions/product';
@@ -17,26 +17,11 @@ class Screen extends React.PureComponent {
         super(props);
 
         this.state = {
-            rehydrationCompleted: props.isRehydrationCompleted,
             resourcesLoadingPromise: null,
             resourcesLoaded: false
         };
 
-        if (this.state.rehydrationCompleted) {
-            this.state.resourcesLoadingPromise = this.loadResources();
-        }
-    }
-
-    componentWillReceiveProps({isRehydrationCompleted}) {
-        if (!this.state.rehydrationCompleted && isRehydrationCompleted) {
-            this.setState({rehydrationCompleted: true});
-        }
-
-        if (this.state.resourcesLoaded || this.state.resourcesLoadingPromise || !this.state.rehydrationCompleted) {
-            return;
-        }
-
-        this.setState({resourcesLoadingPromise: this.loadResources()});
+        this.state.resourcesLoadingPromise = this.loadResources();
     }
 
     componentWillUnmount() {
@@ -51,26 +36,26 @@ class Screen extends React.PureComponent {
     }
 
     render() {
+        // todo request difference
         return (
             <div>
-                {!this.state.resourcesLoaded && <LinearProgress id="loading-bar"/>}
-                {this.state.rehydrationCompleted && <Router/>}
+                {!this.state.resourcesLoaded && <CircularProgress id="progressBar"/>}
+                {
+                    this.state.resourcesLoaded
+                    // todo show linear progress when difference is requested
+                }
+                {this.state.resourcesLoaded && <Router/>}
             </div>
         );
     }
 }
 
 Screen.propTypes = {
-    isRehydrationCompleted: PropTypes.bool.isRequired,
     loadResources: PropTypes.func.isRequired,
 };
 
 export default connect(
-    (state) => {
-        return {
-            isRehydrationCompleted: isRehydrationCompleted(state)
-        }
-    },
+    null,
     (dispatch) => {
         return {
             loadResources: () => {

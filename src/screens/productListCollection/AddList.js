@@ -43,16 +43,13 @@ AddList.propTypes = {
 };
 
 export default connect(
-    (state) => {
-        return {}
-    },
+    null,
     (dispatch, {history}) => {
         return {
             cancel: () => history.goBack(),
             save: (listName) => {
-                createList(listName)(dispatch).then((list) => {
-                    history.push('/product-list/' + list.getTmpId());
-                });
+                const list = createList(listName)(dispatch);
+                history.push('/product-list/' + list.getTmpId());
             }
         }
     }

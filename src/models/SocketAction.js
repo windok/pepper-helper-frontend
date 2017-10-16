@@ -4,7 +4,7 @@ import Entity from './Entity';
 import {Nullable, NotNullable} from 'Models/NullableInterface';
 import {entityStructureFilter, dateConverter} from './entityProcessors';
 
-class SyncAction extends NotNullable(Entity) {
+class SocketAction extends NotNullable(Entity) {
     constructor(entityData) {
         super(
             {
@@ -13,7 +13,7 @@ class SyncAction extends NotNullable(Entity) {
                 date: entityData.date || Moment.utc()
             },
             [
-                (entity) => entityStructureFilter(entity, ['id', 'name', 'payload', 'date', 'responseAction']),
+                (entity) => entityStructureFilter(entity, ['id', 'name', 'payload', 'date']),
                 (entity) => dateConverter(entity, ['date']),
             ]
         );
@@ -31,14 +31,10 @@ class SyncAction extends NotNullable(Entity) {
         return this.entity.payload;
     }
 
-    getResponseAction() {
-        return this.entity.responseAction;
-    }
-
     getDate() {
         return this.entity.date
     }
 }
 
-export default SyncAction;
-export {SyncAction};
+export default SocketAction;
+export {SocketAction};

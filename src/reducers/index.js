@@ -1,6 +1,7 @@
 import {combineReducers} from 'redux';
 
 import app from './app';
+import sync from './sync';
 import ui from './ui';
 
 import list from './list';
@@ -12,6 +13,7 @@ import user from './user';
 
 export const transformers = {
     app,
+    sync,
     ui,
 
     list,

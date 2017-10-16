@@ -12,14 +12,19 @@ export default Object.assign(
             case actionType.FETCH_LIST_COLLECTION_SUCCESS:
                 return {...state, items: new Map([...state.items, ...action.payload])};
 
-            case actionType.CREATE_LIST_REQUEST:
-            case actionType.EDIT_LIST_REQUEST: {
-                const id = action.payload.list.getId() || action.payload.list.getTmpId();
-
+            case actionType.CREATE_LIST_OFFLINE:
+            case actionType.EDIT_LIST_OFFLINE:
                 return {
                     ...state,
-                    items: new Map([...state.items]).set(id, action.payload.list.clone())
+                    items: new Map([...state.items]).set(action.payload.getId(), action.payload.clone())
                 };
+
+            case actionType.DELETE_LIST_OFFLINE: {
+                const items = new Map([...state.items]);
+                items.delete(action.payload.getId());
+                items.delete(action.payload.getTmpId());
+
+                return {...state, items};
             }
 
             case actionType.CREATE_LIST_SUCCESS:
@@ -27,14 +32,6 @@ export default Object.assign(
                 const items = new Map([...state.items]);
                 items.delete(action.payload.getTmpId());
                 items.set(action.payload.getId(), action.payload.clone());
-
-                return {...state, items};
-            }
-
-            case actionType.DELETE_LIST_REQUEST: {
-                const items = new Map([...state.items]);
-                items.delete(action.payload.list.getId());
-                items.delete(action.payload.list.getTmpId());
 
                 return {...state, items};
             }
@@ -62,7 +59,11 @@ export default Object.assign(
  * @return {List}
  */
 export const getList = (state, id) => {
-    return state.list.items.get(id) || getListByTmpId(state, id) || new ListNullObject();
+    if (typeof id === 'string') {
+        return id.includes('-') ? getListByTmpId(state, id) : getList(state, parseInt(id))
+    }
+
+    return state.list.items.get(id) || new ListNullObject();
 };
 
 /**

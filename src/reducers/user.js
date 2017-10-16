@@ -2,7 +2,6 @@ import Moment from 'moment';
 
 import * as actionType from 'Actions';
 import User from 'Models/User';
-import UnauthorizedError from 'Errors/UnauthorizedError';
 
 const initialState = {
     model: null
@@ -22,23 +21,12 @@ export default Object.assign(
         return state;
     },
     {
-        persist: (state) => {
-            return {
-                model: state.model ? state.model.serialize() : null
-            };
-        },
-        rehydrate: (savedState) => {
-            const user = savedState.model && new User(savedState.model);
-
-            if (user && Moment.utc().isAfter(user.getTokenLifeTime())) {
-                // todo process this exception
-                throw new UnauthorizedError();
-            }
-
-            return {
-                model: user
-            }
-        }
+        persist: (state) => ({
+            model: state.model ? state.model.serialize() : null
+        }),
+        rehydrate: (savedState) => ({
+            model: savedState.model && new User(savedState.model)
+        })
     });
 
 export const getUserLanguage = (state) => {
@@ -47,4 +35,14 @@ export const getUserLanguage = (state) => {
 
 export const getUser = (state) => {
     return state.user.model;
+};
+
+export const isTokenExpired = state => {
+    const user = state.user.model;
+
+    if (!user) {
+        return false;
+    }
+
+    return Moment.utc().isAfter(user.getTokenLifeTime())
 };

@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4';
 import SocketClient from 'Services/SocketClient';
 import SocketRequest from 'Models/SocketRequest';
-import SyncAction from 'Models/SyncAction';
+import SocketAction from 'Models/SocketAction';
 
 import ErrorHandler from 'Services/ErrorHandler';
 import UnauthorizedError from 'Errors/UnauthorizedError';
@@ -62,7 +62,7 @@ const socketMiddleware = (store) => {
 
         validateRSAA(action);
 
-        const socketAction = action[SOCKET_CALL].action;
+        const actionName = action[SOCKET_CALL].action;
         const [requestType, successType, failureType] = action[SOCKET_CALL].types;
         const payload = typeof action[SOCKET_CALL].payload === 'function'
             ? action[SOCKET_CALL].payload(action, store.getState())
@@ -72,16 +72,16 @@ const socketMiddleware = (store) => {
 
         const user = getUser(store.getState());
 
-        const syncAction = new SyncAction({
+        const socketAction = new SocketAction({
             id: uuid(),
-            name: socketAction,
+            name: actionName,
             payload: {
                 ...payload,
                 PH_TOKEN: user.getToken()
             }
         });
 
-        return SocketClient.sendAction(syncAction).then(
+        return SocketClient.sendAction(socketAction).then(
             (response) => {
                 const actionForNext = createActionForNext(successType, action, store, response);
                 next(actionForNext);

@@ -6,7 +6,7 @@ import TextField from 'react-md/lib/TextFields';
 import SelectField from 'react-md/lib/SelectFields';
 import Button from 'react-md/lib/Buttons';
 
-import {register} from 'Actions/user';
+import {register} from 'Actions/auth';
 
 import {getAvailableLanguages} from 'Reducers/app';
 import {redirectToDefaultList} from 'Services/BrowserHistory';

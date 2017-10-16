@@ -16,7 +16,7 @@ import {getUserLanguage} from 'Reducers/user';
 
 export const fetchItemsForList = (list) => (dispatch) => {
 
-    if (list.isNullObject()) {
+    if (list.isNullObject() || list.getId() === list.getTmpId()) {
         return Promise.resolve();
     }
 

@@ -24,10 +24,7 @@ class AddItemToListSaveStep extends React.PureComponent {
         super(props);
 
         this.state = {
-            template:
-                this.props.template
-                    ? {...this.props.template.serialize(), name: props.product.getName()}
-                    : null
+            template: this.props.template ? {...this.props.template.serialize(), name: props.product.getName()} : null
         };
     }
 
@@ -56,7 +53,7 @@ class AddItemToListSaveStep extends React.PureComponent {
                 )
             )) {
             this.setState({
-                template: template.serialize()
+                template: {...template.serialize(), name: product.getName()}
             });
         }
     }

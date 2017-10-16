@@ -1,4 +1,3 @@
-class UnauthorizedError {
-}
+class UnauthorizedError {}
 
 export default UnauthorizedError;

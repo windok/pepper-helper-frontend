@@ -7,6 +7,7 @@ import {editItem} from 'Actions/listItem';
 
 import {ListItem} from 'Models/ListItem';
 import {List} from 'Models/List';
+import Product from "Models/Product";
 
 import {getList} from 'Reducers/list';
 import {getListItem} from 'Reducers/listItem';
@@ -33,12 +34,12 @@ class EditListItem extends React.PureComponent {
 
     }
 
-    componentWillReceiveProps({listItem}) {
+    componentWillReceiveProps({listItem, product}) {
         this.redirectToListIfNecessary(listItem);
 
         if (listItem.getId() !== this.props.listItem.getId()) {
             this.setState({
-                listItem: listItem.serialize()
+                listItem: {...listItem.serialize(), name: product.getName()}
             });
         }
     }
@@ -60,7 +61,7 @@ class EditListItem extends React.PureComponent {
             <div>
                 <Header
                     title={'Edit item'}
-                    leftLinks={<BackButton iconType="clear" />}
+                    leftLinks={<BackButton iconType="clear"/>}
                     rightLinks={<SaveButton onTouchTap={() => this.props.saveItemHandler(this.state.listItem)}/>}
                 />
 
@@ -76,6 +77,7 @@ class EditListItem extends React.PureComponent {
 EditListItem.propTypes = {
     listItem: PropTypes.instanceOf(ListItem).isRequired,
     list: PropTypes.instanceOf(List).isRequired,
+    product: PropTypes.instanceOf(Product).isRequired,
 
     redirectToList: PropTypes.func.isRequired,
     saveItemHandler: PropTypes.func.isRequired,

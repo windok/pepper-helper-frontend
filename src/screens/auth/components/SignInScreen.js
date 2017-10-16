@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {signIn} from 'Actions/user';
+import {signIn} from 'Actions/auth';
 
 import TextField from 'react-md/lib/TextFields';
 import Button from 'react-md/lib/Buttons';
@@ -84,9 +84,7 @@ SignInScreen.propTypes = {
 };
 
 export default connect(
-    (state) => {
-        return {};
-    },
+    null,
     (dispatch) => {
         return {
             signIn: (email, password) => {

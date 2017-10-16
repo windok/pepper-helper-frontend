@@ -8,10 +8,10 @@ import Button from 'react-md/lib/Buttons';
 
 import {hideMenu} from 'Actions/ui';
 import {getUser} from 'Reducers/user';
-import {logout} from 'Actions/user';
+import {logout} from 'Actions/auth';
 import User from 'Models/User';
 
-import {redirectToDefaultList} from 'Services/BrowserHistory'
+import {history, redirectToDefaultList} from 'Services/BrowserHistory'
 
 class UserSidebarHeader extends React.PureComponent {
     render() {
@@ -31,6 +31,11 @@ class UserSidebarHeader extends React.PureComponent {
                 <div className="md-grid">
                     <Button
                         raised
+                        onTouchTap={this.props.showProfile}
+                        className="md-cell--center"
+                    >Profile</Button>
+                    <Button
+                        raised
                         secondary
                         onTouchTap={this.props.logout}
                         className="md-cell--center"
@@ -45,6 +50,7 @@ class UserSidebarHeader extends React.PureComponent {
 UserSidebarHeader.propTypes = {
     user: PropTypes.instanceOf(User).isRequired,
     logout: PropTypes.func.isRequired,
+    showProfile: PropTypes.func.isRequired,
     hideMenu: PropTypes.func.isRequired
 };
 
@@ -57,9 +63,14 @@ export default connect(
     (dispatch) => {
         return {
             logout: () => {
-                logout()(dispatch);
+                dispatch(logout());
 
                 redirectToDefaultList();
+            },
+            showProfile: () => {
+                history.push('/user');
+
+                hideMenu()(dispatch);
             },
             hideMenu: () => hideMenu()(dispatch)
         };

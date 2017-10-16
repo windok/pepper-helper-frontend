@@ -1,14 +1,11 @@
-import * as actionType from 'Actions';
-import {API_CALL, GET, POST, PUT, DELETE} from 'Store/api-middleware/RSAA';
-import {SOCKET_CALL} from 'Store/socket-middleware';
-import List from 'Models/List';
 import uuid from 'uuid/v4';
 
-import store from 'Store';
-import {getUser} from 'Reducers/user';
+import * as actionType from 'Actions';
+
+import {SOCKET_CALL} from 'Store/socket-middleware';
+import List from 'Models/List';
 
 export const fetchAll = () => (dispatch) => {
-
     return dispatch({
         [SOCKET_CALL]: {
             action: 'product-list-load',
@@ -47,73 +44,62 @@ export const create = (listName) => (dispatch) => {
     const list = new List({id: 0, tmpId: uuid(), name: listName});
 
     dispatch({
-        type: actionType.CREATE_LIST_REQUEST,
-        payload: {list},
-        meta: {
-            offline: {
-                effect: {
-                    action: 'product-list-create',
-                    payload: {
-                        ...list.serialize(),
-                        // todo refactor setting auth token
-                        PH_TOKEN: getUser(store.getState()).getToken()
-                    },
-                },
-                commit: {
-                    type: actionType.CREATE_LIST_SUCCESS,
-                    payload: (listData) => new List({...listData, tmpId: listData.tmpId || ''})
-                }
-            }
+        type: actionType.CREATE_LIST_OFFLINE,
+        payload: list,
+        sync: {
+            name: 'product-list-create',
+            responseAction: actionType.CREATE_LIST_RESPONSE
         }
     });
 
-    return Promise.resolve(list);
+    return list;
 };
 
 export const updateList = (list, newListName) => (dispatch) => {
-    // todo update by tmpId
-    // todo rollback if error happened
     const listUpdated = new List({...list.serialize(), name: newListName});
 
     dispatch({
-        type: actionType.EDIT_LIST_REQUEST,
-        payload: {list: listUpdated},
-        meta: {
-            offline: {
-                effect: {
-                    action: 'product-list-update',
-                    payload: {
-                        ...listUpdated.serialize(),
-                        // todo refactor setting auth token
-                        PH_TOKEN: getUser(store.getState()).getToken()
-                    },
-                },
-                commit: {
-                    type: actionType.EDIT_LIST_SUCCESS,
-                    payload: (listData) => new List({...listData, tmpId: listData.tmpId || ''})
-                }
-            }
+        type: actionType.EDIT_LIST_OFFLINE,
+        payload: listUpdated,
+        sync: {
+            name: 'product-list-update',
+            responseAction: actionType.EDIT_LIST_RESPONSE
         }
     });
+
+    return listUpdated;
 };
 
 export const deleteList = (list) => (dispatch) => {
-    // todo delete by tmpId
-    // todo process rollback
-
-    return dispatch({
-        type: actionType.DELETE_LIST_REQUEST,
-        payload: {list},
-        meta: {
-            offline: {
-                effect: {
-                    action: 'product-list-delete',
-                    payload: {
-                        id: list.getId(),
-                        PH_TOKEN: getUser(store.getState()).getToken()
-                    },
-                }
-            }
+    dispatch({
+        type: actionType.DELETE_LIST_OFFLINE,
+        payload: list,
+        sync: {
+            name: 'product-list-delete',
         }
     });
 };
+
+
+const actionsToTrigger = {
+    [actionType.CREATE_LIST_RESPONSE]: {success: actionType.CREATE_LIST_SUCCESS, error: actionType.CREATE_LIST_ERROR},
+    [actionType.EDIT_LIST_RESPONSE]: {success: actionType.EDIT_LIST_SUCCESS, error: actionType.EDIT_LIST_ERROR},
+    // todo delete success and error action triggering
+    // [actionType.DELETE_LIST_RESPONSE]: {success: actionType.DELETE_LIST_SUCCESS, error: actionType.DELETE_LIST_ERROR},
+};
+
+export const listEpic = (action$, state) => action$
+    .filter((action) => actionsToTrigger.hasOwnProperty(action.type))
+    .map(action => {
+        const response = action.payload;
+        const nextActionType = actionsToTrigger[action.type];
+
+        if (response.error) {
+            return {type: nextActionType.error, payload: action.meta.syncAction.getPayload()}
+        }
+
+        return {
+            type: nextActionType.success,
+            payload: new List({...response, tmpId: response.tmpId || ''})
+        }
+    });
