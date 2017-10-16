@@ -12,8 +12,9 @@ import webpack from 'webpack';
 const production = process.argv.indexOf('--env.development') === -1;
 const sourceMap = process.argv.indexOf('--env.source-map') === -1;
 
-const client = path.resolve(process.cwd(), 'src', 'index.js');
-const dist = path.resolve(process.cwd(), 'public');
+const currentPath = path.dirname(__filename);
+const client = path.resolve(currentPath, 'src', 'index.js');
+const dist = path.resolve(currentPath, 'public');
 
 // --------------------------------------------------------
 
@@ -63,9 +64,9 @@ plugins.push(new HtmlWebpackPlugin({
     title: 'Pepper Helper',
     inject: false,
     production: production,
-    template: path.resolve(process.cwd(), 'src', 'setup', 'htmlTemplate.js'),
+    template: path.resolve(currentPath, 'src', 'setup', 'htmlTemplate.js'),
     appMountId: 'root',
-    favicon: path.resolve(process.cwd(), 'src', 'favicon.ico'),
+    favicon: path.resolve(currentPath, 'src', 'favicon.ico'),
     externalCSS: [
         'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CMaterial+Icons',
     ],
@@ -160,7 +161,7 @@ export default {
                 exclude: /node_modules|SVGIcon\/icons/,
             }, {
                 test: /\.(svg)$/i,
-                include: path.resolve(process.cwd(), 'src/assets'),
+                include: path.resolve(currentPath, 'src/assets'),
                 loaders: [{
                     loader: 'svg-sprite-loader',
                     options: {
@@ -173,18 +174,18 @@ export default {
     plugins,
     resolve: {
         alias: {
-            Actions: path.resolve(process.cwd(), 'src/actions/'),
-            Assets: path.resolve(process.cwd(), 'src/assets/'),
-            Components: path.resolve(process.cwd(), 'src/components/'),
-            Config: path.resolve(process.cwd(), 'src/config/index.js'),
-            Errors: path.resolve(process.cwd(), 'src/errors'),
-            Models: path.resolve(process.cwd(), 'src/models/'),
-            Reducers: path.resolve(process.cwd(), 'src/reducers/'),
-            Screens: path.resolve(process.cwd(), 'src/screens/'),
-            Services: path.resolve(process.cwd(), 'src/services/'),
-            Store: path.resolve(process.cwd(), 'src/store/'),
-            globals: path.resolve(process.cwd(), 'src', '_globals.scss'),
-            'redux-offline': path.resolve(process.cwd(), 'node_modules/@redux-offline/redux-offline/'),
+            Actions: path.resolve(currentPath, 'src/actions/'),
+            Assets: path.resolve(currentPath, 'src/assets/'),
+            Components: path.resolve(currentPath, 'src/components/'),
+            Config: path.resolve(currentPath, 'src/config/index.js'),
+            Errors: path.resolve(currentPath, 'src/errors'),
+            Models: path.resolve(currentPath, 'src/models/'),
+            Reducers: path.resolve(currentPath, 'src/reducers/'),
+            Screens: path.resolve(currentPath, 'src/screens/'),
+            Services: path.resolve(currentPath, 'src/services/'),
+            Store: path.resolve(currentPath, 'src/store/'),
+            globals: path.resolve(currentPath, 'src', '_globals.scss'),
+            'redux-offline': path.resolve(currentPath, 'node_modules/@redux-offline/redux-offline/'),
         },
         extensions: ['.js'],
         mainFiles: ['index', 'index.js'],
