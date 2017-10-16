@@ -70,7 +70,10 @@ export default function(templateParams) {
     }
 
     let body = '<body>' + entry + js + '</body>';
-    let html = '<html manifest="/appcache/manifest.appcache"';
+    let html = '<html';
+    if (options.production) {
+        html += ' manifest="/appcache/manifest.appcache"';
+    }
     if (options.isomorphicHtmlClassName) {
         html += ' class="<%= ' + options.isomorphicHtmlClassName + ' %>"';
     }

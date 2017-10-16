@@ -34,23 +34,14 @@ import './styles.scss';
 
 persistStore(store, persistConfig);
 
-// todo define variable value from env
-const hotModuleReplacement = false;
+const renderApp = (Component = Root) =>
+    render(
+        <AppContainer>
+            <Component store={store}/>
+        </AppContainer>,
+        document.getElementById('root')
+    );
 
-let renderApp;
-if (hotModuleReplacement) {
-    renderApp = (Component = Root) =>
-        render(
-            <AppContainer>
-                <Component store={store}/>
-            </AppContainer>,
-            document.getElementById('root')
-        );
-
-    // Hot Module Replacement API
-    module.hot && module.hot.accept('./Root', () => renderApp());
-} else {
-    renderApp = (Component = Root) => render(<Component store={store}/>, document.getElementById('root'));
-}
+module.hot && module.hot.accept('./Root', () => renderApp());
 
 renderApp();

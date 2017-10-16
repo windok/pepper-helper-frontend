@@ -4,7 +4,6 @@
 
 /node_modules/
 /package-lock.json
-/yarn.lock
 
 /src/config/index.js
 /public/

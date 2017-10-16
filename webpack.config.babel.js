@@ -62,6 +62,7 @@ production && plugins.push(new OfflinePlugin({
 plugins.push(new HtmlWebpackPlugin({
     title: 'Pepper Helper',
     inject: false,
+    production: production,
     template: path.resolve(process.cwd(), 'src', 'setup', 'htmlTemplate.js'),
     appMountId: 'root',
     favicon: path.resolve(process.cwd(), 'src', 'favicon.ico'),
