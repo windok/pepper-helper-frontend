@@ -71,7 +71,7 @@ class RegistrationScreen extends React.PureComponent {
                         <Button
                             raised
                             secondary
-                            onTouchTap={this.props.backToSignIn}
+                            onClick={this.props.backToSignIn}
                         >Sign in</Button>
                     </div>
                 </div>
@@ -115,7 +115,7 @@ class RegistrationScreen extends React.PureComponent {
 
                     <Button
                         raised
-                        onTouchTap={this.register.bind(this)}
+                        onClick={this.register.bind(this)}
                         className="md-cell--center"
                     >Create account</Button>
 

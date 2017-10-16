@@ -53,7 +53,7 @@ class EditList extends React.PureComponent {
                     leftLinks={<BackButton iconType="clear" />}
                     rightLinks={[<SaveButton
                         key="save"
-                        onTouchTap={() => this.props.save(this.props.list, this.state.name)}
+                        onClick={() => this.props.save(this.props.list, this.state.name)}
                     />]}
                 />
 
@@ -77,7 +77,7 @@ class EditList extends React.PureComponent {
                         secondary
                         iconBefore={false}
                         iconEl={<FontIcon>delete</FontIcon>}
-                        onTouchTap={this.showDeleteDialog}
+                        onClick={this.showDeleteDialog}
                         className="md-cell--right"
                     >Delete list</Button>
                 </div>

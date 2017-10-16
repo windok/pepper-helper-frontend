@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import LinearProgress from 'react-md/lib/Progress/LinearProgress';
 import CircularProgress from 'react-md/lib/Progress/CircularProgress';
 
 import Router from './Router';
@@ -21,13 +20,11 @@ class Screen extends React.PureComponent {
             resourcesLoaded: false
         };
 
+        // TODO remove from representation class
         this.state.resourcesLoadingPromise = this.loadResources();
     }
 
-    componentWillUnmount() {
-        // todo cancel resourceLoadingPromise
-    }
-
+    // TODO remove from representation class
     loadResources() {
         return this.props.loadResources().then(() => this.setState({
             resourcesLoadingPromise: null,

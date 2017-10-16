@@ -16,7 +16,7 @@ class RecommendedItem extends React.PureComponent {
         return (
             <ListItem
                 primaryText={label}
-                onTouchTap={() => this.props.editItem(this.props.item)}>
+                onClick={() => this.props.editItem(this.props.item)}>
             </ListItem>
         )
     }

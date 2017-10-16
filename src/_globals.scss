@@ -3,6 +3,16 @@
 $md-primary-color: $md-light-blue-600;
 $md-secondary-color: $md-red-500;
 
+.drawers__content__scrollable {
+  overflow: auto;
+}
+
+.drawers__toolbar {
+  padding-left: 15px;
+  padding-top: 15px;
+  padding-bottom: 6px;
+}
+
 .text-with-icon {
   line-height: 48px;
   .md-icon {

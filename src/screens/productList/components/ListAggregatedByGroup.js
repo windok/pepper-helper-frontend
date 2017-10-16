@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 
-import {ExpansionList, ExpansionPanel} from 'react-md/lib/ExpansionPanels';
+import ExpansionList from 'react-md/lib/ExpansionPanels/ExpansionList';
+import ExpansionPanel from 'react-md/lib/ExpansionPanels/ExpansionPanel';
 import ItemList from './ItemList';
 
 import {getGroupedItemForList} from 'Reducers/listItem';

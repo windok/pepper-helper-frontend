@@ -9,7 +9,7 @@ class IconButton extends React.PureComponent {
         return (
             <Button
                 icon
-                onTouchTap={this.props.onTouchTap}
+                onClick={this.props.onClick}
                 className={this.props.className}
             >{this.props.icon}</Button>
         );
@@ -18,14 +18,14 @@ class IconButton extends React.PureComponent {
 
 IconButton.propTypes = {
     icon: PropTypes.element.isRequired,
-    onTouchTap: PropTypes.func,
+    onClick: PropTypes.func,
     tooltip: PropTypes.string
 };
 
 export default IconButton;
 
 const SaveButton = (props) => (
-    <Button flat onTouchTap={props.onTouchTap}>Save</Button>
+    <Button flat onClick={props.onClick}>Save</Button>
 );
 
 export {IconButton, SaveButton};

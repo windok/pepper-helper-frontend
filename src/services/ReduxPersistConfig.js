@@ -24,5 +24,5 @@ const storeTransform = createTransform(
 
 export default {
     transforms: [storeTransform],
-    debounce: 10000
+    debounce: 50
 };

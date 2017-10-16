@@ -24,7 +24,7 @@ class ListCollection extends React.PureComponent {
                 key={list.getId()}
                 leftIcon={<Avatar random>{list.getName()[0]}</Avatar>}
                 primaryText={list.getName()}
-                onTouchTap={() => this.props.onListClick(list)}
+                onClick={() => this.props.onListClick(list)}
             />
         ));
 
@@ -32,17 +32,17 @@ class ListCollection extends React.PureComponent {
             <ListItem
                 primaryText="Recommended"
                 leftIcon={<SVGIcon use={pepperLogo.url}/>}
-                onTouchTap={this.props.showRecommendations}
+                onClick={this.props.showRecommendations}
             />
             <ListItem
                 primaryText="Bought"
                 leftIcon={<FontIcon>done_all</FontIcon>}
-                onTouchTap={this.props.showBought}
+                onClick={this.props.showBought}
             />
             <ListItem
                 primaryText="Snoozed"
                 leftIcon={<FontIcon>schedule</FontIcon>}
-                onTouchTap={this.props.showSuspended}
+                onClick={this.props.showSuspended}
             />
         </div>);
 
@@ -55,7 +55,7 @@ class ListCollection extends React.PureComponent {
                 <ListItem
                     primaryText="Add new list"
                     leftIcon={<FontIcon>add</FontIcon>}
-                    onTouchTap={this.props.addList}
+                    onClick={this.props.addList}
                 />
             </List>
         );

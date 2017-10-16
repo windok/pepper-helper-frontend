@@ -80,7 +80,7 @@ class AddItemToListSaveStep extends React.PureComponent {
                 <Header
                     title={"Add item to `" + this.props.list.getName() + "`"}
                     leftLinks={<BackButton/>}
-                    rightLinks={<SaveButton onTouchTap={() => this.props.saveItemHandler(this.state.template)}/>}
+                    rightLinks={<SaveButton onClick={() => this.props.saveItemHandler(this.state.template)}/>}
                 />
 
                 {this.state.template

@@ -13,10 +13,10 @@ const MenuButton = connect(
         className: 'md-btn--toolbar',
         tooltip: 'Menu'
     }},
-    (dispatch, {onTouchTap}) => {
+    (dispatch, {onClick}) => {
         return {
-            onTouchTap: (event) => {
-                onTouchTap && onTouchTap();
+            onClick: (event) => {
+                onClick && onClick();
                 showMenu()(dispatch);
             }
         }
@@ -24,7 +24,7 @@ const MenuButton = connect(
 )(Button);
 
 MenuButton.propTypes = {
-    onTouchTap: PropTypes.func
+    onClick: PropTypes.func
 };
 
 export default MenuButton;

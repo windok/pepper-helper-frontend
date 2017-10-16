@@ -20,8 +20,8 @@ class AddList extends React.PureComponent {
         return (
             <div>
                 <Header title={"Create product list"}
-                        leftLinks={<BackButton onTouchTap={this.props.cancel}/>}
-                        rightLinks={<SaveButton onTouchTap={() => this.props.save(this.state.name)}/>}/>
+                        leftLinks={<BackButton onClick={this.props.cancel}/>}
+                        rightLinks={<SaveButton onClick={() => this.props.save(this.state.name)}/>}/>
                 <form className="md-grid">
                     <TextField
                         id="listName"

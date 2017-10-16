@@ -40,14 +40,14 @@ class ProductListScreen extends React.PureComponent {
                 <Header
                     title={this.props.list.getName()}
                     leftLinks={<MenuButton key="void"/>}
-                    rightLinks={<Button icon key="edit-list" onTouchTap={() => this.props.editList(this.props.list)}>settings</Button>}
+                    rightLinks={<Button icon key="edit-list" onClick={() => this.props.editList(this.props.list)}>settings</Button>}
                 />
 
                 <ListComponent list={this.props.list} itemComponent={DraftItem}/>
 
                 <div style={{marginTop: '180px'}}/>
 
-                <Button onTouchTap={() => this.props.showRecommendations(this.props.list)}
+                <Button onClick={() => this.props.showRecommendations(this.props.list)}
                         floating
                         fixed
                         secondary
@@ -58,7 +58,7 @@ class ProductListScreen extends React.PureComponent {
                 </Button>
 
                 <Button
-                    onTouchTap={() => this.props.addItem(this.props.list)}
+                    onClick={() => this.props.addItem(this.props.list)}
                     floating fixed primary
                 >add</Button>
             </div>

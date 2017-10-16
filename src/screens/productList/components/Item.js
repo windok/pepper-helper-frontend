@@ -10,7 +10,7 @@ import ItemAction from './ItemAction';
 import FontIcon from 'react-md/lib/FontIcons';
 import Avatar from 'react-md/lib/Avatars';
 import Chip from 'react-md/lib/Chips';
-import {ListItem} from 'react-md/lib/Lists';
+import ListItem from 'react-md/lib/Lists/ListItem';
 import SwipeToRevealOptions from 'react-swipe-to-reveal-options';
 
 import {getProduct} from 'Reducers/product';
@@ -19,7 +19,7 @@ import {getUnit} from 'Reducers/unit';
 class Item extends React.PureComponent {
 
     createIcon(itemAction) {
-        return (<FontIcon className="md-cell--phone-hidden" onTouchTap={(e) => {
+        return (<FontIcon className="md-cell--phone-hidden" onClick={(e) => {
             e.stopPropagation();
             e.nativeEvent.stopImmediatePropagation();
             itemAction.getFunction()(this.props.item);
@@ -50,7 +50,7 @@ class Item extends React.PureComponent {
                         id=""
                         leftAvatar={<Avatar random>{this.props.product.getName()[0]}</Avatar>}
                         primaryText={this.props.product.getName()}
-                        onTouchTap={() => this.props.onClick(this.props.item)}
+                        onClick={() => this.props.onClick(this.props.item)}
                         rightIcon={<div>
                             <Chip label={<span><span
                                 className="md-font-semibold">{this.props.item.getQuantity()}</span>&nbsp;{this.props.unit.getName()}</span>}

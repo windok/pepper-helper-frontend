@@ -54,7 +54,7 @@ class SignInScreen extends React.PureComponent {
                     <div className="md-grid">
                         <Button
                             raised
-                            onTouchTap={() => this.props.signIn(this.state.email, this.state.password)}
+                            onClick={() => this.props.signIn(this.state.email, this.state.password)}
                             className="md-cell--right"
                         >Sign in</Button>
                     </div>
@@ -68,7 +68,7 @@ class SignInScreen extends React.PureComponent {
                         <Button
                             raised
                             secondary
-                            onTouchTap={() => this.setState({signUp: true})}
+                            onClick={() => this.setState({signUp: true})}
                         >Sign up</Button>
                     </div>
                 </div>

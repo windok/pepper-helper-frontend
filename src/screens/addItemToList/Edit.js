@@ -62,7 +62,7 @@ class EditListItem extends React.PureComponent {
                 <Header
                     title={'Edit item'}
                     leftLinks={<BackButton iconType="clear"/>}
-                    rightLinks={<SaveButton onTouchTap={() => this.props.saveItemHandler(this.state.listItem)}/>}
+                    rightLinks={<SaveButton onClick={() => this.props.saveItemHandler(this.state.listItem)}/>}
                 />
 
                 {this.state.listItem

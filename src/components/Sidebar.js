@@ -8,7 +8,7 @@ import {isSidebarOpened} from 'Reducers/ui';
 
 import Drawer from 'react-md/lib/Drawers';
 import ListCollection from 'Screens/productListCollection/ListCollection';
-import UserSidebarHeader from 'Screens/user/UserSidebarHeader';
+import UserSidebarHeader from 'components/SidebarHeader';
 
 class Sidebar extends React.PureComponent {
     render() {
@@ -25,6 +25,7 @@ class Sidebar extends React.PureComponent {
                 }}
                 type={Drawer.DrawerTypes.TEMPORARY}
                 header={<UserSidebarHeader/>}
+                className="dialogs__content drawers__content__scrollable"
             >
                 <ListCollection currentList={this.props.currentList}/>
             </Drawer>

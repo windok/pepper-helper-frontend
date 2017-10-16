@@ -9,9 +9,13 @@ import {getUser} from "Reducers/user";
 import TextField from 'react-md/lib/TextFields';
 import SelectField from 'react-md/lib/SelectFields';
 import Button from 'react-md/lib/Buttons';
+import Divider from 'react-md/lib/Dividers';
 
 import Header from "Components/Header";
 import BackButton from "Components/buttons/BackButton";
+
+import {logout} from 'actions/auth';
+import {redirectToDefaultList} from 'services/BrowserHistory'
 
 class Profile extends React.PureComponent {
     constructor(props) {
@@ -70,7 +74,7 @@ class Profile extends React.PureComponent {
 
                     <Button
                         raised
-                        onTouchTap={this.save.bind(this)}
+                        onClick={this.save.bind(this)}
                         className="md-cell--center"
                     >Create account</Button>
 
@@ -78,6 +82,17 @@ class Profile extends React.PureComponent {
                         {this.state.errors.map((errorMessage, key) => (<div key={key}>{errorMessage}</div>))}
                     </div>
                 </form>
+
+                <Divider style={{marginTop: 40, marginBottom: 40}}/>
+
+                <div className="md-grid">
+                    <Button
+                        raised
+                        secondary
+                        onClick={this.props.logout}
+                        className="md-cell--right"
+                    >Logout</Button>
+                </div>
 
             </div>
         );
@@ -101,5 +116,11 @@ export default connect(
     (state) => ({
         user: getUser(state)
     }),
-    (dispatch) => ({})
+    (dispatch) => ({
+        logout: () => {
+            dispatch(logout());
+
+            redirectToDefaultList();
+        }
+    })
 )(Profile);

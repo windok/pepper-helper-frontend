@@ -12,10 +12,10 @@ const BackButton = connect(
         icon: <FontIcon>{props.iconType || 'chevron_left'}</FontIcon>,
         tooltip: 'Back'
     }),
-    (dispatch, {onTouchTap}) => {
+    (dispatch, {onClick}) => {
         return {
-            onTouchTap: (event) => {
-                onTouchTap && onTouchTap();
+            onClick: (event) => {
+                onClick && onClick();
                 history.goBack();
             }
         }
@@ -24,7 +24,7 @@ const BackButton = connect(
 
 BackButton.propTypes = {
     iconType: PropTypes.string,
-    onTouchTap: PropTypes.func
+    onClick: PropTypes.func
 };
 
 export default BackButton;

@@ -2,3 +2,5 @@
 @import '~globals';
 
 @include react-md-everything;
+
+$md-typography-include-utilities: true !default;

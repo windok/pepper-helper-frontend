@@ -40,7 +40,7 @@ class AddItemToListSearchStep extends React.PureComponent {
 
         const listId = this.props.listId;
 
-        const forwardToSaveButton = <Button flat onTouchTap={() => {
+        const forwardToSaveButton = <Button flat onClick={() => {
             if (this.state.query.trim().length === 0) {
                 return;
             }
