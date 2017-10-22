@@ -22,7 +22,7 @@ class ListCollection extends React.PureComponent {
         this.props.lists.forEach(list => listElements.push(
             <ListItem
                 key={list.getIdentifier()}
-                leftIcon={<Avatar random>{list.getName()[0]}</Avatar>}
+                leftAvatar={<Avatar random>{list.getName()[0]}</Avatar>}
                 primaryText={list.getName()}
                 onClick={() => this.props.onListClick(list)}
             />

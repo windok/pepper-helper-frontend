@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import AutoFill from 'Lib/react-autofill';
 
 import {signIn} from 'Actions/auth';
 
 import TextField from 'react-md/lib/TextFields';
 import Button from 'react-md/lib/Buttons';
-
-import RegistrationScreen from './RegistrationScreen';
 
 import {redirectToDefaultList} from 'Services/BrowserHistory';
 
@@ -18,22 +17,15 @@ class SignInScreen extends React.PureComponent {
 
         this.state = {
             email: '',
-            password: '',
-            signUp: false
+            password: ''
         };
     }
 
     render() {
-        if (this.state.signUp) {
-            return (<RegistrationScreen backToSignIn={() => {
-                this.setState({signUp: false})
-            }}/>);
-        }
         return (
-            <div>
                 <form className="md-grid md-divider-border md-divider-border--bottom">
                     <TextField
-                        id="email"
+                        name="email"
                         label="Email"
                         customSize="title"
                         required
@@ -42,7 +34,7 @@ class SignInScreen extends React.PureComponent {
                     />
 
                     <TextField
-                        id="password"
+                        name="password"
                         type="password"
                         label="Password"
                         customSize="title"
@@ -59,21 +51,6 @@ class SignInScreen extends React.PureComponent {
                         >Sign in</Button>
                     </div>
                 </form>
-
-                <div className="md-grid">
-                    <div className="md-cell--center">
-                        <div>
-                            Want to join?
-                        </div>
-                        <Button
-                            raised
-                            secondary
-                            onClick={() => this.setState({signUp: true})}
-                        >Sign up</Button>
-                    </div>
-                </div>
-
-            </div>
         )
 
     }
@@ -93,4 +70,4 @@ export default connect(
             }
         };
     }
-)(SignInScreen);
+)(AutoFill(SignInScreen));

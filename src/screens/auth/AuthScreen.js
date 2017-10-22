@@ -10,14 +10,62 @@ import {getUser} from 'Reducers/user';
 import {isRehydrationCompleted} from 'Reducers/app';
 
 import SignInScreen from './components/SignInScreen';
+import RegistrationScreen from './components/RegistrationScreen';
+import Button from 'react-md/lib/Buttons';
 
 class AuthScreen extends React.PureComponent {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            screen: 'signIn'
+        };
+    }
+
     render() {
         if (!this.props.isRehydrationCompleted) return (<CircularProgress id="progressBar"/>);
 
+        const screens = {
+            signIn: (
+                <div>
+                    <SignInScreen/>
+                    <div className="md-grid">
+                        <div className="md-cell--center">
+                            <div>
+                                Want to join?
+                            </div>
+                            <Button
+                                raised
+                                secondary
+                                onClick={() => this.setState({screen: 'registration'})}
+                            >Sign up</Button>
+                        </div>
+                    </div>
+                </div>
+            ),
+            registration: (
+                <div>
+                    <div className="md-grid md-divider-border md-divider-border--bottom">
+                        <div className="md-cell--center">
+                            <div>
+                                Already have account?
+                            </div>
+                            <Button
+                                raised
+                                secondary
+                                onClick={() => this.setState({screen: 'signIn'})}
+                            >Sign in</Button>
+                        </div>
+                    </div>
+                    <RegistrationScreen/>
+                </div>
+            )
+        };
+
         return (
             <div>
-                {!this.props.user && (<SignInScreen/>)}
+                {!this.props.user && screens[this.state.screen]}
                 {this.props.user && (this.props.children)}
             </div>
         )

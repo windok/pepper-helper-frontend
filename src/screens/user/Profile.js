@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import AutoFill from 'Lib/react-autofill';
 
 import User from "Models/User";
 
@@ -123,4 +124,4 @@ export default connect(
             redirectToDefaultList();
         }
     })
-)(Profile);
+)(AutoFill(Profile));

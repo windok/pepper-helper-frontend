@@ -1,7 +1,6 @@
 import 'babel-polyfill';
 import React from 'react';
 import {render} from 'react-dom';
-import 'vanilla-autofill-event';
 import Root from './Root';
 import store from 'Store';
 import {AppContainer} from 'react-hot-loader'

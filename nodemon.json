@@ -1,8 +1,8 @@
 {
   "watch": [
     "nodemon.json",
-    "package.json",
-    "webpack.config.js",
+    "yarn.lock",
+    "webpack.config.babel.js",
     ".env",
     ".eslintrc",
     ".eslintignore",
