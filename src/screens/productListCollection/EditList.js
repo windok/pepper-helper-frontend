@@ -24,7 +24,7 @@ class EditList extends React.PureComponent {
     }
 
     componentWillReceiveProps({list}) {
-        if (list.getId() !== this.state.id) {
+        if (list.getIdentifier() !== this.state.id) {
             this.setState(list.serialize());
         }
     }
@@ -115,7 +115,7 @@ export default connect(
         return {
             save: (list, newListName) => {
                 updateList(list, newListName)(dispatch);
-                history.push('/product-list/' + list.getId());
+                history.push('/product-list/' + list.getIdentifier());
             },
             delete: (list) => {
                 deleteList(list)(dispatch);

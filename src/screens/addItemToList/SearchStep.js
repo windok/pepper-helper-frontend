@@ -51,8 +51,7 @@ class AddItemToListSearchStep extends React.PureComponent {
                 return this.props.postToSaveStep(product);
             }
 
-            this.props.createProduct(this.state.query)
-                .then(product => this.props.postToSaveStep(product));
+            this.props.postToSaveStep(this.props.createProduct(this.state.query));
         }}>Add</Button>;
 
         return (
@@ -95,7 +94,7 @@ AddItemToListSearchStep.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const listId = parseInt(match.params.listId);
+        const listId = match.params.listId || 0;
 
         const list = listId ? getList(state, listId) : getFirstList(state);
 
@@ -110,7 +109,7 @@ export default withRouter(connect(
             searchProduct: (query) => searchProduct(query)(dispatch),
             createProduct: (value) => createProduct(value)(dispatch),
             postToSaveStep: (product) => {
-                return history.push('/product-list/' + match.params.listId + '/item/save/' + product.getId());
+                return history.push('/product-list/' + match.params.listId + '/item/save/' + product.getIdentifier());
             }
         }
     }

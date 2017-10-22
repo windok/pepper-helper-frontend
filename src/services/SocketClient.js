@@ -38,13 +38,14 @@ const connect = () => {
         };
 
         socket.onmessage = function (event) {
-            console.log('onmessage', event);
+            // console.log('onmessage', event);
 
             if (event.data) {
                 const response = JSON.parse(event.data);
-                console.log('decoded response', response);
 
                 if (requests.has(response.requestId)) {
+                    console.log('decoded response', requests.get(response.requestId).request.getActions()[0].getName(), response);
+
                     requests.get(response.requestId).resolve(new SocketResponse({
                         id: response.requestId,
                         actions: response.actions
@@ -66,7 +67,7 @@ const send = (request) => connect()
     .then((socket) => {
         // todo wait to send after reconnect when socket is closing state
 
-        console.log('send request', request);
+        console.log('send request', request.getActions()[0].getName(), request);
 
         return new Promise((resolve, reject) => {
             requests.set(request.getId(), {request, resolve, reject});

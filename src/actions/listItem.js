@@ -2,6 +2,8 @@ import uuid from 'uuid/v4';
 import Moment from 'moment';
 
 import * as actionType from 'Actions';
+
+import Store from 'Store';
 import {API_CALL, GET, POST, PUT} from 'Store/api-middleware/RSAA';
 import {SOCKET_CALL} from 'Store/socket-middleware';
 
@@ -11,8 +13,12 @@ import {
     TYPE_GENERAL, TYPE_RECOMMENDED
 } from 'Models/ListItem';
 
-import Store from 'Store';
+
+import {getFirst as getFirstGroup} from 'Reducers/group';
+import {getFirst as getFirstUnit} from 'Reducers/unit';
 import {getUserLanguage} from 'Reducers/user';
+
+import {addSyncCompleteHandler} from 'Actions/sync';
 
 export const fetchItemsForList = (list) => (dispatch) => {
 
@@ -23,6 +29,10 @@ export const fetchItemsForList = (list) => (dispatch) => {
     return dispatch({
         [SOCKET_CALL]: {
             action: 'list-item-load',
+            payload: {
+                listId: list.getIdentifier(),
+                limit: 1000
+            },
             types: [
                 actionType.FETCH_ITEMS_FOR_LIST_REQUEST,
                 {
@@ -37,7 +47,7 @@ export const fetchItemsForList = (list) => (dispatch) => {
                                 productId: listItemData.translationId
                             });
 
-                            return items.set(listItem.getId(), listItem);
+                            return items.set(listItem.getIdentifier(), listItem);
                         });
 
                         return items;
@@ -46,10 +56,6 @@ export const fetchItemsForList = (list) => (dispatch) => {
                 },
                 actionType.FETCH_ITEMS_FOR_LIST_ERROR
             ],
-            params: {
-                listId: list.getId(),
-                limit: 1000
-            },
         }
     });
 };
@@ -63,13 +69,18 @@ export const getTemplate = (list, product) => (dispatch) => {
     }
 
     if (product.isCustom()) {
-        let groupId = Store.getState().group.items.keys().next().value || 0;
-        let unitId = Store.getState().unit.items.keys().next().value || 0;
 
         dispatch({
             type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
             meta: {list, product},
-            payload: new CustomProductListItemTemplate(uuid(), list.getId(), product.getId(), groupId, unitId, 1)
+            payload: new CustomProductListItemTemplate(
+                '',
+                list.getIdentifier(),
+                product.getIdentifier(),
+                getFirstGroup(Store.getState()).getIdentifier(),
+                getFirstUnit(Store.getState()).getIdentifier(),
+                1
+            )
         });
 
         return Promise.resolve();
@@ -91,7 +102,7 @@ export const getTemplate = (list, product) => (dispatch) => {
                     payload: (action, state, response) => new ListItem({
                         ...response,
                         id: response.id || 0,
-                        tmpId: response.tmpId || uuid(),
+                        tmpId: response.tmpId || '',
                         date: response.date ? Moment.utc(response.date) : Moment.utc(),
                         productId: response.translationId,
                         quantity: parseInt(response.quantity) || 1
@@ -106,34 +117,37 @@ export const getTemplate = (list, product) => (dispatch) => {
 export const createItem = (listItem) => (dispatch) => {
     listItem = new ListItem({...listItem.serialize(), date: Moment.utc()});
 
-    return dispatch({
-        [SOCKET_CALL]: {
-            action: 'list-item-create',
-            method: POST,
-            payload: {
+    dispatch({
+        type: actionType.CREATE_ITEM_OFFLINE,
+        payload: listItem,
+        sync: {
+            name: 'list-item-create',
+            payload: (state) => ({
                 ...listItem.serialize(),
-                language: getUserLanguage(Store.getState()),
+                language: getUserLanguage(state),
                 translationId: listItem.getProductId(),
-            },
-            types: [
-                {
-                    type: actionType.CREATE_ITEM_REQUEST,
-                    meta: {listItem}
-                },
-                {
-                    type: actionType.CREATE_ITEM_SUCCESS,
-                    meta: {listItem},
-                    payload: (action, state, response) => new ListItem({
-                        ...response,
-                        date: response.date ? Moment.utc(response.date) : Moment.utc(),
-                        productId: response.translationId
-                    })
-                },
-                actionType.CREATE_ITEM_ERROR
-            ],
+            }),
+            successAction: actionType.CREATE_ITEM_SUCCESS,
+            errorAction: actionType.CREATE_ITEM_ERROR
         }
     });
+
+    return listItem;
 };
+
+addSyncCompleteHandler({
+    match: ({response, syncAction}) => syncAction.getName() === 'list-item-create',
+    success: ({response, syncAction}) => ({
+        type: syncAction.getSuccessAction(),
+        meta: syncAction.getMeta(),
+        payload: new ListItem({
+            ...response,
+            tmpId: response.tmpId || '',
+            date: response.date ? Moment.utc(response.date) : Moment.utc(),
+            productId: response.translationId
+        })
+    }),
+});
 
 export const suspendItem = (listItem, date) => (dispatch) => {
     // todo convert recommended item in general one in corresponding component
@@ -141,7 +155,7 @@ export const suspendItem = (listItem, date) => (dispatch) => {
 
     return dispatch({
         [API_CALL]: {
-            endpoint: '/suspend-item/' + listItem.getId() + '/',
+            endpoint: '/suspend-item/' + listItem.getIdentifier() + '/',
             method: PUT,
             types: [
                 {
@@ -173,7 +187,7 @@ export const editItem = (listItem) => (dispatch) => {
 
     return dispatch({
         [API_CALL]: {
-            endpoint: '/list-item/' + listItem.getId(),
+            endpoint: '/list-item/' + listItem.getIdentifier(),
             method: PUT,
             types: [
                 {
@@ -211,7 +225,7 @@ export const buyItem = (listItem) => (dispatch) => {
 
     return dispatch({
         [API_CALL]: {
-            endpoint: '/list-item/buy/' + listItem.getId(),
+            endpoint: '/list-item/buy/' + listItem.getIdentifier(),
             method: PUT,
             types: [
                 {
@@ -240,7 +254,7 @@ export const returnItem = (listItem) => (dispatch) => {
 
     return dispatch({
         [API_CALL]: {
-            endpoint: '/list-item/return/' + listItem.getId(),
+            endpoint: '/list-item/return/' + listItem.getIdentifier(),
             method: PUT,
             types: [
                 {

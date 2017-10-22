@@ -16,7 +16,7 @@ export default Object.assign(
             case actionType.EDIT_LIST_OFFLINE:
                 return {
                     ...state,
-                    items: new Map([...state.items]).set(action.payload.getId(), action.payload.clone())
+                    items: new Map([...state.items]).set(action.payload.getIdentifier(), action.payload.clone())
                 };
 
             case actionType.DELETE_LIST_OFFLINE: {
@@ -31,7 +31,7 @@ export default Object.assign(
             case actionType.EDIT_LIST_SUCCESS: {
                 const items = new Map([...state.items]);
                 items.delete(action.payload.getTmpId());
-                items.set(action.payload.getId(), action.payload.clone());
+                items.set(action.payload.getIdentifier(), action.payload.clone());
 
                 return {...state, items};
             }

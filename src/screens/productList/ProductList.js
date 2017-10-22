@@ -5,6 +5,8 @@ import {connect} from 'react-redux';
 
 import {List as ListModel} from 'Models/List';
 
+import {redirectToDefaultList} from 'Services/BrowserHistory';
+
 import Sidebar from 'Components/Sidebar';
 import Header from 'Components/Header';
 import MenuButton from 'Components/buttons/MenuButton';
@@ -24,13 +26,31 @@ class ProductListScreen extends React.PureComponent {
     constructor(props) {
         super(props);
 
+        if (this.redirectToDefaultListIfNecessary(this.props.list)) {
+            return;
+        }
+
         props.fetchListItems(props.list);
     }
 
     componentWillReceiveProps({list}) {
+        if (this.redirectToDefaultListIfNecessary(list)) {
+            return;
+        }
+
         if (list !== this.props.list) {
             this.props.fetchListItems(list);
         }
+    }
+
+    redirectToDefaultListIfNecessary(list) {
+        if (!list.isNullObject()) {
+            return false;
+        }
+
+        redirectToDefaultList();
+
+        return true;
     }
 
     render() {
@@ -75,20 +95,13 @@ ProductListScreen.propTypes = {
 };
 
 export default withRouter(connect(
-    (state, {match}) => {
-        // todo get rid of dirty hack to redirect to new list, consider another way
-        const listId = (/^[0-9]+$/.test(match.params.listId) ? parseInt(match.params.listId) : match.params.listId) || 0;
-
-        return {
-            list: listId ? getList(state, listId) : getFirstList(state)
-        };
-    },
-    (dispatch, {history}) => {
-        return {
-            fetchListItems: (list) => fetchItemsForList(list)(dispatch),
-            addItem: (list) => history.push('/product-list/' + list.getId() + '/item/search'),
-            editList: (list) => history.push('/product-list/' + list.getId() + '/edit'),
-            showRecommendations: (list) => history.push('/product-list/' + list.getId() + '/recommendations')
-        };
-    }
+    (state, {match}) => ({
+        list: match.params.hasOwnProperty('listId') ? getList(state, match.params.listId || 0) : getFirstList(state)
+    }),
+    (dispatch, {history}) => ({
+        fetchListItems: (list) => fetchItemsForList(list)(dispatch),
+        addItem: (list) => history.push('/product-list/' + list.getIdentifier() + '/item/search'),
+        editList: (list) => history.push('/product-list/' + list.getIdentifier() + '/edit'),
+        showRecommendations: (list) => history.push('/product-list/' + list.getIdentifier() + '/recommendations')
+    })
 )(ProductListScreen));

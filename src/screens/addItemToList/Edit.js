@@ -37,7 +37,7 @@ class EditListItem extends React.PureComponent {
     componentWillReceiveProps({listItem, product}) {
         this.redirectToListIfNecessary(listItem);
 
-        if (listItem.getId() !== this.props.listItem.getId()) {
+        if (listItem.getIdentifier() !== this.props.listItem.getIdentifier()) {
             this.setState({
                 listItem: {...listItem.serialize(), name: product.getName()}
             });
@@ -85,8 +85,8 @@ EditListItem.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const listItem = getListItem(state, parseInt(match.params.itemId) || 0);
-        const list = getList(state, parseInt(match.params.listId) || 0);
+        const listItem = getListItem(state, match.params.itemId);
+        const list = getList(state, match.params.listId);
 
         return {
             product: getProduct(state, listItem.getProductId()),
@@ -97,7 +97,7 @@ export default withRouter(connect(
     (dispatch, {history}) => {
         return {
             redirectToList: (list) => {
-                list.isNullObject() ? history.push('/') : history.push('/product-list/' + list.getId());
+                list.isNullObject() ? history.push('/') : history.push('/product-list/' + list.getIdentifier());
             },
             saveItemHandler: (itemData) => {
                 const listItem = new ListItem(itemData);

@@ -39,7 +39,7 @@ class AddItemToListSaveStep extends React.PureComponent {
             return;
         }
 
-        if (this.props.list.getId() !== list.getId() || this.props.product.getId() !== product.getId()) {
+        if (this.props.list.getIdentifier() !== list.getIdentifier() || this.props.product.getIdentifier() !== product.getIdentifier()) {
             this.props.getTemplate(list, product);
         }
 
@@ -47,11 +47,10 @@ class AddItemToListSaveStep extends React.PureComponent {
                 // if there were no template before
                 !this.props.template
                 // or if list or product has changed
-                || (
-                    template.getListId() !== this.props.template.getListId()
-                    || template.getProductId() !== this.props.template.getProductId()
-                )
+                || template.getListId() !== this.props.template.getListId()
+                || template.getProductId() !== this.props.template.getProductId()
             )) {
+
             this.setState({
                 template: {...template.serialize(), name: product.getName()}
             });
@@ -107,10 +106,11 @@ AddItemToListSaveStep.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const listId = parseInt(match.params.listId);
-        const productId = parseInt(match.params.productId);
+        const listId = match.params.listId;
+        const productId = match.params.productId;
 
         const list = getList(state, listId);
+
         const product = getProduct(state, productId);
 
         const matchingListItem = getListItemByListAndProduct(state, list, product);
@@ -131,7 +131,7 @@ export default withRouter(connect(
                 history.push('/product-list/' + template.listId);
                 createItem(new ListItem(template))(dispatch);
             },
-            redirectToItemEdit: (item) => history.replace('/product-list/' + item.getListId() + '/item/' + item.getId()),
+            redirectToItemEdit: (item) => history.replace('/product-list/' + item.getListId() + '/item/' + item.getIdentifier()),
             getTemplate: (list, product) => getTemplate(list, product)(dispatch)
         }
     }

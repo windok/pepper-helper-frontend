@@ -21,7 +21,7 @@ class ListCollection extends React.PureComponent {
         const listElements = [];
         this.props.lists.forEach(list => listElements.push(
             <ListItem
-                key={list.getId()}
+                key={list.getIdentifier()}
                 leftIcon={<Avatar random>{list.getName()[0]}</Avatar>}
                 primaryText={list.getName()}
                 onClick={() => this.props.onListClick(list)}
@@ -79,15 +79,15 @@ export default connect(
         return {
             showBought: () => {
                 hideMenu()(dispatch);
-                history.push('/product-list/' + props.currentList.getId() + '/bought');
+                history.push('/product-list/' + props.currentList.getIdentifier() + '/bought');
             },
             showSuspended: () => {
                 hideMenu()(dispatch);
-                history.push('/product-list/' + props.currentList.getId() + '/suspended');
+                history.push('/product-list/' + props.currentList.getIdentifier() + '/suspended');
             },
             showRecommendations: () => {
                 hideMenu()(dispatch);
-                history.push('/product-list/' + props.currentList.getId() + '/recommendations');
+                history.push('/product-list/' + props.currentList.getIdentifier() + '/recommendations');
             },
             addList: () => {
                 hideMenu()(dispatch);
@@ -95,7 +95,7 @@ export default connect(
             },
             onListClick: (list) => {
                 hideMenu()(dispatch);
-                history.push('/product-list/' + list.getId());
+                history.push('/product-list/' + list.getIdentifier());
             }
         }
     }

@@ -5,6 +5,8 @@ import * as actionType from 'Actions';
 import {SOCKET_CALL} from 'Store/socket-middleware';
 import List from 'Models/List';
 
+import {addSyncCompleteHandler} from 'Actions/sync';
+
 export const fetchAll = () => (dispatch) => {
     return dispatch({
         [SOCKET_CALL]: {
@@ -48,7 +50,8 @@ export const create = (listName) => (dispatch) => {
         payload: list,
         sync: {
             name: 'product-list-create',
-            responseAction: actionType.CREATE_LIST_RESPONSE
+            successAction: actionType.CREATE_LIST_SUCCESS,
+            errorAction: actionType.CREATE_LIST_ERROR
         }
     });
 
@@ -63,7 +66,8 @@ export const updateList = (list, newListName) => (dispatch) => {
         payload: listUpdated,
         sync: {
             name: 'product-list-update',
-            responseAction: actionType.EDIT_LIST_RESPONSE
+            successAction: actionType.EDIT_LIST_SUCCESS,
+            errorAction: actionType.EDIT_LIST_ERROR
         }
     });
 
@@ -80,26 +84,11 @@ export const deleteList = (list) => (dispatch) => {
     });
 };
 
-
-const actionsToTrigger = {
-    [actionType.CREATE_LIST_RESPONSE]: {success: actionType.CREATE_LIST_SUCCESS, error: actionType.CREATE_LIST_ERROR},
-    [actionType.EDIT_LIST_RESPONSE]: {success: actionType.EDIT_LIST_SUCCESS, error: actionType.EDIT_LIST_ERROR},
-    // todo delete success and error action triggering
-    // [actionType.DELETE_LIST_RESPONSE]: {success: actionType.DELETE_LIST_SUCCESS, error: actionType.DELETE_LIST_ERROR},
-};
-
-export const listEpic = (action$, state) => action$
-    .filter((action) => actionsToTrigger.hasOwnProperty(action.type))
-    .map(action => {
-        const response = action.payload;
-        const nextActionType = actionsToTrigger[action.type];
-
-        if (response.error) {
-            return {type: nextActionType.error, payload: action.meta.syncAction.getPayload()}
-        }
-
-        return {
-            type: nextActionType.success,
-            payload: new List({...response, tmpId: response.tmpId || ''})
-        }
-    });
+addSyncCompleteHandler({
+    match: ({response, syncAction}) => syncAction.getName() === 'product-list-create' || syncAction.getName() === 'product-list-update',
+    success: ({response, syncAction}) => ({
+        type: syncAction.getSuccessAction(),
+        meta: syncAction.getMeta(),
+        payload: new List({...response, tmpId: response.tmpId || ''})
+    }),
+});

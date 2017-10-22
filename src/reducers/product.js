@@ -9,10 +9,6 @@ const initialState = {
 export default Object.assign(
     (state = initialState, action) => {
         switch (action.type) {
-            // case actionType.FETCH_PRODUCT_COLLECTION_REQUEST:
-            // case actionType.FETCH_PRODUCT_COLLECTION_ERROR:
-            //     return {...state};
-
             case actionType.FETCH_PRODUCT_COLLECTION_SUCCESS:
                 return {...state, items: new Map([...state.items, ...action.payload])};
 
@@ -22,11 +18,19 @@ export default Object.assign(
                     searchResults: {...state.searchResults, [action.meta.query]: [...action.payload]}
                 };
 
-            case actionType.CREATE_PRODUCT_SUCCESS:
+            case actionType.CREATE_PRODUCT_OFFLINE:
                 return {
                     ...state,
-                    items: (new Map([...state.items])).set(action.payload.getId(), action.payload.clone())
-                }
+                    items: (new Map([...state.items])).set(action.payload.getIdentifier(), action.payload.clone())
+                };
+
+            case actionType.CREATE_PRODUCT_SUCCESS: {
+                const items = new Map([...state.items]);
+                items.delete(action.payload.getTmpId());
+                items.set(action.payload.getIdentifier(), action.payload.clone());
+
+                return {...state, items};
+            }
 
             case actionType.USER_LOGOUT:
                 return {...initialState}
@@ -35,30 +39,40 @@ export default Object.assign(
         return state;
     },
     {
-        persist: (state) => {
-            return {
-                items: Array.from(state.items.entries(), (([productId, product]) => [productId, product.serialize()]))
-            };
-        },
-        rehydrate: (state) => {
-            return {
-                items: new Map(state.items.map(([productId, productData]) => [productId, new Product(productData)]))
-            };
-        }
+        persist: (state) => ({
+            items: Array.from(state.items.entries(), (([productId, product]) => [productId, product.serialize()]))
+        }),
+        rehydrate: (state) => ({
+            items: new Map(state.items.map(([productId, productData]) => [productId, new Product(productData)]))
+        })
     });
 
 /**
  * @param state
- * @param productId
+ * @param id
  * @return {Product}
  */
-export const getProduct = (state, productId) => {
-    return state.product.items.get(productId) || new ProductNullObject();
+export const getProduct = (state, id) => {
+    if (typeof id === 'string') {
+        return id.includes('-') ? getProductByTmpId(state, id) : getProduct(state, parseInt(id))
+    }
+
+    return state.product.items.get(id) || new ProductNullObject();
 };
 
 /**
  * @param state
- * @param productId
+ * @param tmpId
+ * @return {Product}
+ */
+export const getProductByTmpId = (state, tmpId) => {
+    return state.product.items.get(tmpId)
+        || Array.from(state.product.items.values()).filter(product => product.getTmpId() === tmpId)[0]
+        || new ProductNullObject()
+};
+
+/**
+ * @param state
  * @return {Map}
  */
 export const getProductCollection = (state) => {

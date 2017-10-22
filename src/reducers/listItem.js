@@ -26,17 +26,18 @@ export default Object.assign(
                     template: action.payload.clone()
                 };
 
-            case actionType.CREATE_ITEM_REQUEST:
+            case actionType.CREATE_ITEM_OFFLINE:
                 return {
                     ...state,
-                    items: new Map([...state.items]).set(action.meta.listItem.getTmpId(), action.meta.listItem.clone()),
+                    items: new Map([...state.items]).set(action.payload.getIdentifier(), action.payload.clone()),
                     template: null
                 };
 
             case actionType.CREATE_ITEM_SUCCESS: {
                 const items = new Map([...state.items]);
+
                 items.delete(action.payload.getTmpId());
-                items.set(action.payload.getId(), action.payload.clone());
+                items.set(action.payload.getIdentifier(), action.payload.clone());
 
                 return {
                     ...state,
@@ -149,12 +150,28 @@ export const getRecommendedListItems = (state, productList) => {
 
 /**
  * @param state
- * @param {number} itemId
+ * @param {number} id
  * @return {ListItem}
  */
-export const getListItem = (state, itemId) => {
-    return state.listItem.items.get(itemId) || new ListItemNullObject();
+export const getListItem = (state, id) => {
+    if (typeof id === 'string') {
+        return id.includes('-') ? getListItemByTmpId(state, id) : getListItem(state, parseInt(id))
+    }
+
+    return state.listItem.items.get(id) || new ListItemNullObject();
 };
+
+/**
+ * @param state
+ * @param tmpId
+ * @return {ListItem}
+ */
+export const getListItemByTmpId = (state, tmpId) => {
+    return state.listItem.items.get(tmpId)
+        || Array.from(state.listItem.items.values()).filter(listItem => listItem.getTmpId() === tmpId)[0]
+        || new ListItemNullObject()
+};
+
 
 /**
  * @param state

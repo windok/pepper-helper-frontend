@@ -17,6 +17,10 @@ class Product extends NotNullable(Entity) {
         return this.entity.tmpId;
     }
 
+    getIdentifier() {
+        return this.getId() || this.getTmpId()
+    }
+
     getName() {
         return this.entity.name || this.entity.defaultName;
     }

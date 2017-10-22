@@ -10,10 +10,13 @@ class SyncAction extends NotNullable(Entity) {
             {
                 ...entityData,
                 payload: {...entityData.payload} || {},
-                date: entityData.date || Moment.utc()
+                meta: {...entityData.meta} || {},
+                date: entityData.date || Moment.utc(),
+                successAction: entityData.successAction || '',
+                errorAction: entityData.errorAction || ''
             },
             [
-                (entity) => entityStructureFilter(entity, ['id', 'name', 'payload', 'date', 'responseAction']),
+                (entity) => entityStructureFilter(entity, ['id', 'name', 'payload', 'meta', 'date', 'successAction', 'errorAction']),
                 (entity) => dateConverter(entity, ['date']),
             ]
         );
@@ -31,8 +34,16 @@ class SyncAction extends NotNullable(Entity) {
         return this.entity.payload;
     }
 
-    getResponseAction() {
-        return this.entity.responseAction;
+    getMeta() {
+        return this.entity.meta;
+    }
+
+    getSuccessAction() {
+        return this.entity.successAction;
+    }
+
+    getErrorAction() {
+        return this.entity.errorAction;
     }
 
     getDate() {

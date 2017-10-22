@@ -72,6 +72,10 @@ const socketMiddleware = (store) => {
 
         const user = getUser(store.getState());
 
+        if (!user) {
+            return next(action);
+        }
+
         const socketAction = new SocketAction({
             id: uuid(),
             name: actionName,

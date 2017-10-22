@@ -45,7 +45,7 @@ class ItemList extends React.PureComponent {
             <List>
                 {Array.from(this.props.items, ([itemId, item]) => {
                     const ItemComponent = this.getItemComponent(item);
-                    return <ItemComponent key={item.getId()} item={item}/>
+                    return <ItemComponent key={item.getIdentifier()} item={item}/>
                 })}
             </List>
         );

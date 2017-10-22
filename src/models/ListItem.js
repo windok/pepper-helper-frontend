@@ -30,6 +30,10 @@ class ListItem extends NotNullable(Entity) {
         return this.entity.tmpId;
     }
 
+    getIdentifier() {
+        return this.getId() || this.getTmpId()
+    }
+
     getStatus() {
         return this.entity.status;
     }

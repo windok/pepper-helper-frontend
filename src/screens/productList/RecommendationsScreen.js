@@ -8,7 +8,7 @@ import {List as ListModel} from 'Models/List';
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 
-import {getList, getFirstList} from 'Reducers/list';
+import {getList} from 'Reducers/list';
 import {redirectToDefaultList} from 'Services/BrowserHistory';
 
 import {fetchItemsForList} from 'Actions/listItem';
@@ -18,25 +18,25 @@ import RecommendedItem from './components/RecommendedItem';
 
 class RecommendationsScreen extends React.PureComponent {
     componentWillMount() {
-        if (this.redirectToDefaultListIfNecessary(this.props.listId, this.props.list)) {
+        if (this.redirectToDefaultListIfNecessary(this.props.list)) {
             return;
         }
 
         this.props.fetchListItems(this.props.list);
     }
 
-    componentWillReceiveProps({listId, list}) {
-        if (this.redirectToDefaultListIfNecessary(listId, list)) {
+    componentWillReceiveProps({list}) {
+        if (this.redirectToDefaultListIfNecessary(list)) {
             return;
         }
 
-        if (listId !== this.props.listId) {
+        if (list.getIdentifier() !== this.props.list.getIdentifier()) {
             this.props.fetchListItems(list);
         }
     }
 
-    redirectToDefaultListIfNecessary(listId, list) {
-        if (listId === list.getId() && !list.isNullObject()) {
+    redirectToDefaultListIfNecessary(list) {
+        if (!list.isNullObject()) {
             return false;
         }
 
@@ -57,18 +57,14 @@ class RecommendationsScreen extends React.PureComponent {
 }
 
 RecommendationsScreen.propTypes = {
-    listId: PropTypes.number.isRequired,
     list: PropTypes.instanceOf(ListModel).isRequired,
     fetchListItems: PropTypes.func.isRequired,
 };
 
 export default withRouter(connect(
     (state, {match}) => {
-        const listId = parseInt(match.params.listId) || 0;
-
         return {
-            listId,
-            list: listId ? getList(state, listId) : getFirstList(state)
+            list: getList(state, match.params.listId || 0)
         };
     },
     (dispatch) => {

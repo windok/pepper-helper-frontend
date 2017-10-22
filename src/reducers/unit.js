@@ -47,6 +47,14 @@ export const getUnit = (state, id) => {
 
 /**
  * @param state
+ * @return {Unit}
+ */
+export const getFirst = (state) => {
+    return state.unit.items.values().next().value || new UnitNullObject();
+};
+
+/**
+ * @param state
  * @return {Map}
  */
 export const getUnitCollection = (state) => {

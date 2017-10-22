@@ -33,7 +33,7 @@ export default connect(
     },
     (dispatch) => {
         return {
-            editItem: (listItem) => history.push('/product-list/' + listItem.getListId() + '/item/' + listItem.getId()),
+            editItem: (listItem) => history.push('/product-list/' + listItem.getListId() + '/item/' + listItem.getIdentifier()),
         }
     }
 )(RecommendedItem);

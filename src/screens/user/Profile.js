@@ -76,7 +76,7 @@ class Profile extends React.PureComponent {
                         raised
                         onClick={this.save.bind(this)}
                         className="md-cell--center"
-                    >Create account</Button>
+                    >Save</Button>
 
                     <div>
                         {this.state.errors.map((errorMessage, key) => (<div key={key}>{errorMessage}</div>))}

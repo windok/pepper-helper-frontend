@@ -13,15 +13,13 @@ import {combineEpics} from 'redux-observable';
 
 
 import {logoutEpic} from 'Actions/auth';
-import {createSyncActionEpic, startSyncEpic, syncEpic} from 'Actions/sync';
-
-import {listEpic} from 'Actions/list';
+import {createSyncActionEpic, startSyncEpic, syncEpic, syncCompleteEpic} from 'Actions/sync';
 
 export  default combineEpics(
     logoutEpic,
+
     createSyncActionEpic,
     startSyncEpic,
     syncEpic,
-
-    listEpic
+    syncCompleteEpic,
 );

@@ -41,3 +41,12 @@ export default Object.assign(
 export const getGroupCollection = (state) => {
     return state.group.items;
 };
+
+/**
+ * @param state
+ * @return {Group}
+ */
+export const getFirst = (state) => {
+    return state.group.items.values().next().value || new GroupNullObject();
+};
+

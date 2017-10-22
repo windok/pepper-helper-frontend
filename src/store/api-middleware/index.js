@@ -88,6 +88,7 @@ const apiMiddleware = (store) => {
 
         // todo refactor user specific headers
         const user = getUser(store.getState());
+
         if (user) {
             headers['PH-TOKEN'] = user.getToken();
             headers['Accept-Language'] = user.getLanguage();

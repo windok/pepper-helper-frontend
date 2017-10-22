@@ -100,7 +100,7 @@ const developmentConfig = {
         inline: true,
         hot: true,
         port: 3000,
-        stats: 'errors-only',
+        stats: 'minimal',
         historyApiFallback: true,
     },
     entry: [

@@ -10,11 +10,15 @@ class List extends NotNullable(Entity) {
     }
 
     getId() {
-        return this.entity.id || this.getTmpId();
+        return this.entity.id;
     }
 
     getTmpId() {
         return this.entity.tmpId;
+    }
+
+    getIdentifier() {
+        return this.getId() || this.getTmpId()
     }
 
     getName() {
