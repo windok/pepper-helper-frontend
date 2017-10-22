@@ -27,13 +27,18 @@ export default Object.assign(
                 };
 
             case actionType.CREATE_ITEM_OFFLINE:
+            case actionType.EDIT_ITEM_OFFLINE:
+            case actionType.BUY_ITEM_OFFLINE:
+            case actionType.RETURN_ITEM_OFFLINE:
+            case actionType.SUSPEND_ITEM_OFFLINE:
                 return {
                     ...state,
                     items: new Map([...state.items]).set(action.payload.getIdentifier(), action.payload.clone()),
                     template: null
                 };
 
-            case actionType.CREATE_ITEM_SUCCESS: {
+            case actionType.CREATE_ITEM_SUCCESS:
+            case actionType.EDIT_ITEM_SUCCESS: {
                 const items = new Map([...state.items]);
 
                 items.delete(action.payload.getTmpId());
@@ -45,21 +50,6 @@ export default Object.assign(
                     template: null
                 };
             }
-
-            case actionType.EDIT_ITEM_REQUEST:
-            case actionType.SUSPEND_ITEM_REQUEST:
-            case actionType.BUY_ITEM_REQUEST:
-            case actionType.RETURN_ITEM_REQUEST:
-                return {
-                    ...state,
-                    items: new Map([...state.items]).set(action.meta.listItem.getId(), action.meta.listItem.clone()),
-                };
-
-            case actionType.EDIT_ITEM_SUCCESS:
-                return {
-                    ...state,
-                    items: new Map([...state.items]).set(action.payload.getId(), action.payload.clone()),
-                };
 
             case actionType.USER_LOGOUT:
                 return {...initialState}
@@ -177,16 +167,18 @@ export const getListItemByTmpId = (state, tmpId) => {
  * @param state
  * @param {List} list
  * @param {Product} product
- * @return {ListItem}
+ * @return {ListItem[]}
  */
-export const getListItemByListAndProduct = (state, list, product) => {
-    for (let listItem of state.listItem.items.values()) {
-        if (listItem.getListId() === list.getId() && listItem.getProductId() === product.getId()) {
-            return listItem;
-        }
-    }
+export const getItemsByListAndProduct = (state, list, product) => {
+    const items = [];
 
-    return new ListItemNullObject();
+    state.listItem.items.forEach(listItem => {
+        if (listItem.getListId() === list.getIdentifier() && listItem.getProductId() === product.getIdentifier()) {
+            items.push(listItem);
+        }
+    });
+
+    return items;
 };
 
 /**

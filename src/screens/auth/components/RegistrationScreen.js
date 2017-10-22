@@ -29,17 +29,9 @@ class RegistrationScreen extends React.PureComponent {
     register() {
         // todo make validation as onChange event handler for each field
         const errors = [];
+
         if (!/\S+@\S+\.\S+/.test(this.state.email)) {
             errors.push('Email field is not valid.')
-        }
-        if (!/[0-9]/.test(this.state.password)) {
-            errors.push('Password field should contain at least one digit.')
-        }
-        if (!/[a-zA-Z]/.test(this.state.password)) {
-            errors.push('Password field should contain at least one letter.')
-        }
-        if (!/[^a-zA-Z\d]/.test(this.state.password)) {
-            errors.push('Password field should contain at least one special symbol.')
         }
 
         this.setState({errors});

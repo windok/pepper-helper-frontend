@@ -11,7 +11,7 @@ import {Product, ProductNullObject} from 'Models/Product';
 
 import {getList} from 'Reducers/list';
 import {getProduct} from 'Reducers/product';
-import {getTemplate as getListItemTemplate, getListItemByListAndProduct} from 'Reducers/listItem';
+import {getTemplate as getListItemTemplate, getItemsByListAndProduct} from 'Reducers/listItem';
 
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
@@ -113,10 +113,11 @@ export default withRouter(connect(
 
         const product = getProduct(state, productId);
 
-        const matchingListItem = getListItemByListAndProduct(state, list, product);
+        const matchingListItems = getItemsByListAndProduct(state, list, product)
+            .filter((listItem) => listItem.getStatus() === STATUS_DRAFT);
 
-        const template = !matchingListItem.isNullObject() && matchingListItem.getStatus() === STATUS_DRAFT
-            ? matchingListItem
+        const template = matchingListItems.length
+            ? matchingListItems[0]
             : getListItemTemplate(state, list, product);
 
         return {

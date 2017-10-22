@@ -85,7 +85,7 @@ export const deleteList = (list) => (dispatch) => {
 };
 
 addSyncCompleteHandler({
-    match: ({response, syncAction}) => syncAction.getName() === 'product-list-create' || syncAction.getName() === 'product-list-update',
+    match: ({response, syncAction}) => ['product-list-create', 'product-list-update'].includes(syncAction.getName()),
     success: ({response, syncAction}) => ({
         type: syncAction.getSuccessAction(),
         meta: syncAction.getMeta(),

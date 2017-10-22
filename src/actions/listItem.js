@@ -69,7 +69,6 @@ export const getTemplate = (list, product) => (dispatch) => {
     }
 
     if (product.isCustom()) {
-
         dispatch({
             type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
             meta: {list, product},
@@ -135,8 +134,29 @@ export const createItem = (listItem) => (dispatch) => {
     return listItem;
 };
 
+export const editItem = (listItem) => (dispatch) => {
+    listItem = new ListItem({...listItem.serialize(), date: Moment.utc()});
+
+    dispatch({
+        type: actionType.EDIT_ITEM_OFFLINE,
+        payload: listItem,
+        sync: {
+            name: 'list-item-update',
+            payload: (state) => ({
+                ...listItem.serialize(),
+                language: getUserLanguage(state),
+                translationId: listItem.getProductId(),
+            }),
+            successAction: actionType.EDIT_ITEM_SUCCESS,
+            errorAction: actionType.EDIT_ITEM_ERROR
+        }
+    });
+
+    return listItem;
+};
+
 addSyncCompleteHandler({
-    match: ({response, syncAction}) => syncAction.getName() === 'list-item-create',
+    match: ({response, syncAction}) => ['list-item-create', 'list-item-update'].includes(syncAction.getName()),
     success: ({response, syncAction}) => ({
         type: syncAction.getSuccessAction(),
         meta: syncAction.getMeta(),
@@ -150,67 +170,19 @@ addSyncCompleteHandler({
 });
 
 export const suspendItem = (listItem, date) => (dispatch) => {
-    // todo convert recommended item in general one in corresponding component
-    listItem = new ListItem({...listItem.serialize(), date: Moment.utc(), type: TYPE_GENERAL});
+    listItem = new ListItem({...listItem.serialize(), date: Moment.utc(), status: STATUS_BOUGHT});
 
-    return dispatch({
-        [API_CALL]: {
-            endpoint: '/suspend-item/' + listItem.getIdentifier() + '/',
-            method: PUT,
-            types: [
-                {
-                    type: actionType.SUSPEND_ITEM_REQUEST,
-                    meta: {listItem}
-                },
-                {
-                    type: actionType.SUSPEND_ITEM_SUCCESS,
-                    meta: {listItem},
-                    payload: (action, state, response) => new ListItem({
-                        ...response.data,
-                        date: response.data.date ? Moment.utc(response.data.date) : Moment.utc(),
-                        productId: response.data.translationId
-                    })
-                },
-                actionType.SUSPEND_ITEM_ERROR
-            ],
-            params: {
-                ...listItem.serialize(),
-                translationId: listItem.getProductId()
-            },
+    dispatch({
+        type: actionType.SUSPEND_ITEM_OFFLINE,
+        payload: listItem,
+        sync: {
+            name: 'list-item-suspend',
+            successAction: actionType.SUSPEND_ITEM_SUCCESS,
+            errorAction: actionType.SUSPEND_ITEM_ERROR
         }
     });
-};
 
-export const editItem = (listItem) => (dispatch) => {
-    // todo convert recommended item in general one in corresponding component
-    listItem = new ListItem({...listItem.serialize(), date: Moment.utc(), type: TYPE_GENERAL});
-
-    return dispatch({
-        [API_CALL]: {
-            endpoint: '/list-item/' + listItem.getIdentifier(),
-            method: PUT,
-            types: [
-                {
-                    type: actionType.EDIT_ITEM_REQUEST,
-                    meta: {listItem}
-                },
-                {
-                    type: actionType.EDIT_ITEM_SUCCESS,
-                    payload: (action, state, response) => new ListItem({
-                        ...response.data,
-                        tmpId: response.data.tmpId || '',
-                        date: response.data.date ? Moment.utc(response.data.date) : Moment.utc(),
-                        productId: response.data.translationId
-                    })
-                },
-                actionType.EDIT_ITEM_ERROR
-            ],
-            params: {
-                ...listItem.serialize(),
-                translationId: listItem.getProductId()
-            },
-        }
-    });
+    return listItem;
 };
 
 /**
@@ -223,23 +195,17 @@ export const buyItem = (listItem) => (dispatch) => {
 
     listItem = new ListItem({...listItem.serialize(), status: STATUS_BOUGHT});
 
-    return dispatch({
-        [API_CALL]: {
-            endpoint: '/list-item/buy/' + listItem.getIdentifier(),
-            method: PUT,
-            types: [
-                {
-                    type: actionType.BUY_ITEM_REQUEST,
-                    meta: {listItem}
-                },
-                {
-                    type: actionType.BUY_ITEM_SUCCESS,
-                    meta: {listItem},
-                },
-                actionType.BUY_ITEM_ERROR
-            ],
+    dispatch({
+        type: actionType.BUY_ITEM_OFFLINE,
+        payload: listItem,
+        sync: {
+            name: 'list-item-buy',
+            successAction: actionType.BUY_ITEM_SUCCESS,
+            errorAction: actionType.BUY_ITEM_ERROR
         }
     });
+
+    return listItem;
 };
 
 /**
@@ -253,20 +219,20 @@ export const returnItem = (listItem) => (dispatch) => {
     listItem = new ListItem({...listItem.serialize(), status: STATUS_DRAFT});
 
     return dispatch({
-        [API_CALL]: {
-            endpoint: '/list-item/return/' + listItem.getIdentifier(),
-            method: PUT,
-            types: [
-                {
-                    type: actionType.RETURN_ITEM_REQUEST,
-                    meta: {listItem}
-                },
-                {
-                    type: actionType.RETURN_ITEM_SUCCESS,
-                    meta: {listItem},
-                },
-                actionType.RETURN_ITEM_ERROR
-            ],
+        type: actionType.RETURN_ITEM_OFFLINE,
+        payload: listItem,
+        sync: {
+            name: 'list-item-return',
+            successAction: actionType.RETURN_ITEM_SUCCESS,
+            errorAction: actionType.RETURN_ITEM_ERROR
         }
     });
 };
+
+addSyncCompleteHandler({
+    match: ({response, syncAction}) => ['list-item-buy', 'list-item-return', 'list-item-suspend'].includes(syncAction.getName()),
+    success: ({response, syncAction}) => ({
+        type: syncAction.getSuccessAction()
+    }),
+});
+

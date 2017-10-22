@@ -7,14 +7,10 @@ import {getUnitCollection} from 'Reducers/unit';
 
 class UnitSelect extends React.PureComponent {
     render() {
-
-        const options = [];
-        this.props.units.forEach((unit) => {
-            options.push({
-                value: unit.getId(),
-                label: unit.getName()
-            });
-        });
+        const options = Array.from(this.props.units.values(), unit => ({
+            value: unit.getId(),
+            label: unit.getName()
+        }));
 
         return (
             <SelectField
