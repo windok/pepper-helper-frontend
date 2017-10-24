@@ -10,7 +10,6 @@ import ErrorHandler from 'Services/ErrorHandler';
 import UnauthorizedErrorHandler from 'Services/ErrorHandler/UnauthorizedErrorHandler';
 import LoggingErrorHandler from 'Services/ErrorHandler/LoggingErrorHandler';
 
-import persistConfig from 'Services/ReduxPersistConfig';
 import {persistStore} from 'redux-persist';
 
 
@@ -30,7 +29,7 @@ ErrorHandler.addHandlers([
 
 import './styles.scss';
 
-persistStore(store, persistConfig);
+persistStore(store);
 
 const renderApp = (Component = Root) =>
     render(

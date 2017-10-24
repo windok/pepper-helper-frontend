@@ -74,7 +74,7 @@ class AddItemToListSearchStep extends React.PureComponent {
 
                     <Divider style={{marginTop: 10, marginBottom: 10}}/>
 
-                    <ProductSearchResultList listId={listId} query={this.state.query}/>
+                    {this.state.query && <ProductSearchResultList listId={listId} query={this.state.query}/>}
                 </form>
             </div>
         )

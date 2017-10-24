@@ -17,7 +17,7 @@ class UnitSelect extends React.PureComponent {
                 id="unitId"
                 label="Unit"
                 className={this.props.className}
-                defaultValue={this.props.unitId}
+                value={this.props.unitId}
                 menuItems={options}
                 onChange={this.props.onUnitChange}/>
         )

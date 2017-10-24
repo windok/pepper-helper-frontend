@@ -37,6 +37,14 @@ export default Object.assign(
                     template: null
                 };
 
+            case actionType.DELETE_ITEM_OFFLINE: {
+                const items = new Map([...state.items]);
+                items.delete(action.payload.getId());
+                items.delete(action.payload.getTmpId());
+
+                return {...state, items};
+            }
+
             case actionType.CREATE_ITEM_SUCCESS:
             case actionType.EDIT_ITEM_SUCCESS: {
                 const items = new Map([...state.items]);
@@ -62,6 +70,7 @@ export default Object.assign(
             items: Array.from(state.items.entries(), ([itemId, listItem]) => [itemId, listItem.serialize()])
         }),
         rehydrate: (persistedState) => ({
+            ...initialState,
             items: new Map(persistedState.items.map(([itemId, listItemData]) => [itemId, new ListItem(listItemData)]))
         })
     }

@@ -40,10 +40,11 @@ export default Object.assign(
     },
     {
         persist: (state) => ({
-            items: Array.from(state.items.entries(), (([productId, product]) => [productId, product.serialize()]))
+            items: Array.from(state.items.entries(), (([productId, product]) => [productId, product.serialize()])),
         }),
         rehydrate: (state) => ({
-            items: new Map(state.items.map(([productId, productData]) => [productId, new Product(productData)]))
+            ...initialState,
+            items: new Map(state.items.map(([productId, productData]) => [productId, new Product(productData)])),
         })
     });
 
@@ -80,6 +81,10 @@ export const getProductCollection = (state) => {
 };
 
 export const findBestSearchResults = (state, query) => {
+    if (!query.trim()) {
+        return [];
+    }
+
     let searchResults = state.product.searchResults[query];
 
     if (searchResults === undefined) {

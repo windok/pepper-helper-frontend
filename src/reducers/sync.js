@@ -49,6 +49,7 @@ export default Object.assign(
             queue: state.queue
         }),
         rehydrate: (persistedState) => ({
+            ...initialState,
             actions: new Map(persistedState.actions.map(([actionId, actionData]) => [actionId, new SyncAction(actionData)])),
             queue: persistedState.queue
         })

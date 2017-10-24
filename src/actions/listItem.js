@@ -155,6 +155,21 @@ export const editItem = (listItem) => (dispatch) => {
     return listItem;
 };
 
+export const deleteItem = (listItem) => (dispatch) => {
+    dispatch({
+        type: actionType.DELETE_ITEM_OFFLINE,
+        payload: listItem,
+        sync: {
+            name: 'list-item-delete',
+            payload: {
+                id: listItem.getId()
+            },
+            successAction: actionType.DELETE_ITEM_SUCCESS,
+            errorAction: actionType.DELETE_ITEM_ERROR
+        }
+    });
+};
+
 addSyncCompleteHandler({
     match: ({response, syncAction}) => ['list-item-create', 'list-item-update'].includes(syncAction.getName()),
     success: ({response, syncAction}) => ({

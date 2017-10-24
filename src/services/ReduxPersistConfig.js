@@ -1,4 +1,5 @@
 import {createTransform} from 'redux-persist';
+import storage from 'redux-persist/lib/storage'
 
 import {transformers} from 'Reducers';
 
@@ -23,6 +24,8 @@ const storeTransform = createTransform(
 );
 
 export default {
+    key: 'pepper-helper',
+    storage,
     transforms: [storeTransform],
     debounce: 50
 };

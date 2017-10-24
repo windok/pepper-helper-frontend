@@ -7,19 +7,18 @@ import {getGroupCollection} from 'Reducers/group';
 
 class GroupSelect extends React.PureComponent {
     render() {
-        const options = [];
-        this.props.groups.forEach((group) => options.push({
-                value: group.getId(),
-                label: group.getName()
-            }
-        ));
+
+        const options = Array.from(this.props.groups.values(), group => ({
+            value: group.getId(),
+            label: group.getName()
+        }));
 
         return (
             <SelectField
                 id="group"
                 label="Group"
                 className={this.props.className}
-                defaultValue={this.props.groupId}
+                value={this.props.groupId}
                 menuItems={options}
                 onChange={this.props.onGroupChange}/>
         )

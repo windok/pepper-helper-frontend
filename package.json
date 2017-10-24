@@ -29,15 +29,15 @@
     "react-addons-transition-group": "^15.6.0",
     "react-dom": "^15.6.1",
     "react-hot-loader": "^3.0.0-beta.7",
-    "react-md": "^1.1.4",
+    "react-md": "^1.2.4",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
     "react-swipe-to-reveal-options": "^0.3.6",
     "redux": "^3.7.2",
     "redux-observable": "^0.16.0",
-    "redux-persist": "^4.9.1",
+    "redux-persist": "^5.0.1",
     "redux-thunk": "^2.2.0",
-    "rxjs": "^5.4.3",
+    "rxjs": "^5.5.1",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
@@ -76,7 +76,7 @@
     "svg-sprite-loader": "^3.2.5",
     "svgo-loader": "^1.2.1",
     "url-loader": "^0.5.9",
-    "webpack": "^3.6.0",
-    "webpack-dev-server": "^2.8.2"
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3"
   }
 }
