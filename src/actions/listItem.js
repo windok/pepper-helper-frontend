@@ -1,10 +1,8 @@
-import uuid from 'uuid/v4';
 import Moment from 'moment';
 
 import * as actionType from 'Actions';
 
 import Store from 'Store';
-import {API_CALL, GET, POST, PUT} from 'Store/api-middleware/RSAA';
 import {SOCKET_CALL} from 'Store/socket-middleware';
 
 import {

@@ -16,9 +16,7 @@ export const register = (user) => (dispatch) => {
         [API_CALL]: {
             endpoint: '/user/register',
             method: POST,
-            params: {
-                ...user
-            },
+            payload: user,
             headers: {
                 'Accept-Language': user.language
             },
@@ -44,7 +42,7 @@ export const signIn = (email, password) => (dispatch) => {
         [API_CALL]: {
             endpoint: '/user/signIn',
             method: PUT,
-            params: {email, password},
+            payload: {email, password},
             types: [
                 actionType.USER_SIGN_IN_REQUEST,
                 {

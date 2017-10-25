@@ -77,14 +77,12 @@ const apiMiddleware = (store) => {
         const endpoint = action[API_CALL].endpoint;
         const [requestType, successType, failureType] = action[API_CALL].types;
         const method = action[API_CALL].method;
-        const params = typeof action[API_CALL].params === 'function'
-            ? action[API_CALL].params(action, store.getState())
-            : action[API_CALL].params || {};
+        const payload = typeof action[API_CALL].payload === 'function'
+            ? action[API_CALL].payload(action, store.getState())
+            : action[API_CALL].payload || {};
 
 
-        let headers = {
-            'Content-Type': 'application/json',
-        };
+        let headers = {};
 
         // todo refactor user specific headers
         const user = getUser(store.getState());
@@ -101,7 +99,7 @@ const apiMiddleware = (store) => {
 
         next(createActionForNext(requestType, action, store));
 
-        return RestClient[method](endpoint, params, headers)
+        return RestClient[method](endpoint, payload, headers)
             .then(
                 (response) => {
                     const actionForNext = createActionForNext(successType, action, store, response);

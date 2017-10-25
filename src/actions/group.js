@@ -1,5 +1,4 @@
 import * as actionType from 'Actions';
-import {API_CALL, GET, POST} from 'Store/api-middleware/RSAA';
 import {SOCKET_CALL} from 'Store/socket-middleware';
 import Group from 'Models/Group';
 import store from 'Store';

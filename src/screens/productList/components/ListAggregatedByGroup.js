@@ -20,6 +20,7 @@ class ListAggregatedByGroup extends React.PureComponent {
                             headerStyle={{backgroundColor: this.props.groups.has(groupId) ? this.props.groups.get(groupId).getColor() : 'transparent'}}
                             secondaryLabel=""
                             defaultExpanded
+                            overflown={false}
                         ><ItemList itemComponent={this.props.itemComponent} items={itemsByGroup}/>
                         </ExpansionPanel>
                     )

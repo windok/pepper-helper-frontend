@@ -6,6 +6,7 @@ import {SOCKET_CALL} from 'Store/socket-middleware';
 import List from 'Models/List';
 
 import {addSyncCompleteHandler} from 'Actions/sync';
+import RestClient from 'Services/RestClient';
 
 export const fetchAll = () => (dispatch) => {
     return dispatch({
@@ -92,3 +93,16 @@ addSyncCompleteHandler({
         payload: new List({...response, tmpId: response.tmpId || ''})
     }),
 });
+
+
+export const share = (list, user, email) => {
+    return RestClient.put(
+        'product-list/share/' + list.getId(),
+        {email},
+        {
+            headers: {
+                'PH-TOKEN': user.getToken()
+            }
+        }
+    );
+};

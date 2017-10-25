@@ -25,7 +25,9 @@ class SignInScreen extends React.PureComponent {
         return (
                 <form className="md-grid md-divider-border md-divider-border--bottom">
                     <TextField
+                        id="signIn-email"
                         name="email"
+                        type="email"
                         label="Email"
                         customSize="title"
                         required
@@ -34,6 +36,7 @@ class SignInScreen extends React.PureComponent {
                     />
 
                     <TextField
+                        id="signIn-password"
                         name="password"
                         type="password"
                         label="Password"

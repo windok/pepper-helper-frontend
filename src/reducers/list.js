@@ -81,10 +81,19 @@ export const getListByTmpId = (state, tmpId) => {
  * @param state
  * @return {List}
  */
-export const getFirstList = (state) => {
+export const getDefaultList = (state) => {
     const user = getUser(state);
 
-    return (user && state.list.items.get(user.getDefaultProductListId()))
+    return (user && state.list.items.get(user.getDefaultProductListId())) || null;
+};
+
+
+/**
+ * @param state
+ * @return {List}
+ */
+export const getFirstList = (state) => {
+    return getDefaultList(state)
         || state.list.items.values().next().value
         || new ListNullObject();
 };

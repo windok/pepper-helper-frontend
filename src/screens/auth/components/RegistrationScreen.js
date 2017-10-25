@@ -58,6 +58,7 @@ class RegistrationScreen extends React.PureComponent {
             <form className="md-grid">
                 <TextField
                     name="email"
+                    type="email"
                     label="Email"
                     customSize="title"
                     required

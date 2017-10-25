@@ -15,13 +15,10 @@ import {getProduct} from 'Reducers/product';
 
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
+import DeleteButton from 'Components/buttons/DeleteButton';
 import {SaveButton} from 'Components/buttons/Button';
 
 import Divider from 'react-md/lib/Dividers';
-import Button from 'react-md/lib/Buttons';
-import FontIcon from 'react-md/lib/FontIcons';
-import DialogContainer from 'react-md/lib/Dialogs';
-
 
 import ItemCard from './components/ItemCard';
 
@@ -62,25 +59,6 @@ class EditListItem extends React.PureComponent {
         });
     }
 
-    showDeleteDialog = () => {
-        this.setState({deleteDialog: true});
-    };
-
-    hideDeleteDialog = () => {
-        this.setState({deleteDialog: false});
-    };
-
-    getDeleteDialogActions() {
-        return [
-            {secondary: true, children: 'Cancel', onClick: this.hideDeleteDialog},
-            <Button flat primary onClick={() => {
-                this.hideDeleteDialog();
-                this.props.delete(this.props.listItem);
-            }}>Confirm</Button>
-        ];
-    }
-
-
     render() {
         return (
             <div>
@@ -98,24 +76,7 @@ class EditListItem extends React.PureComponent {
 
                         <Divider style={{marginTop: 40, marginBottom: 40}}/>
 
-                        <div className="md-grid">
-                            <Button
-                                raised
-                                secondary
-                                iconBefore={false}
-                                iconEl={<FontIcon>delete</FontIcon>}
-                                onClick={this.showDeleteDialog}
-                                className="md-cell--right"
-                            >Delete item</Button>
-                        </div>
-
-                        <DialogContainer
-                            id="delete-item-dialog"
-                            visible={this.state.deleteDialog}
-                            onHide={this.hideDeleteDialog}
-                            actions={this.getDeleteDialogActions()}
-                            title="Are you sure to delete?"
-                        />
+                        <DeleteButton text="Delete item" onClick={() => this.props.delete(this.props.listItem)}/>
                     </div>
                 )}
             </div>
