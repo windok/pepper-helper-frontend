@@ -3,6 +3,7 @@ import {Unit, UnitNullObject} from 'Models/Unit';
 
 const initialState = {
     items: new Map(),
+    userUnits: new Set()
 };
 
 export default Object.assign(
@@ -12,8 +13,21 @@ export default Object.assign(
             // case actionType.FETCH_UNIT_COLLECTION_ERROR:
             //     return {...state};
 
-            case actionType.FETCH_UNIT_COLLECTION_SUCCESS:
-                return {...state, items: new Map([...state.items, ...action.payload])};
+            case actionType.FETCH_UNIT_COLLECTION_SUCCESS: {
+                const userUnits = new Set([...state.userUnits]);
+
+                action.payload.items.forEach(unit => {
+                    if (unit.getType() === action.payload.userUnitType) {
+                        userUnits.add(unit.getId());
+                    }
+                });
+
+                return {
+                    ...state,
+                    items: new Map([...state.items, ...action.payload.items]),
+                    userUnits
+                };
+            }
 
             case actionType.USER_LOGOUT:
                 return {...initialState}
@@ -24,12 +38,14 @@ export default Object.assign(
     {
         persist: (state) => {
             return {
-                items: Array.from(state.items.entries(), ([unitId, unit]) => [unitId, unit.serialize()])
+                items: Array.from(state.items.entries(), ([unitId, unit]) => [unitId, unit.serialize()]),
+                userUnits: Array.from(state.userUnits)
             };
         },
         rehydrate: (persistedState) => {
             return {
-                items: new Map(persistedState.items.map(([unitId, unitData]) => [unitId, new Unit(unitData)]))
+                items: new Map(persistedState.items.map(([unitId, unitData]) => [unitId, new Unit(unitData)])),
+                userUnits: new Set(persistedState.userUnits)
             }
         }
     }
@@ -55,8 +71,24 @@ export const getFirst = (state) => {
 
 /**
  * @param state
+ * @return {Unit}
+ */
+export const getFirstUserUnit = (state) => {
+    return getUnit(state, state.unit.userUnits.values().next().value);
+};
+
+/**
+ * @param state
  * @return {Map}
  */
 export const getUnitCollection = (state) => {
     return state.unit.items;
+};
+
+/**
+ * @param state
+ * @return {Map}
+ */
+export const getUserUnitCollection = (state) => {
+    return new Map(Array.from(state.unit.items).filter(unit => state.unit.userUnits.includes(unit.getId())));
 };

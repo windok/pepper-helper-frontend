@@ -13,7 +13,7 @@ import {
 
 
 import {getFirst as getFirstGroup} from 'Reducers/group';
-import {getFirst as getFirstUnit} from 'Reducers/unit';
+import {getFirstUserUnit} from 'Reducers/unit';
 import {getUserLanguage} from 'Reducers/user';
 
 import {addSyncCompleteHandler} from 'Actions/sync';
@@ -75,7 +75,7 @@ export const getTemplate = (list, product) => (dispatch) => {
                 list.getIdentifier(),
                 product.getIdentifier(),
                 getFirstGroup(Store.getState()).getIdentifier(),
-                getFirstUnit(Store.getState()).getIdentifier(),
+                getFirstUserUnit(Store.getState()).getIdentifier(),
                 1
             )
         });

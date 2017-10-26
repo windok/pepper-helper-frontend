@@ -109,6 +109,7 @@ Profile.propTypes = {
 // todo edit language
 // todo edit avatar
 // todo edit default product list
+// todo edit unit type
 
 // todo edit email
 // todo edit password

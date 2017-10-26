@@ -1,11 +1,16 @@
 import Entity from './Entity';
-import {entityStructureFilter} from './entityProcessors';
+import {entityStructureFilter, allowedValuesValidator} from './entityProcessors';
 import {Nullable, NotNullable} from 'Models/NullableInterface';
+
+const TYPE_USA = 'usa';
+const TYPE_INTERNATIONAL = 'international';
+const TYPE_INTERNATIONAL_RU = 'international-ru';
 
 class Unit extends NotNullable(Entity) {
     constructor(entity) {
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['id', 'tmpId', 'name'])
+            (entity) => entityStructureFilter(entity, ['id', 'tmpId', 'name', 'type']),
+            (entity) => allowedValuesValidator(entity, 'type', [TYPE_USA, TYPE_INTERNATIONAL, TYPE_INTERNATIONAL_RU]),
         ]);
     }
 
@@ -24,6 +29,10 @@ class Unit extends NotNullable(Entity) {
     getName() {
         return this.entity.name;
     }
+
+    getType() {
+        return this.entity.type
+    }
 }
 
 class UnitNullObject extends Nullable(Unit) {
@@ -31,10 +40,17 @@ class UnitNullObject extends Nullable(Unit) {
         super({
             id: 0,
             tmpId: '',
-            name: 'n/a'
+            name: 'n/a',
+            type: TYPE_USA
         });
     }
 }
 
 export default Unit;
-export {Unit, UnitNullObject};
+export {
+    Unit,
+    UnitNullObject,
+    TYPE_USA,
+    TYPE_INTERNATIONAL,
+    TYPE_INTERNATIONAL_RU
+};

@@ -10,6 +10,7 @@ import Button from 'react-md/lib/Buttons';
 import {register} from 'Actions/auth';
 
 import {getAvailableLanguages} from 'Reducers/app';
+import {getUnitTypes} from 'Reducers/app';
 import {redirectToDefaultList} from 'Services/BrowserHistory';
 
 
@@ -22,8 +23,30 @@ class RegistrationScreen extends React.PureComponent {
             password: '',
             name: '',
             language: props.preferredLanguage,
+            unitType: this.getDefaultUnitType(),
             errors: []
         };
+    }
+
+    getDefaultUnitType() {
+        const unitTypes = this.props.getUnitTypes(this.props.preferredLanguage);
+
+        return (unitTypes[0] && unitTypes[0].value) || this.props.getUnitTypes('en')[0].value;
+    }
+
+    onLanguageChange(lang) {
+        let userUnitType = this.state.unitType;
+        const availableUnitTypes = this.props.getUnitTypes(lang);
+
+        // if not possible to leave currently selected unit
+        if (availableUnitTypes.filter(unitType => unitType.value === userUnitType).length === 0) {
+            userUnitType = availableUnitTypes ? availableUnitTypes[0].value : this.getDefaultUnitType();
+        }
+
+        this.setState({
+            language: lang,
+            unitType: userUnitType
+        });
     }
 
     register() {
@@ -43,7 +66,8 @@ class RegistrationScreen extends React.PureComponent {
         const user = {
             email: this.state.email,
             password: this.state.password,
-            language: this.state.language
+            language: this.state.language,
+            unitType: this.state.unitType
         };
 
         if (this.state.name) {
@@ -88,9 +112,17 @@ class RegistrationScreen extends React.PureComponent {
                     name="language"
                     label="Language"
                     className="md-cell md-cell--12"
-                    defaultValue={this.state.language}
+                    value={this.state.language}
                     menuItems={this.props.languages}
-                    onChange={(value) => this.setState({language: value})}/>
+                    onChange={this.onLanguageChange.bind(this)}/>
+
+                <SelectField
+                    name="unitType"
+                    label="UnitType"
+                    className="md-cell md-cell--12"
+                    value={this.state.unitType}
+                    menuItems={this.props.getUnitTypes(this.state.language)}
+                    onChange={(value) => this.setState({unitType: value})}/>
 
                 <Button
                     raised
@@ -122,7 +154,8 @@ export default connect(
 
         return {
             languages,
-            preferredLanguage: preferredLanguages.length ? preferredLanguages[0] : languages[0]
+            preferredLanguage: preferredLanguages.length ? preferredLanguages[0] : languages[0],
+            getUnitTypes: (lang) => getUnitTypes(state, lang)
         }
     },
     (dispatch) => {

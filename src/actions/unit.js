@@ -1,6 +1,9 @@
 import * as actionType from 'Actions';
 import {SOCKET_CALL} from 'Store/socket-middleware';
+
 import Unit from 'Models/Unit';
+
+import {getUser} from 'Reducers/user';
 
 export const fetchAll = () => (dispatch) => {
     return dispatch({
@@ -24,7 +27,10 @@ export const fetchAll = () => (dispatch) => {
                             })
                         ));
 
-                        return unitCollection;
+                        return {
+                            items: unitCollection,
+                            userUnitType: getUser(state).getUnitType()
+                        };
                     }
                 },
                 actionType.FETCH_UNIT_COLLECTION_ERROR
