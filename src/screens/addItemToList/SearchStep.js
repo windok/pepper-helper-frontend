@@ -1,13 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withRouter, Link} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
+import uuid from 'uuid/v4';
+
 import {List as ListModel} from 'Models/List';
+import {Product as ProductModel} from 'Models/Product';
 
 import {searchProduct, createProduct} from 'Actions/product';
+
 import {getList, getFirstList} from 'Reducers/list';
 import {findProductByName} from 'Reducers/product';
+import {getUser} from 'Reducers/user';
 
 import Divider from 'react-md/lib/Dividers';
 
@@ -51,7 +56,7 @@ class AddItemToListSearchStep extends React.PureComponent {
                 return this.props.postToSaveStep(product);
             }
 
-            this.props.postToSaveStep(this.props.createProduct(this.state.query));
+            this.props.postToSaveStep(this.props.createProduct(this.props.createProductModel(this.state.query)));
         }}>Add</Button>;
 
         return (
@@ -86,6 +91,7 @@ AddItemToListSearchStep.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
 
     findProductByName: PropTypes.func,
+    createProductModel: PropTypes.func,
 
     searchProduct: PropTypes.func.isRequired,
     postToSaveStep: PropTypes.func.isRequired,
@@ -101,13 +107,20 @@ export default withRouter(connect(
         return {
             listId,
             list,
-            findProductByName: (name) => findProductByName(state, name)
+            findProductByName: (name) => findProductByName(state, name),
+            createProductModel: (value) => new ProductModel({
+                id: 0,
+                tmpId: uuid(),
+                name: value,
+                defaultName: value,
+                userId: getUser(state).getId()
+            })
         }
     },
     (dispatch, {match, history}) => {
         return {
             searchProduct: (query) => searchProduct(query)(dispatch),
-            createProduct: (value) => createProduct(value)(dispatch),
+            createProduct: (product) => createProduct(product)(dispatch),
             postToSaveStep: (product) => {
                 return history.push('/product-list/' + match.params.listId + '/item/save/' + product.getIdentifier());
             }

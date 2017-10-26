@@ -70,16 +70,7 @@ export const searchProduct = (query) => (dispatch) => {
     });
 };
 
-export const createProduct = (value) => (dispatch) => {
-    // todo set appropriate userId
-    const product = new Product({
-        id: 0,
-        tmpId: uuid(),
-        name: value,
-        defaultName: value,
-        userId: 1
-    });
-
+export const createProduct = (product) => (dispatch) => {
     dispatch({
         type: actionType.CREATE_PRODUCT_OFFLINE,
         payload: product,
@@ -87,7 +78,7 @@ export const createProduct = (value) => (dispatch) => {
             name: 'translation-create',
             payload: (state) => ({
                 ...product.serialize(),
-                value: value,
+                value: product.getName(),
                 type: 'product',
                 language: getUserLanguage(state)
             }),

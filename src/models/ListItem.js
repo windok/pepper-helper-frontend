@@ -18,7 +18,7 @@ class ListItem extends NotNullable(Entity) {
             (entity) => entityStructureFilter(entity, ['id', 'tmpId', 'status', 'listId', 'productId', 'unitId', 'groupId', 'quantity', 'type', 'date']),
             (entity) => allowedValuesValidator(entity, 'status', [STATUS_DRAFT, STATUS_BOUGHT, STATUS_DELETED]),
             (entity) => allowedValuesValidator(entity, 'type', [TYPE_GENERAL, TYPE_RECOMMENDED]),
-            (entity) => numberConverter(entity, ['id', 'listId', 'productId', 'unitId', 'groupId', 'quantity']),
+            (entity) => numberConverter(entity, ['id', 'quantity']),
             (entity) => dateConverter(entity, ['date']),
         ]);
     }

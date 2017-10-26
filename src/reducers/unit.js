@@ -90,5 +90,5 @@ export const getUnitCollection = (state) => {
  * @return {Map}
  */
 export const getUserUnitCollection = (state) => {
-    return new Map(Array.from(state.unit.items).filter(unit => state.unit.userUnits.includes(unit.getId())));
+    return new Map(Array.from(state.unit.items).filter(([unitId]) => state.unit.userUnits.has(unitId)));
 };

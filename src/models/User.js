@@ -10,10 +10,14 @@ const UNIT_TYPE_INTERNATIONAL_RU = 'international-ru';
 class User extends NotNullable(Entity) {
     constructor(entity) {
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['email', 'token', 'tokenLifeTime', 'language', 'name', 'defaultProductListId', 'avatar', 'unitType']),
+            (entity) => entityStructureFilter(entity, ['id', 'email', 'token', 'tokenLifeTime', 'language', 'name', 'defaultProductListId', 'avatar', 'unitType']),
             (entity) => allowedValuesValidator(entity, 'unitType', [UNIT_TYPE_USA, UNIT_TYPE_INTERNATIONAL, UNIT_TYPE_INTERNATIONAL_RU]),
             (entity) => dateConverter(entity, ['tokenLifeTime']),
         ]);
+    }
+
+    getId() {
+        return this.entity.id;
     }
 
     getEmail() {
