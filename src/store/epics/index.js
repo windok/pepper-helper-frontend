@@ -12,10 +12,14 @@ import 'rxjs';
 import {combineEpics} from 'redux-observable';
 
 
+import {onlineEpic, backendConnectionEpic} from 'Actions/app';
 import {logoutEpic} from 'Actions/auth';
 import {createSyncActionEpic, startSyncEpic, syncEpic, syncCompleteEpic} from 'Actions/sync';
 
 export  default combineEpics(
+    onlineEpic,
+    backendConnectionEpic,
+
     logoutEpic,
 
     createSyncActionEpic,

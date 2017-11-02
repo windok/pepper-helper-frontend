@@ -7,7 +7,13 @@ import SocketResponse from 'Models/SocketResponse';
 let connectionPromise = null;
 let socket = null;
 
+const initialReconnectTimeout = 50;
+const maxReconnectTimeout = 10 * 60 * 1000;
+let reconnectTimeout = initialReconnectTimeout;
+
 const requests = new Map();
+
+const isConnected = () => Boolean(socket) && socket.readyState === WebSocket.OPEN;
 
 const connect = () => {
     if (connectionPromise) {
@@ -23,6 +29,7 @@ const connect = () => {
 
         socket.onopen = function () {
             connectionPromise = null;
+            reconnectTimeout = initialReconnectTimeout;
             resolve(socket);
 
             console.log("Connected");
@@ -34,7 +41,12 @@ const connect = () => {
             connectionPromise = null;
             socket = null;
 
-            setTimeout(connect, 1000);
+            reconnectTimeout *= 2;
+            if (reconnectTimeout > maxReconnectTimeout) {
+                reconnectTimeout = maxReconnectTimeout;
+            }
+
+            setTimeout(connect, reconnectTimeout);
         };
 
         socket.onmessage = function (event) {
@@ -63,14 +75,33 @@ const connect = () => {
     return connectionPromise;
 };
 
-const send = (request) => connect()
+const send = (request, retryCount = 0) => connect()
     .then((socket) => {
         // todo wait to send after reconnect when socket is closing state
 
         console.log('send request', request.getActions()[0].getName(), request);
 
+        let requestMeta = requests.get(request.getId());
+
+        if (!requestMeta) {
+            requestMeta = {request, resolve: Promise.resolve(), reject: Promise.reject, retryCount: 0};
+            requests.set(request.getId(), requestMeta);
+        } else {
+            requestMeta.retryCount++;
+        }
+
+        // some instabilities may occur, but socket client tries to reconnect automatically
+        if (requestMeta.retryCount > 5) {
+            return Promise.reject('Can not send socket request.');
+        }
+
+        if (!isConnected()) {
+            return new Promise(resolve => setTimeout(resolve, 100)).then(() => send(request));
+        }
+
         return new Promise((resolve, reject) => {
-            requests.set(request.getId(), {request, resolve, reject});
+            requestMeta.resolve = resolve;
+            requestMeta.reject = reject;
 
             setTimeout(() => {
                 requests.delete(request.getId());
@@ -78,7 +109,7 @@ const send = (request) => connect()
             }, request.getTimeout());
 
             socket.send(request.toJSON());
-        });
+        })
 });
 
 const sendAction = (action) => {
@@ -101,7 +132,8 @@ const sendAction = (action) => {
 const SocketClient = {
     connect,
     send,
-    sendAction
+    sendAction,
+    isConnected
 };
 
 export default SocketClient;
