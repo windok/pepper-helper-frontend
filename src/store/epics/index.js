@@ -2,7 +2,9 @@
 
 // todo import rxjs properly
 import 'rxjs/Observable';
-import 'rxjs/observable/from';
+import 'rxjs/Subscription';
+import 'rxjs/add/observable/from';
+import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
