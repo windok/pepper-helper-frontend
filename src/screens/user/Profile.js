@@ -19,14 +19,11 @@ import {logout} from 'actions/auth';
 import {redirectToDefaultList} from 'services/BrowserHistory'
 
 class Profile extends React.PureComponent {
-    constructor(props) {
-        super(props);
 
-        this.state = {
-            language: 'en',
-            errors: []
-        };
-    }
+    state = {
+        language: 'en',
+        errors: []
+    };
 
     save() {
     }

@@ -4,7 +4,7 @@ import history from 'Services/BrowserHistory';
 
 import AddListScreen from 'Screens/productListCollection/AddList';
 import EditListScreen from 'Screens/productListCollection/EditList';
-import ProductListScreen from 'Screens/productList/ProductList';
+import ProductListScreen from 'Screens/productList/ProductListScreen';
 import RecommendationsScreen from 'screens/productList/RecommendationsScreen';
 import AddItemToListSearchStep from 'Screens/addItemToList/SearchStep';
 import AddItemToListSaveStep from 'Screens/addItemToList/SaveStep';

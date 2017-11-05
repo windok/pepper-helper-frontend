@@ -1,75 +1,45 @@
+import moment from 'moment';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 import {List as ListModel} from 'Models/List';
-
-import Header from 'Components/Header';
-import BackButton from 'Components/buttons/BackButton';
+import {TYPE_RECOMMENDED} from 'Models/ListItem';
 
 import {getList} from 'Reducers/list';
-import {redirectToDefaultList} from 'Services/BrowserHistory';
 
-import {fetchItemsForList} from 'Actions/listItem';
-
-import ListComponent from './components/ListAggregatedByGroup';
 import RecommendedItem from './components/RecommendedItem';
+import SecondaryProductListScreen from "./components/SecondaryProductListScreen";
 
 class RecommendationsScreen extends React.PureComponent {
-    componentWillMount() {
-        if (this.redirectToDefaultListIfNecessary(this.props.list)) {
-            return;
-        }
-
-        this.props.fetchListItems(this.props.list);
-    }
-
-    componentWillReceiveProps({list}) {
-        if (this.redirectToDefaultListIfNecessary(list)) {
-            return;
-        }
-
-        if (list.getIdentifier() !== this.props.list.getIdentifier()) {
-            this.props.fetchListItems(list);
-        }
-    }
-
-    redirectToDefaultListIfNecessary(list) {
-        if (!list.isNullObject()) {
-            return false;
-        }
-
-        redirectToDefaultList();
-
-        return true;
-    }
-
     render() {
         return (
-            <div>
-                <Header title={this.props.list.getName() + ": Recommendations"} leftLinks={<BackButton/>}/>
+            <SecondaryProductListScreen
+                list={this.props.list}
+                headerTitle={this.props.list.getName() + ': Recommendations'}
+                itemComponent={RecommendedItem}
+                itemFilterFunc={(item) => {
+                    const today = moment.utc();
+                    const nextDay = moment.utc(today.add(1, 'day').format('YYYY-MM-DD'), 'YYYY-MM-DD');
+                    const isItemActual = nextDay.isAfter(item.getDate());
 
-                <ListComponent list={this.props.list} itemComponent={RecommendedItem}/>
-            </div>
+                    return item.getListId() === this.props.list.getIdentifier()
+                        && item.getType() === TYPE_RECOMMENDED
+                        && isItemActual
+                }}
+            />
         )
     }
 }
 
 RecommendationsScreen.propTypes = {
-    list: PropTypes.instanceOf(ListModel).isRequired,
-    fetchListItems: PropTypes.func.isRequired,
+    list: PropTypes.instanceOf(ListModel).isRequired
 };
 
 export default withRouter(connect(
-    (state, {match}) => {
-        return {
-            list: getList(state, match.params.listId || 0)
-        };
-    },
-    (dispatch) => {
-        return {
-            fetchListItems: (list) => fetchItemsForList(list)(dispatch)
-        };
-    }
+    (state, {match}) => ({
+        list: getList(state, match.params.listId)
+    })
 )(RecommendationsScreen));

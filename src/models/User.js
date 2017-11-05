@@ -10,7 +10,7 @@ const UNIT_TYPE_INTERNATIONAL_RU = 'international-ru';
 class User extends NotNullable(Entity) {
     constructor(entity) {
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['id', 'email', 'token', 'tokenLifeTime', 'language', 'name', 'defaultProductListId', 'avatar', 'unitType']),
+            (entity) => entityStructureFilter(entity, ['id', 'email', 'token', 'tokenLifeTime', 'language', 'name', 'avatar', 'unitType']),
             (entity) => allowedValuesValidator(entity, 'unitType', [UNIT_TYPE_USA, UNIT_TYPE_INTERNATIONAL, UNIT_TYPE_INTERNATIONAL_RU]),
             (entity) => dateConverter(entity, ['tokenLifeTime']),
         ]);
@@ -38,10 +38,6 @@ class User extends NotNullable(Entity) {
 
     getLanguage() {
         return this.entity.language;
-    }
-
-    getDefaultProductListId() {
-        return this.entity.defaultProductListId;
     }
 
     getAvatar() {

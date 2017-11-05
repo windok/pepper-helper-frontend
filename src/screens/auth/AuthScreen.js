@@ -15,13 +15,9 @@ import Button from 'react-md/lib/Buttons';
 
 class AuthScreen extends React.PureComponent {
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            screen: 'signIn'
-        };
-    }
+    state = {
+        screen: 'signIn'
+    };
 
     render() {
         if (!this.props.isRehydrationCompleted) return (<CircularProgress id="progressBar"/>);

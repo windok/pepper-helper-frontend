@@ -10,14 +10,8 @@ import {isColdStartFinished} from 'Reducers/sync';
 import {startColdStart} from 'Actions/app';
 
 class Screen extends React.PureComponent {
-    constructor(props) {
-        super(props);
-
-        this.loadResources();
-    }
-
     // TODO remove from representation class
-    loadResources() {
+    componentWillMount() {
         if (!this.props.isColdStartFinished) {
             this.props.startColdStartResourceLoading();
         }

@@ -132,7 +132,7 @@ export const requestDiffEpic = (action$, store) => action$
     .map(() => store.getState())
     .filter((state) => {
         return (
-            isBackendConnected(state) && !isSyncInProgress(state) && isColdStartFinished(state)
+            isBackendConnected(state) && isQueueEmpty(state) && !isSyncInProgress(state) && isColdStartFinished(state)
             // at least 30 seconds after last sync past
             && moment.duration(moment().diff(getLastDiff(state))).asSeconds() >= 30
         );

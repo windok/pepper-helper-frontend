@@ -6,7 +6,7 @@ import ExpansionList from 'react-md/lib/ExpansionPanels/ExpansionList';
 import ExpansionPanel from 'react-md/lib/ExpansionPanels/ExpansionPanel';
 import ItemList from './ItemList';
 
-import {getGroupedItemForList} from 'Reducers/listItem';
+import {getItemIds, getItemCollectionByGroupForList} from 'Reducers/listItem';
 import {getGroupCollection} from 'Reducers/group';
 
 class ListAggregatedByGroup extends React.PureComponent {
@@ -21,7 +21,8 @@ class ListAggregatedByGroup extends React.PureComponent {
                             secondaryLabel=""
                             defaultExpanded
                             overflown={false}
-                        ><ItemList itemComponent={this.props.itemComponent} items={itemsByGroup}/>
+                        >
+                            <ItemList itemComponent={this.props.itemComponent} items={itemsByGroup}/>
                         </ExpansionPanel>
                     )
                 ))}
@@ -32,14 +33,15 @@ class ListAggregatedByGroup extends React.PureComponent {
 
 ListAggregatedByGroup.propTypes = {
     itemComponent: PropTypes.any.isRequired,
+    itemFilterFunc: PropTypes.func.isRequired,
     items: PropTypes.instanceOf(Map).isRequired,
     groups: PropTypes.instanceOf(Map).isRequired
 };
 
 export default connect(
-    (state, {list}) => {
+    (state, {itemFilterFunc}) => {
         return {
-            items: getGroupedItemForList(state, list),
+            items: getItemCollectionByGroupForList(state, getItemIds(state, itemFilterFunc)),
             groups: getGroupCollection(state)
         };
     }

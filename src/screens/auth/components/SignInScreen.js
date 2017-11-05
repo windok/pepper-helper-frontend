@@ -12,14 +12,10 @@ import {redirectToDefaultList} from 'Services/BrowserHistory';
 
 
 class SignInScreen extends React.PureComponent {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            email: '',
-            password: ''
-        };
-    }
+    state = {
+        email: '',
+        password: ''
+    };
 
     render() {
         return (

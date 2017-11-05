@@ -10,10 +10,10 @@ import {getUser} from 'Reducers/user';
 
 import {addSyncCompleteHandler} from 'Actions/sync';
 
-const buildProductCollectionFromResponse = (state, response) => {
+const buildProductCollectionFromResponse = (state, products = []) => {
     const productCollection = new Map();
 
-    (response.items || []).forEach(productData => productCollection.set(
+    products.forEach(productData => productCollection.set(
         productData.id,
         new Product({
             ...productData,
@@ -38,7 +38,7 @@ export const fetchAll = () => (dispatch) => {
                 actionType.FETCH_PRODUCT_COLLECTION_REQUEST,
                 {
                     type: actionType.FETCH_PRODUCT_COLLECTION_SUCCESS,
-                    payload: (action, state, response) => buildProductCollectionFromResponse(state, response)
+                    payload: (action, state, response) => buildProductCollectionFromResponse(state, response.items)
                 },
                 actionType.FETCH_PRODUCT_COLLECTION_ERROR
             ],
@@ -48,14 +48,11 @@ export const fetchAll = () => (dispatch) => {
 
 export const fetchProductDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
-    .map(action => ({
+    .map(action => action.payload.translations.items.filter(translation => translation.type === 'product'))
+    .filter(products => products.length)
+    .map(products => ({
         type: actionType.FETCH_PRODUCT_COLLECTION_SUCCESS,
-        payload: buildProductCollectionFromResponse(
-            store.getState(),
-            {
-                items: action.payload.translations.items.filter(translation => translation.type === 'product')
-            }
-        ),
+        payload: buildProductCollectionFromResponse(store.getState(), products),
     }));
 
 

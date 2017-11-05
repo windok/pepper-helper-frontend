@@ -27,7 +27,7 @@ class Sidebar extends React.PureComponent {
                 header={<UserSidebarHeader/>}
                 className="dialogs__content drawers__content__scrollable"
             >
-                <ListCollection currentList={this.props.currentList}/>
+                <ListCollection/>
             </Drawer>
         );
     }
@@ -35,20 +35,17 @@ class Sidebar extends React.PureComponent {
 
 Sidebar.propTypes = {
     isOpened: PropTypes.bool.isRequired,
+
     showMenu: PropTypes.func.isRequired,
     hideMenu: PropTypes.func.isRequired
 };
 
 export default connect(
-    (state) => {
-        return {
-            isOpened: isSidebarOpened(state)
-        }
-    },
-    (dispatch) => {
-        return {
-            showMenu: () => showMenu()(dispatch),
-            hideMenu: () => hideMenu()(dispatch)
-        }
-    }
+    (state) => ({
+        isOpened: isSidebarOpened(state),
+    }),
+    (dispatch) => ({
+        showMenu: () => showMenu()(dispatch),
+        hideMenu: () => hideMenu()(dispatch)
+    })
 )(Sidebar);

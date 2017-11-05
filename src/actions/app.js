@@ -8,6 +8,7 @@ import SocketClient from 'Services/SocketClient';
 import {isOnline, isBackendConnected} from 'Reducers/app'
 
 import {fetchAll as fetchProductListCollection} from 'Actions/list';
+import {fetchAll as fetchProductListItemCollection} from 'Actions/listItem';
 import {fetchAll as fetchProductCollection} from 'Actions/product';
 import {fetchAll as fetchUnitCollection} from 'Actions/unit';
 import {fetchAll as fetchGroupCollection} from 'Actions/group';
@@ -54,6 +55,7 @@ export const coldStartEpic = (action$, store) => action$
     .mergeMap(() => (
         Observable.fromPromise(Promise.all([
             fetchProductListCollection()(store.dispatch),
+            fetchProductListItemCollection()(store.dispatch),
             fetchProductCollection()(store.dispatch),
             fetchUnitCollection()(store.dispatch),
             fetchGroupCollection()(store.dispatch)

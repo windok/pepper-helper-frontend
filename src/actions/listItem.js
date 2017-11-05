@@ -18,10 +18,10 @@ import {getUser} from 'Reducers/user';
 
 import {addSyncCompleteHandler} from 'Actions/sync';
 
-const buildListItemCollectionFromResopnse = (state, response) => {
+const buildListItemCollectionFromResponse = (state, listItems = []) => {
     const items = new Map();
 
-    (response.items || []).forEach(listItemData => {
+    listItems.forEach(listItemData => {
         const listItem = new ListItem({
             ...listItemData,
             tmpId: listItemData.tmpId || '',
@@ -34,25 +34,18 @@ const buildListItemCollectionFromResopnse = (state, response) => {
     return items;
 };
 
-export const fetchItemsForList = (list) => (dispatch) => {
-
-    if (list.isNullObject() || list.getId() === list.getTmpId()) {
-        return Promise.resolve();
-    }
-
+export const fetchAll = () => (dispatch) => {
     return dispatch({
         [SOCKET_CALL]: {
             action: 'list-item-load',
             payload: {
-                listId: list.getIdentifier(),
                 limit: 1000
             },
             types: [
                 actionType.FETCH_ITEMS_FOR_LIST_REQUEST,
                 {
                     type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,
-                    payload: (action, state, response) => buildListItemCollectionFromResopnse(state, response),
-                    meta: {list}
+                    payload: (action, state, response) => buildListItemCollectionFromResponse(state, response.items),
                 },
                 actionType.FETCH_ITEMS_FOR_LIST_ERROR
             ],
@@ -62,9 +55,11 @@ export const fetchItemsForList = (list) => (dispatch) => {
 
 export const fetchListItemDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
-    .map(action => ({
+    .map(action => action.payload.listItems.items)
+    .filter(listItems => listItems.length)
+    .map(listItems => ({
         type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,
-        payload: buildListItemCollectionFromResopnse(store.getState(), action.payload.listItems),
+        payload: buildListItemCollectionFromResponse(store.getState(), listItems),
     }));
 
 

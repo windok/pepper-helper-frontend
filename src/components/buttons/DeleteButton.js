@@ -6,11 +6,7 @@ import FontIcon from 'react-md/lib/FontIcons';
 import DialogContainer from 'react-md/lib/Dialogs';
 
 class DeleteButton extends React.PureComponent {
-    constructor(params) {
-        super(params);
-
-        this.state = {showDialog: false};
-    }
+    state = {showDialog: false};
 
     showDialog = () => {
         this.setState({showDialog: true});

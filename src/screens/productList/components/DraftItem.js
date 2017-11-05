@@ -10,10 +10,9 @@ import {buyItem} from 'Actions/listItem';
 
 class DraftItem extends React.PureComponent {
 
-    constructor(params) {
-        super(params);
-        this.state = {suspendDialog: false};
-    }
+    state = {
+        suspendDialog: false
+    };
 
     showSuspendDialog = () => {
         this.setState({suspendDialog: true});

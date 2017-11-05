@@ -13,7 +13,7 @@ import Divider from 'react-md/lib/Dividers';
 
 import ShareList from './components/ShareList';
 
-import {getList, getDefaultList} from 'Reducers/list';
+import {getList} from 'Reducers/list';
 
 import {updateList, deleteList} from 'Actions/list';
 
@@ -23,7 +23,7 @@ class EditList extends React.PureComponent {
     constructor(params) {
         super(params);
 
-        this.state = {deleteDialog: false, ...params.list.serialize()};
+        this.state = {...params.list.serialize()};
     }
 
     componentWillReceiveProps({list}) {
@@ -33,6 +33,12 @@ class EditList extends React.PureComponent {
     }
 
     render() {
+        if (this.props.list.isNullObject()) {
+            redirectToDefaultList();
+
+            return null;
+        }
+
         return (
             <div>
                 <Header
@@ -60,10 +66,7 @@ class EditList extends React.PureComponent {
 
                 <Divider style={{marginTop: 40, marginBottom: 40}}/>
 
-                {
-                    this.props.isDeleteAllowed
-                    && <DeleteButton text="Delete list" onClick={() => this.props.delete(this.props.list)}/>
-                }
+                <DeleteButton text="Delete list" onClick={() => this.props.delete(this.props.list)}/>
 
             </div>
         );
@@ -72,20 +75,15 @@ class EditList extends React.PureComponent {
 
 EditList.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
-    isDeleteAllowed: PropTypes.bool.isRequired,
+
     save: PropTypes.func.isRequired,
     delete: PropTypes.func.isRequired,
 };
 
 export default connect(
-    (state, {match}) => {
-        const list = getList(state, match.params.listId);
-
-        return {
-            list,
-            isDeleteAllowed: list !== getDefaultList(state)
-        }
-    },
+    (state, {match}) => ({
+        list: getList(state, match.params.listId)
+    }),
     (dispatch, {history}) => ({
         save: (list, newListName) => {
             updateList(list, newListName)(dispatch);

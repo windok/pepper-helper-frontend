@@ -8,14 +8,20 @@ import List from 'Models/List';
 import {addSyncCompleteHandler} from 'Actions/sync';
 import RestClient from 'Services/RestClient';
 
-const buildListCollectionFromResponse = (state, response) => {
+export const selectProductList = (list) => ({
+    type: actionType.SELECT_LIST,
+    payload: list
+});
+
+const buildListCollectionFromResponse = (state, lists = []) => {
     const listCollection = new Map();
 
-    (response.items || []).forEach(listData => listCollection.set(
+    lists.forEach(listData => listCollection.set(
         listData.id,
         new List({
             ...listData,
-            tmpId: listData.tmpId || ''
+            tmpId: listData.tmpId || '',
+            color: listData.color || ''
         })
     ));
 
@@ -33,7 +39,7 @@ export const fetchAll = () => (dispatch) => {
                 actionType.FETCH_LIST_COLLECTION_REQUEST,
                 {
                     type: actionType.FETCH_LIST_COLLECTION_SUCCESS,
-                    payload: (action, state, response) => buildListCollectionFromResponse(state, response)
+                    payload: (action, state, response) => buildListCollectionFromResponse(state, response.items)
                 },
                 actionType.FETCH_LIST_COLLECTION_ERROR
             ],
@@ -43,9 +49,11 @@ export const fetchAll = () => (dispatch) => {
 
 export const fetchListDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
-    .map(action => ({
+    .map(action => action.payload.productLists.items)
+    .filter(lists => lists.length)
+    .map(lists => ({
         type: actionType.FETCH_LIST_COLLECTION_SUCCESS,
-        payload: buildListCollectionFromResponse(store.getState(), action.payload.productLists),
+        payload: buildListCollectionFromResponse(store.getState(), lists),
     }));
 
 
@@ -54,7 +62,7 @@ export const create = (listName) => (dispatch) => {
         return Promise.reject();
     }
 
-    const list = new List({id: 0, tmpId: uuid(), name: listName});
+    const list = new List({id: 0, tmpId: uuid(), name: listName, color: ''});
 
     dispatch({
         type: actionType.CREATE_LIST_OFFLINE,
@@ -100,7 +108,11 @@ addSyncCompleteHandler({
     success: ({response, syncAction}) => ({
         type: syncAction.getSuccessAction(),
         meta: syncAction.getMeta(),
-        payload: new List({...response, tmpId: response.tmpId || ''})
+        payload: new List({
+            ...response,
+            tmpId: response.tmpId || '',
+            color: ''
+        })
     }),
 });
 

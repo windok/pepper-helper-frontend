@@ -78,30 +78,36 @@ export default Object.assign(
 
 /**
  * @param state
- * @param {List} productList
+ * @param {Array} itemIds
  * @return {Map}
  */
-export const getGroupedItemForList = (state, productList) => {
-    // todo make prepared grouped item via reducer
+export const getItemCollectionByGroupForList = (state, itemIds) => {
+    const itemCollectionByGroup = new Map();
 
-    const itemCollection = new Map();
+    itemIds.forEach(itemId => {
+        const listItem = getListItem(state, itemId);
 
-    if (productList.isNullObject()) {
-        return itemCollection;
-    }
+        itemCollectionByGroup.has(listItem.getGroupId()) || itemCollectionByGroup.set(listItem.getGroupId(), new Map());
 
-    state.listItem.items.forEach(listItem => {
-        if (listItem.getListId() !== productList.getId()) {
-            return;
-        }
-
-        itemCollection.has(listItem.getGroupId()) || itemCollection.set(listItem.getGroupId(), new Map());
-
-        itemCollection.get(listItem.getGroupId()).set(listItem.getId(), listItem);
+        itemCollectionByGroup.get(listItem.getGroupId()).set(listItem.getId(), listItem);
     });
 
-    return itemCollection;
+    return itemCollectionByGroup;
 };
+
+export const getItemIds = (state, filterFunc = (listItem) => true) => {
+    const itemIds = [];
+
+    state.listItem.items.forEach(listItem => {
+        if (filterFunc(listItem)) {
+            itemIds.push(listItem.getIdentifier())
+        }
+    });
+
+    return itemIds;
+};
+
+
 /**
  * @param state
  * @param {List} productList

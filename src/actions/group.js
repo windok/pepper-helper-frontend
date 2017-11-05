@@ -7,10 +7,10 @@ import Group from 'Models/Group';
 
 import {getUser} from 'Reducers/user';
 
-const buildGroupCollectionFromResponse = (state, response) => {
+const buildGroupCollectionFromResponse = (state, groups = []) => {
     const groupCollection = new Map();
 
-    (response.items || []).forEach(groupData => groupCollection.set(
+    groups.forEach(groupData => groupCollection.set(
         groupData.id,
         new Group({
             ...groupData,
@@ -36,7 +36,7 @@ export const fetchAll = () => (dispatch) => {
                 actionType.FETCH_GROUP_COLLECTION_REQUEST,
                 {
                     type: actionType.FETCH_GROUP_COLLECTION_SUCCESS,
-                    payload: (action, state, response) => buildGroupCollectionFromResponse(state, response),
+                    payload: (action, state, response) => buildGroupCollectionFromResponse(state, response.items),
                 },
                 actionType.FETCH_GROUP_COLLECTION_ERROR
             ],
@@ -46,14 +46,11 @@ export const fetchAll = () => (dispatch) => {
 
 export const fetchGroupDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
-    .map(action => ({
+    .map(action => action.payload.translations.items.filter(translation => translation.type === 'group'))
+    .filter(groups => groups.length)
+    .map(groups => ({
         type: actionType.FETCH_GROUP_COLLECTION_SUCCESS,
-        payload: buildGroupCollectionFromResponse(
-            store.getState(),
-            {
-                items: action.payload.translations.items.filter(translation => translation.type === 'group')
-            }
-        ),
+        payload: buildGroupCollectionFromResponse(store.getState(), groups),
     }));
 
 export const createGroup = (value) => (dispatch) => {

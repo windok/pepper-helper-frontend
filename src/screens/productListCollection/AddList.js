@@ -10,11 +10,9 @@ import TextField from 'react-md/lib/TextFields';
 import {create as createList} from 'Actions/list';
 
 class AddList extends React.PureComponent {
-    constructor(params) {
-        super(params);
-
-        this.state = {name: ''};
-    }
+    state = {
+        name: ''
+    };
 
     render() {
         return (

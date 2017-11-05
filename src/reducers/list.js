@@ -1,9 +1,9 @@
 import * as actionType from 'Actions';
 import {List, ListNullObject} from 'Models/List';
-import {getUser} from 'Reducers/user';
 
 const initialState = {
     items: new Map(),
+    selected: null
 };
 
 export default Object.assign(
@@ -36,6 +36,13 @@ export default Object.assign(
                 return {...state, items};
             }
 
+            case actionType.SELECT_LIST:
+                if (!state.items.has(action.payload.getIdentifier())) {
+                    return state;
+                }
+
+                return {...state, selected: action.payload.getIdentifier()};
+
             case actionType.USER_LOGOUT:
                 return {...initialState}
         }
@@ -44,10 +51,12 @@ export default Object.assign(
     },
     {
         persist: (state) => ({
-            items: Array.from(state.items.entries(), ([listId, list]) => [listId, list.serialize()])
+            items: Array.from(state.items.entries(), ([listId, list]) => [listId, list.serialize()]),
+            selected: state.selected
         }),
         rehydrate: (persistedState) => ({
-            items: new Map(persistedState.items.map(([listId, listData]) => [listId, new List(listData)]))
+            items: new Map(persistedState.items.map(([listId, listData]) => [listId, new List(listData)])),
+            selected: persistedState.selected
         })
     }
 );
@@ -81,27 +90,16 @@ export const getListByTmpId = (state, tmpId) => {
  * @param state
  * @return {List}
  */
-export const getDefaultList = (state) => {
-    const user = getUser(state);
-
-    return (user && state.list.items.get(user.getDefaultProductListId())) || null;
-};
-
+export const getSelectedList = (state) => state.list.items.get(state.list.selected) || null;
 
 /**
  * @param state
  * @return {List}
  */
-export const getFirstList = (state) => {
-    return getDefaultList(state)
-        || state.list.items.values().next().value
-        || new ListNullObject();
-};
+export const getFirstList = (state) => state.list.items.values().next().value || null;
 
 /**
  * @param state
  * @return {Map}
  */
-export const getListCollection = (state) => {
-    return state.list.items;
-};
+export const getListCollection = (state) => state.list.items;
