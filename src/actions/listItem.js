@@ -2,8 +2,8 @@ import Moment from 'moment';
 
 import * as actionType from 'Actions';
 
-import Store from 'Store';
 import {SOCKET_CALL} from 'Store/socket-middleware';
+import {STATE_PROVIDER} from 'Store/state-provider-middleware';
 
 import {
     ListItem, CustomProductListItemTemplate,
@@ -14,9 +14,25 @@ import {
 
 import {getFirst as getFirstGroup} from 'Reducers/group';
 import {getFirstUserUnit} from 'Reducers/unit';
-import {getUserLanguage} from 'Reducers/user';
+import {getUser} from 'Reducers/user';
 
 import {addSyncCompleteHandler} from 'Actions/sync';
+
+const buildListItemCollectionFromResopnse = (state, response) => {
+    const items = new Map();
+
+    (response.items || []).forEach(listItemData => {
+        const listItem = new ListItem({
+            ...listItemData,
+            tmpId: listItemData.tmpId || '',
+            productId: listItemData.translationId
+        });
+
+        return items.set(listItem.getIdentifier(), listItem);
+    });
+
+    return items;
+};
 
 export const fetchItemsForList = (list) => (dispatch) => {
 
@@ -35,21 +51,7 @@ export const fetchItemsForList = (list) => (dispatch) => {
                 actionType.FETCH_ITEMS_FOR_LIST_REQUEST,
                 {
                     type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,
-                    payload: (action, state, response) => {
-                        const items = new Map();
-
-                        (response.items || []).forEach(listItemData => {
-                            const listItem = new ListItem({
-                                ...listItemData,
-                                tmpId: listItemData.tmpId || '',
-                                productId: listItemData.translationId
-                            });
-
-                            return items.set(listItem.getIdentifier(), listItem);
-                        });
-
-                        return items;
-                    },
+                    payload: (action, state, response) => buildListItemCollectionFromResopnse(state, response),
                     meta: {list}
                 },
                 actionType.FETCH_ITEMS_FOR_LIST_ERROR
@@ -57,6 +59,14 @@ export const fetchItemsForList = (list) => (dispatch) => {
         }
     });
 };
+
+export const fetchListItemDiffEpic = (action$, store) => action$
+    .ofType(actionType.SYNC_DIFF_SUCCESS)
+    .map(action => ({
+        type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,
+        payload: buildListItemCollectionFromResopnse(store.getState(), action.payload.listItems),
+    }));
+
 
 export const getTemplate = (list, product) => (dispatch) => {
     if (
@@ -68,16 +78,18 @@ export const getTemplate = (list, product) => (dispatch) => {
 
     if (product.isCustom()) {
         dispatch({
-            type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
-            meta: {list, product},
-            payload: new CustomProductListItemTemplate(
-                '',
-                list.getIdentifier(),
-                product.getIdentifier(),
-                getFirstGroup(Store.getState()).getIdentifier(),
-                getFirstUserUnit(Store.getState()).getIdentifier(),
-                1
-            )
+            [STATE_PROVIDER]: (state) => ({
+                type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
+                meta: {list, product},
+                payload: new CustomProductListItemTemplate(
+                    '',
+                    list.getIdentifier(),
+                    product.getIdentifier(),
+                    getFirstGroup(state).getIdentifier(),
+                    getFirstUserUnit(state).getIdentifier(),
+                    1
+                )
+            })
         });
 
         return Promise.resolve();
@@ -86,11 +98,11 @@ export const getTemplate = (list, product) => (dispatch) => {
     return dispatch({
         [SOCKET_CALL]: {
             action: 'list-item-getTemplate',
-            payload: {
+            payload: (state) => ({
                 translationId: product.getId(),
-                language: getUserLanguage(Store.getState()),
+                language: getUser(state).getLanguage(),
                 listId: list.getId(),
-            },
+            }),
             types: [
                 actionType.GET_ITEM_TEMPLATE_REQUEST,
                 {
@@ -121,7 +133,7 @@ export const createItem = (listItem) => (dispatch) => {
             name: 'list-item-create',
             payload: (state) => ({
                 ...listItem.serialize(),
-                language: getUserLanguage(state),
+                language: getUser(state).getLanguage(),
                 translationId: listItem.getProductId(),
             }),
             successAction: actionType.CREATE_ITEM_SUCCESS,
@@ -142,7 +154,7 @@ export const editItem = (listItem) => (dispatch) => {
             name: 'list-item-update',
             payload: (state) => ({
                 ...listItem.serialize(),
-                language: getUserLanguage(state),
+                language: getUser(state).getLanguage(),
                 translationId: listItem.getProductId(),
             }),
             successAction: actionType.EDIT_ITEM_SUCCESS,

@@ -12,6 +12,7 @@ import LoggingErrorHandler from 'Services/ErrorHandler/LoggingErrorHandler';
 
 import {persistStore} from 'redux-persist';
 
+import {Observable} from "rxjs/Observable";
 
 OfflinePlugin.install({
     onUpdateReady: function () {
@@ -30,6 +31,9 @@ ErrorHandler.addHandlers([
 import './styles.scss';
 
 persistStore(store);
+
+// emit redux actions to trigger react-observable epics
+Observable.interval(30 * 1000).subscribe(() => store.dispatch({type: 'TICK'}));
 
 const renderApp = (Component = Root) =>
     render(

@@ -1,8 +1,11 @@
 import * as actionType from 'Actions';
 import {API_CALL, POST, PUT} from 'Store/api-middleware/RSAA';
 
+import SocketClient from 'Services/SocketClient';
+
 import User from 'Models/User';
 
+import {getApplicationVersion, getCacheApplicationVersion} from 'Reducers/app'
 import {isTokenExpired} from 'Reducers/user'
 
 export const register = (user) => (dispatch) => {
@@ -60,9 +63,17 @@ export const signIn = (email, password) => (dispatch) => {
     });
 };
 
-export const logout = () => ({type: actionType.USER_LOGOUT});
+export const logout = () => {
+    SocketClient.close();
+
+    return {type: actionType.USER_LOGOUT};
+};
 
 export const logoutEpic = (action$, store) => action$
-    .filter(() => isTokenExpired(store.getState()))
+    .map(() => store.getState())
+    .filter(
+        (state) => isTokenExpired(state)
+        || getApplicationVersion(state) !== getCacheApplicationVersion(state)  // todo get rid of temporal hack
+    )
     .do(() => console.log('logout'))
     .map(logout);

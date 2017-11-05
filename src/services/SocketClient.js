@@ -13,9 +13,21 @@ let reconnectTimeout = initialReconnectTimeout;
 
 const requests = new Map();
 
+let isClosed = false;
+
 const isConnected = () => Boolean(socket) && socket.readyState === WebSocket.OPEN;
 
 const connect = () => {
+    isClosed = false;
+
+    return reconnect();
+};
+
+const reconnect = () => {
+    if (isClosed) {
+        return Promise.reject('Socket connection was closed');
+    }
+
     if (connectionPromise) {
         return connectionPromise;
     }
@@ -23,6 +35,8 @@ const connect = () => {
     if (socket) {
         return Promise.resolve(socket);
     }
+
+    console.log('trying reconnect');
 
     connectionPromise = new Promise((resolve, reject) => {
         socket = new WebSocket(config.BACKEND_WS_URL);
@@ -46,7 +60,7 @@ const connect = () => {
                 reconnectTimeout = maxReconnectTimeout;
             }
 
-            setTimeout(connect, reconnectTimeout);
+            setTimeout(() => !isClosed && reconnect(), reconnectTimeout);
         };
 
         socket.onmessage = function (event) {
@@ -96,6 +110,7 @@ const send = (request, retryCount = 0) => connect()
         }
 
         if (!isConnected()) {
+            console.log('retry socket request', requestMeta);
             return new Promise(resolve => setTimeout(resolve, 100)).then(() => send(request));
         }
 
@@ -110,13 +125,10 @@ const send = (request, retryCount = 0) => connect()
 
             socket.send(request.toJSON());
         })
-});
+    });
 
-const sendAction = (action) => {
-    return send(new SocketRequest({
-        id: uuid(),
-        actions: [action]
-    })).then(
+const sendAction = (action) => send(new SocketRequest({id: uuid(), actions: [action]}))
+    .then(
         (response) => {
             const socketActionResponse = response.getAction(action.getId());
 
@@ -127,13 +139,20 @@ const sendAction = (action) => {
             return Promise.resolve(socketActionResponse);
         }
     );
+
+
+const close = () => {
+    isClosed = true;
+
+    socket && socket.close();
 };
 
 const SocketClient = {
     connect,
     send,
     sendAction,
-    isConnected
+    isConnected,
+    close
 };
 
 export default SocketClient;

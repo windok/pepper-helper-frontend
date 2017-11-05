@@ -1,14 +1,30 @@
 import uuid from 'uuid/v4';
 
 import * as actionType from 'Actions';
-import store from 'Store';
+import {STATE_PROVIDER} from 'Store/state-provider-middleware';
 import {SOCKET_CALL} from 'Store/socket-middleware';
 
 import Product from 'Models/Product';
 
-import {getUserLanguage} from 'Reducers/user';
+import {getUser} from 'Reducers/user';
 
 import {addSyncCompleteHandler} from 'Actions/sync';
+
+const buildProductCollectionFromResponse = (state, response) => {
+    const productCollection = new Map();
+
+    (response.items || []).forEach(productData => productCollection.set(
+        productData.id,
+        new Product({
+            ...productData,
+            tmpId: productData.tmpId || '',
+            name: productData[getUser(state).getLanguage()],
+            defaultName: productData.en
+        })
+    ));
+
+    return productCollection;
+}
 
 export const fetchAll = () => (dispatch) => {
     return dispatch({
@@ -22,27 +38,26 @@ export const fetchAll = () => (dispatch) => {
                 actionType.FETCH_PRODUCT_COLLECTION_REQUEST,
                 {
                     type: actionType.FETCH_PRODUCT_COLLECTION_SUCCESS,
-                    payload: (action, state, response) => {
-                        const productCollection = new Map();
-
-                        (response.items || []).forEach(productData => productCollection.set(
-                            productData.id,
-                            new Product({
-                                ...productData,
-                                tmpId: productData.tmpId || '',
-                                name: productData[getUserLanguage(state)],
-                                defaultName: productData.en
-                            })
-                        ));
-
-                        return productCollection;
-                    }
+                    payload: (action, state, response) => buildProductCollectionFromResponse(state, response)
                 },
                 actionType.FETCH_PRODUCT_COLLECTION_ERROR
             ],
         }
     });
 };
+
+export const fetchProductDiffEpic = (action$, store) => action$
+    .ofType(actionType.SYNC_DIFF_SUCCESS)
+    .map(action => ({
+        type: actionType.FETCH_PRODUCT_COLLECTION_SUCCESS,
+        payload: buildProductCollectionFromResponse(
+            store.getState(),
+            {
+                items: action.payload.translations.items.filter(translation => translation.type === 'product')
+            }
+        ),
+    }));
+
 
 export const searchProduct = (query) => (dispatch) => {
     if (query.length < 2) {
@@ -52,11 +67,11 @@ export const searchProduct = (query) => (dispatch) => {
     dispatch({
         [SOCKET_CALL]: {
             action: 'translation-search',
-            payload: {
+            payload: (state) => ({
                 value: query,
                 type: 'product',
-                language: getUserLanguage(store.getState())
-            },
+                language: getUser(state).getLanguage()
+            }),
             types: [
                 actionType.SEARCH_PRODUCT_REQUEST,
                 {
@@ -70,20 +85,35 @@ export const searchProduct = (query) => (dispatch) => {
     });
 };
 
-export const createProduct = (product) => (dispatch) => {
+export const createProduct = (value) => (dispatch) => {
+    let product;
+
     dispatch({
-        type: actionType.CREATE_PRODUCT_OFFLINE,
-        payload: product,
-        sync: {
-            name: 'translation-create',
-            payload: (state) => ({
-                ...product.serialize(),
-                value: product.getName(),
-                type: 'product',
-                language: getUserLanguage(state)
-            }),
-            successAction: actionType.CREATE_PRODUCT_SUCCESS,
-            errorAction: actionType.CREATE_PRODUCT_ERROR
+        [STATE_PROVIDER]: (state) => {
+            product = new Product({
+                id: 0,
+                tmpId: uuid(),
+                name: value,
+                defaultName: value,
+                userId: getUser(state).getId()
+            });
+
+
+            return {
+                type: actionType.CREATE_PRODUCT_OFFLINE,
+                payload: product,
+                sync: {
+                    name: 'translation-create',
+                    payload: (state) => ({
+                        ...product.serialize(),
+                        value: product.getName(),
+                        type: 'product',
+                        language: getUser(state).getLanguage()
+                    }),
+                    successAction: actionType.CREATE_PRODUCT_SUCCESS,
+                    errorAction: actionType.CREATE_PRODUCT_ERROR
+                }
+            };
         }
     });
 

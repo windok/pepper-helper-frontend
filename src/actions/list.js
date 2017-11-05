@@ -8,6 +8,20 @@ import List from 'Models/List';
 import {addSyncCompleteHandler} from 'Actions/sync';
 import RestClient from 'Services/RestClient';
 
+const buildListCollectionFromResponse = (state, response) => {
+    const listCollection = new Map();
+
+    (response.items || []).forEach(listData => listCollection.set(
+        listData.id,
+        new List({
+            ...listData,
+            tmpId: listData.tmpId || ''
+        })
+    ));
+
+    return listCollection;
+};
+
 export const fetchAll = () => (dispatch) => {
     return dispatch({
         [SOCKET_CALL]: {
@@ -19,25 +33,21 @@ export const fetchAll = () => (dispatch) => {
                 actionType.FETCH_LIST_COLLECTION_REQUEST,
                 {
                     type: actionType.FETCH_LIST_COLLECTION_SUCCESS,
-                    payload: (action, state, response) => {
-                        const listCollection = new Map();
-
-                        (response.items || []).forEach(listData => listCollection.set(
-                            listData.id,
-                            new List({
-                                ...listData,
-                                tmpId: listData.tmpId || ''
-                            })
-                        ));
-
-                        return listCollection;
-                    }
+                    payload: (action, state, response) => buildListCollectionFromResponse(state, response)
                 },
                 actionType.FETCH_LIST_COLLECTION_ERROR
             ],
         }
     });
 };
+
+export const fetchListDiffEpic = (action$, store) => action$
+    .ofType(actionType.SYNC_DIFF_SUCCESS)
+    .map(action => ({
+        type: actionType.FETCH_LIST_COLLECTION_SUCCESS,
+        payload: buildListCollectionFromResponse(store.getState(), action.payload.productLists),
+    }));
+
 
 export const create = (listName) => (dispatch) => {
     if (listName.trim().length === 0) {

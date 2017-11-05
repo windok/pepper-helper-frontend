@@ -29,28 +29,41 @@ const initialState = {
                 label: 'US standard system'
             }
         ]
-    }
+    },
+    applicationVersion: 1,
+    cacheApplicationVersion: 1       // todo get rid of temporal workaround to clear local storage during dev testing,
 };
 
 export default Object.assign(
     (state = initialState, action) => {
         switch (action.type) {
             case actionType.OFFLINE_REHYDRATE_COMPLETED:
-                return {...state, rehydrateCompleted: true};
+                return {
+                    ...state,
+                    // todo get rid of temporal workaround
+                    cacheApplicationVersion: action.payload && action.payload.app && action.payload.app.cacheApplicationVersion,
+                    rehydrateCompleted: true
+                };
 
             case actionType.ONLINE_STATUS_CHANGE:
                 return {...state, online: action.payload};
 
             case actionType.BACKEND_CONNECTION_STATUS_CHANGE:
                 return {...state, backendConnected: action.payload};
+
+            case actionType.USER_LOGOUT:
+                return {
+                    ...initialState,
+                    rehydrateCompleted: state.rehydrateCompleted
+                }
         }
 
         return state;
     },
     {
-        persist: () => {
-            return {};
-        }
+        persist: (state) => ({
+            cacheApplicationVersion: state.cacheApplicationVersion
+        }),
     });
 
 export const isOnline = (state) => state.app.online;
@@ -61,3 +74,6 @@ export const isRehydrationCompleted = (state) => state.app.rehydrateCompleted;
 export const getAvailableLanguages = (state) => state.app.availableLanguages;
 
 export const getUnitTypes = (state, lang) => state.app.unitTypes[lang] || [];
+
+export const getApplicationVersion = (state) => state.app.applicationVersion;
+export const getCacheApplicationVersion = (state) => state.app.cacheApplicationVersion;

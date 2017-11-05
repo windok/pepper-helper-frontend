@@ -3,6 +3,7 @@ import {createStore, applyMiddleware, compose} from 'redux';
 import reducers from 'Reducers';
 
 import thunk from 'redux-thunk';
+import stateProviderMiddleware from './state-provider-middleware';
 import {apiMiddleware as restApiMiddleware} from './api-middleware';
 import {socketMiddleware as socketApiMiddleware} from './socket-middleware';
 
@@ -14,9 +15,10 @@ import {persistReducer} from 'redux-persist';
 
 const middleware = [
     thunk,
-    createEpicMiddleware(rootEpic),
+    stateProviderMiddleware,
     restApiMiddleware,
     socketApiMiddleware,
+    createEpicMiddleware(rootEpic),
 ];
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

@@ -37,7 +37,11 @@ const validateRSAA = (action) => {
 const createActionForNext = (typeDescriptor, action, store, response) => {
 
     if (typeof typeDescriptor === 'string') {
-        return {type: typeDescriptor};
+        return {
+            type: typeDescriptor,
+            meta: {action},
+            payload: response || {},
+        };
     }
 
     // todo error handling if func payload or meta fail
@@ -45,7 +49,7 @@ const createActionForNext = (typeDescriptor, action, store, response) => {
         type: typeDescriptor.type,
         meta: typeof typeDescriptor.meta === 'function'
             ? typeDescriptor.meta(action, store.getState(), response)
-            : typeDescriptor.meta || {},
+            : typeDescriptor.meta || {action},
         payload: typeof typeDescriptor.payload === 'function'
             ? typeDescriptor.payload(action, store.getState(), response)
             : response || typeDescriptor.payload || {}
@@ -65,7 +69,7 @@ const socketMiddleware = (store) => {
         const actionName = action[SOCKET_CALL].action;
         const [requestType, successType, failureType] = action[SOCKET_CALL].types;
         const payload = typeof action[SOCKET_CALL].payload === 'function'
-            ? action[SOCKET_CALL].payload(action, store.getState())
+            ? action[SOCKET_CALL].payload(store.getState())
             : action[SOCKET_CALL].payload || {};
 
         next(createActionForNext(requestType, action, store));
@@ -73,7 +77,7 @@ const socketMiddleware = (store) => {
         const user = getUser(store.getState());
 
         if (!user) {
-            return next(action);
+            return Promise.reject('User does not exit to continue socket calls.');
         }
 
         const socketAction = new SocketAction({

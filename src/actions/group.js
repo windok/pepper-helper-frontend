@@ -1,9 +1,27 @@
+import uuid from 'uuid/v4';
+
 import * as actionType from 'Actions';
 import {SOCKET_CALL} from 'Store/socket-middleware';
+
 import Group from 'Models/Group';
-import store from 'Store';
-import {getUserLanguage} from 'Reducers/user';
-import uuid from 'uuid/v4';
+
+import {getUser} from 'Reducers/user';
+
+const buildGroupCollectionFromResponse = (state, response) => {
+    const groupCollection = new Map();
+
+    (response.items || []).forEach(groupData => groupCollection.set(
+        groupData.id,
+        new Group({
+            ...groupData,
+            tmpId: groupData.tmpId || '',
+            color: groupData.img || '',
+            name: groupData[getUser(state).getLanguage()] || groupData.en
+        })
+    ));
+
+    return groupCollection;
+};
 
 export const fetchAll = () => (dispatch) => {
 
@@ -18,21 +36,7 @@ export const fetchAll = () => (dispatch) => {
                 actionType.FETCH_GROUP_COLLECTION_REQUEST,
                 {
                     type: actionType.FETCH_GROUP_COLLECTION_SUCCESS,
-                    payload: (action, state, response) => {
-                        const groupCollection = new Map();
-
-                        (response.items || []).forEach(groupData => groupCollection.set(
-                            groupData.id,
-                            new Group({
-                                ...groupData,
-                                tmpId: groupData.tmpId || '',
-                                color: groupData.img || '',
-                                name: groupData[getUserLanguage(state)] || groupData.en
-                            })
-                        ));
-
-                        return groupCollection;
-                    }
+                    payload: (action, state, response) => buildGroupCollectionFromResponse(state, response),
                 },
                 actionType.FETCH_GROUP_COLLECTION_ERROR
             ],
@@ -40,6 +44,17 @@ export const fetchAll = () => (dispatch) => {
     });
 };
 
+export const fetchGroupDiffEpic = (action$, store) => action$
+    .ofType(actionType.SYNC_DIFF_SUCCESS)
+    .map(action => ({
+        type: actionType.FETCH_GROUP_COLLECTION_SUCCESS,
+        payload: buildGroupCollectionFromResponse(
+            store.getState(),
+            {
+                items: action.payload.translations.items.filter(translation => translation.type === 'group')
+            }
+        ),
+    }));
 
 export const createGroup = (value) => (dispatch) => {
     const group = new Group({
@@ -50,12 +65,12 @@ export const createGroup = (value) => (dispatch) => {
     return dispatch({
         [SOCKET_CALL]: {
             action: 'translation-create',
-            payload: {
+            payload: (state) => ({
                 ...group.serialize(),
                 type: 'group',
-                language: getUserLanguage(store.getState()),
+                language: getUser(state).getLanguage(),
                 value
-            },
+            }),
             types: [
                 {
                     type: actionType.CREATE_GROUP_REQUEST,

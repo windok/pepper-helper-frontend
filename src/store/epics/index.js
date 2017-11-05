@@ -12,9 +12,15 @@ import 'rxjs';
 import {combineEpics} from 'redux-observable';
 
 
-import {onlineEpic, backendConnectionEpic} from 'Actions/app';
+import {onlineEpic, backendConnectionEpic, coldStartEpic} from 'Actions/app';
 import {logoutEpic} from 'Actions/auth';
-import {createSyncActionEpic, startSyncEpic, syncEpic, syncCompleteEpic} from 'Actions/sync';
+import {createSyncActionEpic, startSyncEpic, cancelSyncEpic, syncEpic, syncCompleteEpic, requestDiffEpic} from 'Actions/sync';
+
+import {fetchListDiffEpic} from 'Actions/list';
+import {fetchListItemDiffEpic} from 'Actions/listItem';
+import {fetchProductDiffEpic} from 'Actions/product';
+import {fetchGroupDiffEpic} from 'Actions/group';
+import {fetchUnitDiffEpic} from 'Actions/unit';
 
 export  default combineEpics(
     onlineEpic,
@@ -24,6 +30,15 @@ export  default combineEpics(
 
     createSyncActionEpic,
     startSyncEpic,
+    cancelSyncEpic,
     syncEpic,
     syncCompleteEpic,
+    coldStartEpic,
+    requestDiffEpic,
+
+    fetchListDiffEpic,
+    fetchListItemDiffEpic,
+    fetchGroupDiffEpic,
+    fetchProductDiffEpic,
+    fetchUnitDiffEpic
 );
