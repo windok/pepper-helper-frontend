@@ -5,10 +5,11 @@
   "license": "private",
   "scripts": {
     "start:dev": "nodemon --exec webpack-dev-server -d --progress --colors --host=0.0.0.0 --env.development --env.source-map",
+    "start:profile": "nodemon --exec webpack-dev-server -d --progress --colors --host=0.0.0.0 --env.development --env.source-map --profile",
     "watch:dev": "webpack -w --env.development",
     "watch:dev:map": "webpack -w --env.development --env.source-map",
-    "build": "webpack --optimize-minimize --env.production",
-    "build:verbose": "webpack --optimize-minimize --env.production --progress --profile --colors --display-error-details --display-cached",
+    "build": "cross-env NODE_ENV=production BABEL_ENV=production webpack --optimize-minimize",
+    "build:verbose": "cross-env NODE_ENV=production BABEL_ENV=production webpack --optimize-minimize --progress --profile --colors --display-error-details --display-cached",
     "prebuild": "npm run clean && npm run test",
     "clean": "rimraf public",
     "lint": "eslint src"
@@ -18,7 +19,6 @@
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.2.5",
     "compression": "^1.7.0",
-    "cross-env": "^5.0.5",
     "helmet": "^3.8.1",
     "history": "^4.7.2",
     "moment": "^2.18.1",
@@ -52,6 +52,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
     "circular-dependency-plugin": "^4.2.1",
+    "cross-env": "^5.1.1",
     "css-loader": "^0.28.7",
     "eslint": "^4.7.1",
     "eslint-config-airbnb": "^15.1.0",
@@ -77,6 +78,7 @@
     "svgo-loader": "^1.2.1",
     "url-loader": "^0.5.9",
     "webpack": "^3.8.1",
+    "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.9.3"
   }
 }

@@ -2,6 +2,7 @@
 
 import path from 'path';
 import CircularDependencyPlugin from 'circular-dependency-plugin';
+import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import autoprefixer from 'autoprefixer';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -11,6 +12,7 @@ import webpack from 'webpack';
 
 const production = process.argv.indexOf('--env.development') === -1;
 const sourceMap = process.argv.indexOf('--env.source-map') !== -1;
+const profiling = process.argv.indexOf('--profile') !== -1;
 
 const currentPath = path.dirname(__filename);
 const client = path.resolve(currentPath, 'src', 'index.js');
@@ -50,7 +52,6 @@ production && plugins.push(new OfflinePlugin({
     safeToUseOptionalCaches: true,
     responseStrategy: 'cache-first',
     externals: [
-        'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CMaterial+Icons',
     ],
     ServiceWorker: {
         events: true
@@ -68,7 +69,6 @@ plugins.push(new HtmlWebpackPlugin({
     appMountId: 'root',
     favicon: path.resolve(currentPath, 'src', 'favicon.ico'),
     externalCSS: [
-        'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CMaterial+Icons',
     ],
     externalJS: [
         // any umd builds
@@ -88,6 +88,7 @@ production && plugins.push(new webpack.optimize.UglifyJsPlugin({
 production || plugins.push(new webpack.HotModuleReplacementPlugin());
 production || plugins.push(new webpack.NamedModulesPlugin());
 production || plugins.push(new webpack.NoEmitOnErrorsPlugin());
+profiling && plugins.push(new BundleAnalyzerPlugin());
 
 // --------------------------------------------------------
 
@@ -157,7 +158,7 @@ export default {
                 loader: 'json-loader',
             }, {
                 test: /\.(woff2?|ttf|eot)$/,
-                loader: 'url-loader?limit=10000',
+                loader: 'url-loader?limit=10000&name=./fonts/[hash].[ext]',
                 exclude: /node_modules|SVGIcon\/icons/,
             }, {
                 test: /\.(svg)$/i,
