@@ -137,7 +137,7 @@ export const requestDiffEpic = (action$, store) => action$
             (action.type === actionType.OFFLINE_REHYDRATE_COMPLETED || isBackendConnected(state))
             && isQueueEmpty(state) && !isSyncInProgress(state) && isColdStartFinished(state)
             // at least 30 seconds after last sync past
-            && moment.duration(moment().diff(getLastDiff(state))).asSeconds() >= 30
+            && moment.duration(moment().diff(getLastDiff(state))).asSeconds() >= 10
         );
     })
     .map(() => {

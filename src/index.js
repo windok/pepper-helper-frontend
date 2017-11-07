@@ -33,7 +33,7 @@ import './styles.scss';
 persistStore(store);
 
 // emit redux actions to trigger react-observable epics
-Observable.interval(30 * 1000).subscribe(() => store.dispatch({type: 'TICK'}));
+Observable.interval(10 * 1000).subscribe(() => store.dispatch({type: 'TICK'}));
 
 const renderApp = (Component = Root) =>
     render(
