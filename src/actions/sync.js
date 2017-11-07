@@ -48,13 +48,14 @@ export const createSyncActionEpic = (action$, store) => action$
 
 
 export const startSyncEpic = (action$, store) => action$
-    .filter(() => {
+    .filter(action => {
         const state = store.getState();
 
-        return isOnline(state)
-            && isBackendConnected(state)
+        return (
+            (action.type === actionType.OFFLINE_REHYDRATE_COMPLETED || isBackendConnected(state))
             && !isQueueEmpty(state)
-            && !isSyncInProgress(state);
+            && !isSyncInProgress(state)
+        )
     })
     .do(() => console.log('start sync'))
     .map(startSync);
@@ -129,15 +130,19 @@ export const syncCompleteEpic = (action$, store) => action$
 
 
 export const requestDiffEpic = (action$, store) => action$
-    .map(() => store.getState())
-    .filter((state) => {
+    .filter(action => {
+        const state = store.getState();
+
         return (
-            isBackendConnected(state) && isQueueEmpty(state) && !isSyncInProgress(state) && isColdStartFinished(state)
+            (action.type === actionType.OFFLINE_REHYDRATE_COMPLETED || isBackendConnected(state))
+            && isQueueEmpty(state) && !isSyncInProgress(state) && isColdStartFinished(state)
             // at least 30 seconds after last sync past
             && moment.duration(moment().diff(getLastDiff(state))).asSeconds() >= 30
         );
     })
-    .map((state) => {
+    .map(() => {
+        const state = store.getState();
+
         return {
             [SOCKET_CALL]: {
                 action: 'diff',

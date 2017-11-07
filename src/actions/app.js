@@ -6,6 +6,7 @@ import * as actionType from 'Actions';
 import SocketClient from 'Services/SocketClient';
 
 import {isOnline, isBackendConnected} from 'Reducers/app'
+import {getUser} from 'Reducers/user'
 
 import {fetchAll as fetchProductListCollection} from 'Actions/list';
 import {fetchAll as fetchProductListItemCollection} from 'Actions/listItem';
@@ -32,7 +33,8 @@ export const onlineEpic = (action$, store) => action$
 
 export const backendConnectionEpic = (action$, store) => action$
     .map(() => SocketClient.isConnected())
-    .filter(backendConnectionStatus => isBackendConnected(store.getState()) !== backendConnectionStatus)
+    .do(isConnected => Boolean(!isConnected && getUser(store.getState())) && SocketClient.connect())
+    .filter(isConnected => isBackendConnected(store.getState()) !== isConnected)
     .map(changeBackendConnectionStatus);
 
 export const startColdStart = () => ({
