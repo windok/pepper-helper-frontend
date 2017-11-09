@@ -19,7 +19,7 @@ const buildProductCollectionFromResponse = (state, products = []) => {
             ...productData,
             tmpId: productData.tmpId || '',
             name: productData[getUser(state).getLanguage()],
-            defaultName: productData.en
+            defaultName: productData.en || ''
         })
     ));
 

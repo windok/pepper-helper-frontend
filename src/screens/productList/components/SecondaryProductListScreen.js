@@ -4,10 +4,9 @@ import {connect} from 'react-redux';
 
 import {List as ListModel} from 'Models/List';
 
+import {ensureListExists} from 'Components/EnsureListExists';
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
-
-import {redirectToDefaultList} from 'Services/BrowserHistory';
 
 import {selectProductList} from 'Actions/list';
 
@@ -21,12 +20,6 @@ class SecondaryProductListScreen extends React.PureComponent {
     }
 
     render() {
-        if (this.props.list.isNullObject()) {
-            redirectToDefaultList();
-
-            return null;
-        }
-
         return (
             <div>
                 <Header title={this.props.headerTitle} leftLinks={<BackButton/>}/>
@@ -55,4 +48,4 @@ export default connect(
     (dispatch) => ({
         selectList: (list) => dispatch(selectProductList(list))
     })
-)(SecondaryProductListScreen);
+)(ensureListExists(SecondaryProductListScreen));

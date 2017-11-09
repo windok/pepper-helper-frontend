@@ -85,21 +85,7 @@ export const findBestSearchResults = (state, query) => {
         return [];
     }
 
-    let searchResults = state.product.searchResults[query];
-
-    if (searchResults === undefined) {
-        let foundQuery = '';
-        searchResults = [];
-
-        Object.keys(state.product.searchResults).forEach((possibleQuery) => {
-            if (query.includes(possibleQuery) && possibleQuery.length > foundQuery.length) {
-                foundQuery = possibleQuery;
-                searchResults = state.product.searchResults[foundQuery];
-            }
-        })
-    }
-
-    return searchResults;
+    return Array.from(state.product.items.values()).filter(product => product.getName().includes(query));
 };
 
 export const findProductByName = (state, productName) => {

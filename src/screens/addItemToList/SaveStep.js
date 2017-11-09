@@ -13,6 +13,7 @@ import {getList} from 'Reducers/list';
 import {getProduct} from 'Reducers/product';
 import {getTemplate as getListItemTemplate, getItemsByListAndProduct} from 'Reducers/listItem';
 
+import {ensureListExists} from 'Components/EnsureListExists';
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 import {SaveButton} from 'Components/buttons/Button';
@@ -106,10 +107,9 @@ AddItemToListSaveStep.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const listId = match.params.listId;
         const productId = match.params.productId;
 
-        const list = getList(state, listId);
+        const list = getList(state, match.params.listId);
 
         const product = getProduct(state, productId);
 
@@ -132,8 +132,8 @@ export default withRouter(connect(
                 history.push('/product-list/' + template.listId);
                 createItem(new ListItem(template))(dispatch);
             },
-            redirectToItemEdit: (item) => history.replace('/product-list/' + item.getListId() + '/item/' + item.getIdentifier()),
+            redirectToItemEdit: (item) => history.replace(`/product-list/${item.getListId()}/item/${item.getIdentifier()}`),
             getTemplate: (list, product) => getTemplate(list, product)(dispatch)
         }
     }
-)(AddItemToListSaveStep));
+)(ensureListExists(AddItemToListSaveStep)));

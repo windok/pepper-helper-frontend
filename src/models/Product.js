@@ -22,7 +22,7 @@ class Product extends NotNullable(Entity) {
     }
 
     getName() {
-        return this.entity.name || this.entity.defaultName;
+        return this.entity.name || this.entity.defaultName || '';
     }
 
     getUserId() {

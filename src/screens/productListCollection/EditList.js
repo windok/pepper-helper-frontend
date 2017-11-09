@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 
 import ListModel from 'Models/List';
 
+import {ensureListExists} from 'Components/EnsureListExists';
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 import {SaveButton} from 'Components/buttons/Button';
@@ -34,8 +35,6 @@ class EditList extends React.PureComponent {
 
     render() {
         if (this.props.list.isNullObject()) {
-            redirectToDefaultList();
-
             return null;
         }
 
@@ -94,4 +93,4 @@ export default connect(
             redirectToDefaultList()
         }
     })
-)(EditList);
+)(ensureListExists(EditList));

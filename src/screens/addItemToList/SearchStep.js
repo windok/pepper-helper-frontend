@@ -3,19 +3,16 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
-import uuid from 'uuid/v4';
-
 import {List as ListModel} from 'Models/List';
-import {Product as ProductModel} from 'Models/Product';
 
 import {searchProduct, createProduct} from 'Actions/product';
 
-import {getList, getFirstList} from 'Reducers/list';
+import {getList} from 'Reducers/list';
 import {findProductByName} from 'Reducers/product';
-import {getUser} from 'Reducers/user';
 
 import Divider from 'react-md/lib/Dividers';
 
+import {ensureListExists} from 'Components/EnsureListExists';
 import Header from 'Components/Header';
 import TextField from 'react-md/lib/TextFields';
 import BackButton from 'Components/buttons/BackButton';
@@ -25,51 +22,38 @@ import ProductSearchResultList from './components/ProductSearchResultList';
 
 class AddItemToListSearchStep extends React.PureComponent {
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            query: ''
-        };
-
-        this.onQueryChange.bind(this);
-    }
+    state = {
+        query: ''
+    };
+    searchField = null;
 
     onQueryChange(newQuery) {
         this.setState({query: newQuery});
+    }
 
-        this.props.searchProduct(newQuery);
+    forwardToSaveStep() {
+        const product = this.props.findProductByName(this.state.query) || this.props.createProduct(this.state.query);
+
+        this.props.postToSaveStep(this.props.list, product);
     }
 
     render() {
-
-        const listId = this.props.listId;
-
-        const forwardToSaveButton = <Button flat onClick={() => {
-            if (this.state.query.trim().length === 0) {
-                return;
-            }
-
-            const product = this.props.findProductByName(this.state.query);
-
-            if (product) {
-                return this.props.postToSaveStep(product);
-            }
-
-            this.props.postToSaveStep(this.props.createProduct(this.state.query));
-        }}>Add</Button>;
+        const forwardToSaveStepButton = this.state.query.trim().length
+            ? <Button flat onClick={this.forwardToSaveStep.bind(this)}>Add</Button>
+            : [];
 
         return (
             <div>
                 <Header
                     title={"Add item to `" + this.props.list.getName() + "`"}
                     leftLinks={<BackButton/>}
-                    rightLinks={forwardToSaveButton}
+                    rightLinks={forwardToSaveStepButton}
                 />
 
                 <form className="md-grid">
                     <TextField
                         id="query"
+                        ref={field => this.searchField = field}
                         label="Search for products"
                         className="md-cell md-cell--12"
                         defaultValue={this.state.query}
@@ -79,17 +63,19 @@ class AddItemToListSearchStep extends React.PureComponent {
 
                     <Divider style={{marginTop: 10, marginBottom: 10}}/>
 
-                    {this.state.query && <ProductSearchResultList listId={listId} query={this.state.query}/>}
+                    {this.state.query && <ProductSearchResultList list={this.props.list} query={this.state.query}/>}
                 </form>
             </div>
         )
     }
+
+    componentDidMount() {
+        this.searchField && this.searchField.focus();
+    }
 }
 
 AddItemToListSearchStep.propTypes = {
-    listId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     list: PropTypes.instanceOf(ListModel).isRequired,
-
     findProductByName: PropTypes.func,
 
     searchProduct: PropTypes.func.isRequired,
@@ -98,24 +84,15 @@ AddItemToListSearchStep.propTypes = {
 };
 
 export default withRouter(connect(
-    (state, {match}) => {
-        const listId = match.params.listId || 0;
-
-        const list = listId ? getList(state, listId) : getFirstList(state);
-
-        return {
-            listId,
-            list,
-            findProductByName: (name) => findProductByName(state, name),
+    (state, {match}) => ({
+        list: getList(state, match.params.listId),
+        findProductByName: (name) => findProductByName(state, name),
+    }),
+    (dispatch, {history}) => ({
+        searchProduct: (query) => searchProduct(query)(dispatch),
+        createProduct: (value) => createProduct(value)(dispatch),
+        postToSaveStep: (list, product) => {
+            return history.push(`/product-list/${list.getIdentifier()}/item/save/${product.getIdentifier()}`);
         }
-    },
-    (dispatch, {match, history}) => {
-        return {
-            searchProduct: (query) => searchProduct(query)(dispatch),
-            createProduct: (value) => createProduct(value)(dispatch),
-            postToSaveStep: (product) => {
-                return history.push('/product-list/' + match.params.listId + '/item/save/' + product.getIdentifier());
-            }
-        }
-    }
-)(AddItemToListSearchStep));
+    })
+)(ensureListExists(AddItemToListSearchStep)));

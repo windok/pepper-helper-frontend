@@ -13,6 +13,7 @@ import {getList} from 'Reducers/list';
 import {getListItem} from 'Reducers/listItem';
 import {getProduct} from 'Reducers/product';
 
+import {ensureListExists} from 'Components/EnsureListExists';
 import Header from 'Components/Header';
 import BackButton from 'Components/buttons/BackButton';
 import DeleteButton from 'Components/buttons/DeleteButton';
@@ -32,24 +33,11 @@ class EditListItem extends React.PureComponent {
         };
     }
 
-    componentWillMount() {
-        this.redirectToListIfNecessary(this.props.listItem);
-
-    }
-
     componentWillReceiveProps({listItem, product}) {
-        this.redirectToListIfNecessary(listItem);
-
         if (listItem.getIdentifier() !== this.props.listItem.getIdentifier()) {
             this.setState({
                 listItem: {...listItem.serialize(), name: product.getName()}
             });
-        }
-    }
-
-    redirectToListIfNecessary(listItem) {
-        if (listItem.isNullObject()) {
-            this.props.redirectToList(this.props.list);
         }
     }
 
@@ -82,6 +70,20 @@ class EditListItem extends React.PureComponent {
             </div>
         )
     }
+
+    redirectToListIfNecessary() {
+        if (this.props.listItem.isNullObject()) {
+            this.props.redirectToList(this.props.list);
+        }
+    }
+
+    componentDidMount() {
+        this.redirectToListIfNecessary();
+    }
+
+    componentDidUpdate() {
+        this.redirectToListIfNecessary();
+    }
 }
 
 EditListItem.propTypes = {
@@ -97,12 +99,11 @@ EditListItem.propTypes = {
 export default withRouter(connect(
     (state, {match}) => {
         const listItem = getListItem(state, match.params.itemId);
-        const list = getList(state, match.params.listId);
 
         return {
             product: getProduct(state, listItem.getProductId()),
+            list: getList(state, match.params.listId),
             listItem,
-            list
         }
     },
     (dispatch, {history}) => {
@@ -120,4 +121,4 @@ export default withRouter(connect(
             delete: (item) => deleteItem(item)(dispatch)
         }
     }
-)(EditListItem));
+)(ensureListExists(EditListItem)));
