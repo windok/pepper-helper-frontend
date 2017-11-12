@@ -27,12 +27,6 @@ import DraftItem from './components/DraftItem';
 import pepperLogo from 'Assets/hot-pepper.svg';
 
 class ProductListScreen extends React.PureComponent {
-    componentWillReceiveProps({list}) {
-        if(list && !list.isNullObject()) {
-            this.props.selectList(list);
-        }
-    }
-
     render() {
         if (this.props.list === null) {
             return (<NoList/>);
@@ -86,6 +80,20 @@ class ProductListScreen extends React.PureComponent {
                 >add</Button>
             </div>
         )
+    }
+
+    selectList() {
+        if(this.props.list && !this.props.list.isNullObject()) {
+            this.props.selectList(this.props.list);
+        }
+    }
+
+    componentDidMount() {
+        this.selectList();
+    }
+
+    componentDidUpdate() {
+        this.selectList();
     }
 }
 

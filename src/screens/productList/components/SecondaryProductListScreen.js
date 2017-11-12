@@ -13,12 +13,6 @@ import {selectProductList} from 'Actions/list';
 import ListComponent from './ListAggregatedByGroup';
 
 class SecondaryProductListScreen extends React.PureComponent {
-    componentWillReceiveProps({list}) {
-        if(!list.isNullObject()) {
-            this.props.selectList(list);
-        }
-    }
-
     render() {
         return (
             <div>
@@ -31,6 +25,20 @@ class SecondaryProductListScreen extends React.PureComponent {
                 />
             </div>
         )
+    }
+
+    selectList() {
+        if(this.props.list && !this.props.list.isNullObject()) {
+            this.props.selectList(this.props.list);
+        }
+    }
+
+    componentDidMount() {
+        this.selectList();
+    }
+
+    componentDidUpdate() {
+        this.selectList();
     }
 }
 
