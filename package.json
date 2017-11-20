@@ -9,7 +9,8 @@
     "watch:dev": "webpack -w --env.development",
     "watch:dev:map": "webpack -w --env.development --env.source-map",
     "build": "cross-env NODE_ENV=production BABEL_ENV=production webpack --optimize-minimize",
-    "build:verbose": "cross-env NODE_ENV=production BABEL_ENV=production webpack --optimize-minimize --progress --profile --colors --display-error-details --display-cached",
+    "build:vvv": "cross-env NODE_ENV=production BABEL_ENV=production webpack --optimize-minimize --progress --profile --colors --display-error-details --display-cached",
+    "build:verbose": "cross-env NODE_ENV=production BABEL_ENV=production webpack --optimize-minimize --progress --colors --display-error-details --display-cached",
     "prebuild": "npm run clean && npm run test",
     "clean": "rimraf public",
     "lint": "eslint src"
