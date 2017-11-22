@@ -85,7 +85,10 @@ export const findBestSearchResults = (state, query) => {
         return [];
     }
 
-    return Array.from(state.product.items.values()).filter(product => product.getName().includes(query));
+    query = query.toLowerCase();
+
+    return Array.from(state.product.items.values())
+        .filter(product => product.getName().toLowerCase().includes(query));
 };
 
 export const findProductByName = (state, productName) => {
