@@ -8,7 +8,7 @@ $md-typography-include-utilities: true !default;
 $splash-color: #ff8b6b;
 $splash-height: 20vh;
 
-.splash {
+.splash.auth-splash {
   position: relative;
   overflow: hidden;
   animation-name: splash-animation;
@@ -28,19 +28,20 @@ $splash-height: 20vh;
     height: 100vh - $splash-height;
     width: 100%;
     flex-direction: column;
-    padding-top: 36px;
+    padding-top: 40px;
 
     .screens {
       position: absolute;
       top: 0;
       width: 100%;
-      height: 36px;
+      height: 40px;
       display: flex;
       flex-direction: row;
 
       button {
         color: #FFF;
         flex: 1;
+        align-self: flex-end;
         display: block;
         border-radius: 10px 10px 0 0;
         border-color: transparent;

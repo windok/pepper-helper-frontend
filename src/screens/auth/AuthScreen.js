@@ -19,7 +19,7 @@ class AuthScreen extends React.PureComponent {
 
         return (
             <div>
-                <div className="splash">
+                <div className="splash auth-splash">
                     {logoElement}
                     <div className={'auth-container ' + this.state.screen}>
                         <div className="screens">
