@@ -48,7 +48,7 @@ export const fetchAll = () => (dispatch) => {
 
 export const fetchProductDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
-    .map(action => action.payload.translations.items.filter(translation => translation.type === 'product'))
+    .map(action => action.payload.data.translations.items.filter(translation => translation.type === 'product'))
     .filter(products => products.length)
     .map(products => ({
         type: actionType.FETCH_PRODUCT_COLLECTION_SUCCESS,

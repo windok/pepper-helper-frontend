@@ -46,7 +46,7 @@ export const fetchAll = () => (dispatch) => {
 
 export const fetchGroupDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
-    .map(action => action.payload.translations.items.filter(translation => translation.type === 'group'))
+    .map(action => action.payload.data.translations.items.filter(translation => translation.type === 'group'))
     .filter(groups => groups.length)
     .map(groups => ({
         type: actionType.FETCH_GROUP_COLLECTION_SUCCESS,

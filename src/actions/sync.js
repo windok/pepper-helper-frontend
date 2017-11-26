@@ -11,7 +11,7 @@ import SyncAction from "Models/SyncAction";
 import SocketAction from 'Models/SocketAction';
 
 import {isOnline, isBackendConnected} from 'Reducers/app';
-import {getProcessingAction, isQueueEmpty, isSyncInProgress, isColdStartFinished, getLastDiff} from 'Reducers/sync';
+import {getProcessingAction, isQueueEmpty, isSyncInProgress, isColdStartFinished, getDiffTime, getLastDiffRequestTime} from 'Reducers/sync';
 import {getUser} from 'Reducers/user'
 
 export const createSyncAction = (syncAction) => ({
@@ -136,8 +136,8 @@ export const requestDiffEpic = (action$, store) => action$
         return (
             (action.type === actionType.OFFLINE_REHYDRATE_COMPLETED || isBackendConnected(state))
             && isQueueEmpty(state) && !isSyncInProgress(state) && isColdStartFinished(state)
-            // at least 30 seconds after last sync past
-            && moment.duration(moment().diff(getLastDiff(state))).asSeconds() >= 10
+            // at least 10 seconds after last sync past
+            && moment.duration(moment().diff(getLastDiffRequestTime(state))).asSeconds() >= 10
         );
     })
     .map(() => {
@@ -147,12 +147,18 @@ export const requestDiffEpic = (action$, store) => action$
             [SOCKET_CALL]: {
                 action: 'diff',
                 payload: {
-                    timestamp: getLastDiff(state).unix(),
+                    timestamp: getDiffTime(state).unix(),
                     language: getUser(state).getLanguage()
                 },
                 types: [
                     actionType.SYNC_DIFF_REQUEST,
-                    actionType.SYNC_DIFF_SUCCESS,
+                    {
+                        type: actionType.SYNC_DIFF_SUCCESS,
+                        payload: (state, action, response) => ({
+                            ...response,
+                            currentTimestamp: moment.unix(response.currentTimestamp)
+                        })
+                    },
                     actionType.SYNC_DIFF_ERROR
                 ],
             }

@@ -49,7 +49,7 @@ export const fetchAll = () => (dispatch) => {
 
 export const fetchListDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
-    .map(action => action.payload.productLists.items)
+    .map(action => action.payload.data.productLists.items)
     .filter(lists => lists.length)
     .map(lists => ({
         type: actionType.FETCH_LIST_COLLECTION_SUCCESS,

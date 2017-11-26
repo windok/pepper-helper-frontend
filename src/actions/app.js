@@ -38,17 +38,11 @@ export const backendConnectionEpic = (action$, store) => action$
     .map(changeBackendConnectionStatus);
 
 export const startColdStart = () => ({
-    type: actionType.SYNC_COLD_START_STARTED,
-    meta: {
-        time: moment.utc()
-    }
+    type: actionType.SYNC_COLD_START_STARTED
 });
 
 export const finishColdStart = () => ({
-    type: actionType.SYNC_COLD_START_FINISHED,
-    meta: {
-        time: moment.utc()
-    }
+    type: actionType.SYNC_COLD_START_FINISHED
 });
 
 export const coldStartEpic = (action$, store) => action$

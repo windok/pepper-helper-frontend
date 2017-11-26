@@ -43,7 +43,7 @@ export const fetchAll = () => (dispatch) => {
 
 export const fetchUnitDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
-    .map(action => action.payload.units.items)
+    .map(action => action.payload.data.units.items)
     .filter(units => units.length)
     .map(units => ({
         type: actionType.FETCH_UNIT_COLLECTION_SUCCESS,

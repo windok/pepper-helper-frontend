@@ -55,7 +55,7 @@ export const fetchAll = () => (dispatch) => {
 
 export const fetchListItemDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
-    .map(action => action.payload.listItems.items)
+    .map(action => action.payload.data.listItems.items)
     .filter(listItems => listItems.length)
     .map(listItems => ({
         type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,

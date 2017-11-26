@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import * as actionType from 'Actions';
+import * as actionType from 'Actions/index';
 import SyncAction from 'Models/SyncAction';
 
 const initialState = {
@@ -8,8 +8,8 @@ const initialState = {
     queue: [],
     syncInProgress: false,
     resourcesLoaded: false,
-    lastDiff: moment.unix(1),
-    coldStartTime: moment.unix(1)
+    diffTime: moment.unix(1),
+    lastDiffRequestTime: moment.unix(1)
 };
 
 export default Object.assign(
@@ -72,34 +72,26 @@ export default Object.assign(
                     ...state,
                     syncInProgress: true,
                     resourcesLoaded: false,
-                    lastDiff: action.meta.time,
+                    diffTime: action.meta.time,
                 };
 
             case actionType.SYNC_COLD_START_FINISHED:
                 return {
                     ...state,
                     resourcesLoaded: true,
-                    syncInProgress: false,
-                    coldStartTime: action.meta.time
+                    syncInProgress: false
                 };
 
             case actionType.SYNC_DIFF_REQUEST:
                 return {
                     ...state,
-                    syncInProgress: true
+                    lastDiffRequestTime: action.meta.time
                 };
 
             case actionType.SYNC_DIFF_SUCCESS:
                 return {
                     ...state,
-                    syncInProgress: false,
-                    lastDiff: moment.utc()  // todo get from response
-                };
-
-            case actionType.SYNC_DIFF_ERROR:
-                return {
-                    ...state,
-                    syncInProgress: false
+                    diffTime: action.payload.currentTimestamp
                 };
 
             case actionType.USER_LOGOUT:
@@ -113,14 +105,14 @@ export default Object.assign(
             actions: Array.from(state.actions.entries(), ([actionId, action]) => [actionId, action.serialize()]),
             queue: state.queue,
             resourcesLoaded: state.resourcesLoaded,
-            lastDiff: state.lastDiff.unix()
+            diffTime: state.diffTime.unix()
         }),
         rehydrate: (persistedState) => ({
             ...initialState,
             actions: new Map(persistedState.actions.map(([actionId, actionData]) => [actionId, new SyncAction(actionData)])),
             queue: persistedState.queue,
             resourcesLoaded: persistedState.resourcesLoaded,
-            lastDiff: moment.unix(persistedState.lastDiff)
+            diffTime: moment.unix(persistedState.diffTime)
         })
     }
 );
@@ -133,4 +125,5 @@ export const getProcessingAction = (state) => state.sync.actions.get(state.sync.
 
 export const isColdStartFinished = (state) => state.sync.resourcesLoaded;
 
-export const getLastDiff = (state) => state.sync.lastDiff;
+export const getDiffTime = (state) => state.sync.diffTime;
+export const getLastDiffRequestTime = (state) => state.sync.lastDiffRequestTime;
