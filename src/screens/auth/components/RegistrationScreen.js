@@ -79,58 +79,67 @@ class RegistrationScreen extends React.PureComponent {
 
     render() {
         return (
-            <form className="md-grid">
-                <TextField
-                    name="email"
-                    type="email"
-                    label="Email"
-                    customSize="title"
-                    required
-                    className="md-cell md-cell--12"
-                    onChange={(value) => this.setState({email: value})}
-                />
+            <form className="md-grid" onSubmit={event => {
+                event.preventDefault();
+                this.register.bind(this)
+            }}>
+                <div className="md-cell md-cell--12">
+                    <TextField
+                        id="signup-email"
+                        name="email"
+                        type="email"
+                        label="Email"
+                        required
+                        onChange={(value) => this.setState({email: value})}
+                    />
 
-                <TextField
-                    name="password"
-                    type="password"
-                    label="Password"
-                    customSize="title"
-                    required
-                    className="md-cell md-cell--12"
-                    onChange={(value) => this.setState({password: value})}
-                />
+                    <TextField
+                        id="signup-password"
+                        name="password"
+                        type="password"
+                        label="Password"
+                        required
+                        onChange={(value) => this.setState({password: value})}
+                    />
 
-                <TextField
-                    name="name"
-                    label="Name"
-                    customSize="title"
-                    className="md-cell md-cell--12"
-                    onChange={(value) => this.setState({name: value})}
-                />
+                    <TextField
+                        id="signup-name"
+                        name="name"
+                        label="Name"
+                        onChange={(value) => this.setState({name: value})}
+                    />
+
+                </div>
 
                 <SelectField
+                    id="signup-language"
                     name="language"
                     label="Language"
-                    className="md-cell md-cell--12"
                     value={this.state.language}
                     menuItems={this.props.languages}
-                    onChange={this.onLanguageChange.bind(this)}/>
+                    onChange={this.onLanguageChange.bind(this)}
+                    className="md-cell md-cell--6"
+                />
 
                 <SelectField
+                    id="signup-unitType"
                     name="unitType"
                     label="UnitType"
-                    className="md-cell md-cell--12"
                     value={this.state.unitType}
                     menuItems={this.props.getUnitTypes(this.state.language)}
-                    onChange={(value) => this.setState({unitType: value})}/>
+                    onChange={(value) => this.setState({unitType: value})}
+                    className="md-cell md-cell--6"
+                />
 
                 <Button
                     raised
-                    onClick={this.register.bind(this)}
-                    className="md-cell--center"
+                    primary
+                    type="submit"
+                    className="md-cell md-cell--12"
                 >Create account</Button>
 
                 <div>
+                    {/*TODO snackbar */}
                     {this.state.errors.map((errorMessage, key) => (<div key={key}>{errorMessage}</div>))}
                 </div>
             </form>

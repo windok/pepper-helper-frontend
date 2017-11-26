@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Provider} from 'react-redux';
+import Loader from 'Components/Loader';
+import Splash from 'Components/Splash';
 import Screen from 'Components/Screen';
 import AuthScreen from 'Screens/auth/AuthScreen';
 
 const Root = ({store}) => (
     <Provider store={store}>
-        <AuthScreen>
-            <Screen/>
-        </AuthScreen>
+        <Loader ready={<Screen/>} splash={<Splash/>} auth={<AuthScreen/>} />
     </Provider>
 );
 

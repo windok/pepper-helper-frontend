@@ -1,6 +1,97 @@
+@import 'assets/splash.css';
 @import '~normalize.css';
 @import '~globals';
 
 @include react-md-everything;
 
 $md-typography-include-utilities: true !default;
+$splash-color: #ff8b6b;
+$splash-height: 20vh;
+
+.splash {
+  position: relative;
+  overflow: hidden;
+  animation-name: splash-animation;
+  animation-duration: 0.7s;
+  padding-bottom: 100vh - $splash-height;
+
+  svg {
+    max-height: 50%;
+  }
+
+  .auth-container {
+    display: flex;
+    animation-name: auth-animation;
+    animation-duration: 0.7s;
+    position: absolute;
+    top: $splash-height;
+    height: 100vh - $splash-height;
+    width: 100%;
+    flex-direction: column;
+    padding-top: 36px;
+
+    .screens {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 36px;
+      display: flex;
+      flex-direction: row;
+
+      button {
+        color: #FFF;
+        flex: 1;
+        display: block;
+        border-radius: 10px 10px 0 0;
+        border-color: transparent;
+        border-width: 1px 1px 0 1px;
+        background: rgba(255, 255, 255, 0.07);
+        margin: 0;
+
+        &:before {
+          display: none;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.17);
+        }
+      }
+    }
+
+    &.signIn .screens button:first-child,
+    &.registration .screens button:last-child {
+      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .form {
+      flex: 1;
+      flex-wrap: wrap;
+      background: rgba(255, 255, 255, 0.85);
+      overflow-y: auto;
+
+      [type="submit"] {
+        background: $splash-color;
+      }
+    }
+  }
+}
+
+@keyframes splash-animation {
+  from {
+    padding-bottom: 10vh;
+  }
+  to {
+    padding-bottom: 100vh - $splash-height;
+  }
+}
+
+@keyframes auth-animation {
+  from {
+    top: 100vh;
+    visibility: hidden;
+  }
+  to {
+    top: $splash-height;
+  }
+}

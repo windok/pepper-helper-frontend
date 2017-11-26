@@ -1,0 +1,26 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #FFF;
+}
+
+.splash {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 10vh;
+    box-sizing: border-box;
+    background: #ff8b6b;
+}
+
+.splash > svg {
+    max-width: 50%;
+    fill: white !important;
+    width: auto !important;;
+    height: auto !important;
+}
+
+.splash > div {
+    display: none;
+}

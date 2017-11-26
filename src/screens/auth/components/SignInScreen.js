@@ -19,15 +19,17 @@ class SignInScreen extends React.PureComponent {
 
     render() {
         return (
-                <form className="md-grid md-divider-border md-divider-border--bottom">
+            <form className="md-grid" onSubmit={(event) => {
+                event.preventDefault();
+                this.props.signIn(this.state.email, this.state.password);
+            }}>
+                <div className="md-cell md-cell--12">
                     <TextField
                         id="signIn-email"
                         name="email"
                         type="email"
                         label="Email"
-                        customSize="title"
                         required
-                        className="md-cell md-cell--12"
                         onChange={(value) => this.setState({email: value})}
                     />
 
@@ -36,20 +38,18 @@ class SignInScreen extends React.PureComponent {
                         name="password"
                         type="password"
                         label="Password"
-                        customSize="title"
                         required
-                        className="md-cell md-cell--12"
                         onChange={(value) => this.setState({password: value})}
                     />
+                </div>
 
-                    <div className="md-grid">
-                        <Button
-                            raised
-                            onClick={() => this.props.signIn(this.state.email, this.state.password)}
-                            className="md-cell--right"
-                        >Sign in</Button>
-                    </div>
-                </form>
+                <Button
+                    raised
+                    primary
+                    type="submit"
+                    className="md-cell md-cell--12"
+                >Sign in</Button>
+            </form>
         )
 
     }

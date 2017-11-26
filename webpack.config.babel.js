@@ -68,11 +68,7 @@ plugins.push(new HtmlWebpackPlugin({
     template: path.resolve(currentPath, 'src', 'setup', 'htmlTemplate.js'),
     appMountId: 'root',
     favicon: path.resolve(currentPath, 'src', 'favicon.ico'),
-    externalCSS: [
-    ],
-    externalJS: [
-        // any umd builds
-    ],
+    splash: true
 }));
 
 production && plugins.push(new webpack.optimize.UglifyJsPlugin({
@@ -166,8 +162,7 @@ export default {
                 loaders: [{
                     loader: 'svg-sprite-loader',
                     options: {
-                        extract: true,
-                        spriteFilename: 'icon-sprites.[hash:8].svg',
+                        extract: true
                     },
                 }, 'svgo-loader']
             }],
