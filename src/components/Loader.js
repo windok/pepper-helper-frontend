@@ -5,23 +5,20 @@ import {connect} from 'react-redux';
 import User from 'Models/User';
 
 import {getUser} from 'Reducers/user';
-import {isRehydrationCompleted} from 'Reducers/app';
+import {isRehydrationCompleted, isAppReady} from 'Reducers/app';
 
 class Loader extends React.PureComponent {
 
     render() {
-
-        let state = 'splash';
-
-        if (this.props.isRehydrationCompleted) {
-            state = 'auth';
-
-            if (this.props.user) {
-                state = 'ready';
-            }
+        if (this.props.isRehydrationCompleted && !this.props.user) {
+            return this.props.auth;
         }
 
-        return this.props[state];
+        if (this.props.isAppReady) {
+            return this.props.ready;
+        }
+
+        return this.props.splash;
     }
 }
 
@@ -30,14 +27,14 @@ Loader.propTypes = {
     splash: PropTypes.object.isRequired,
     auth: PropTypes.object.isRequired,
     user: PropTypes.instanceOf(User),
-    isRehydrationCompleted: PropTypes.bool.isRequired,
+    isAppReady: PropTypes.bool.isRequired,
+    isRehydrationCompleted: PropTypes.bool.isRequired
 };
 
 export default connect(
-    (state) => {
-        return {
-            isRehydrationCompleted: isRehydrationCompleted(state),
-            user: getUser(state),
-        };
-    },
+    (state) => ({
+        user: getUser(state),
+        isAppReady: isAppReady(state),
+        isRehydrationCompleted: isRehydrationCompleted(state),
+    }),
 )(Loader);

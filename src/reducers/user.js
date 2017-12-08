@@ -1,18 +1,27 @@
-import Moment from 'moment';
-
 import * as actionType from 'Actions';
 import User from 'Models/User';
 
 const initialState = {
-    model: null
+    model: null,
+    refreshRequested: false
 };
 
 export default Object.assign(
     (state = initialState, action) => {
         switch (action.type) {
+            case actionType.USER_REFRESH_REQUEST:
+                return {...state, refreshRequested: true};
+
             case actionType.USER_REGISTER_SUCCESS:
             case actionType.USER_SIGN_IN_SUCCESS:
-                return {...state, model: action.payload};
+            case actionType.USER_REFRESH_SUCCESS:
+                return {...state, model: action.payload, refreshRequested: false};
+
+            case actionType.USER_REFRESH_ERROR:
+                return {...state, refreshRequested: false};
+
+            case 'userOld':
+                return {...state, model: state.model.rrToken()};
 
             case actionType.USER_LOGOUT:
                 return {...initialState}
@@ -29,20 +38,6 @@ export default Object.assign(
         })
     });
 
-export const getUserLanguage = (state) => {
-    return state.user.model.getLanguage();
-};
+export const getUser = (state) => state.user.model;
 
-export const getUser = (state) => {
-    return state.user.model;
-};
-
-export const isTokenExpired = state => {
-    const user = state.user.model;
-
-    if (!user) {
-        return false;
-    }
-
-    return Moment.utc().isAfter(user.getTokenLifeTime())
-};
+export const isUserRefreshRequested = (state) => state.user.refreshRequested;

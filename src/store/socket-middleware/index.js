@@ -72,12 +72,22 @@ const socketMiddleware = (store) => {
             ? action[SOCKET_CALL].payload(store.getState())
             : action[SOCKET_CALL].payload || {};
 
+        if (!SocketClient.isConnected() && typeof action[SOCKET_CALL].fallback === 'function') {
+            const actionForNext = action[SOCKET_CALL].fallback(store.getState());
+            next(actionForNext);
+            return Promise.resolve(actionForNext);
+        }
+
         next(createActionForNext(requestType, action, store));
 
         const user = getUser(store.getState());
 
-        if (!user) {
-            return Promise.reject('User does not exit to continue socket calls.');
+        if (!user || user.isTokenExpired()) {
+            const error = 'No user or token is expired to create socket call.';
+            const actionForNext = createActionForNext(failureType, action, store, error);
+            next(actionForNext);
+
+            return Promise.reject(error);
         }
 
         const socketAction = new SocketAction({
@@ -97,12 +107,12 @@ const socketMiddleware = (store) => {
                 return Promise.resolve(actionForNext.payload);
             },
             (error) => {
+                const actionForNext = createActionForNext(failureType, action, store, error);
+                next(actionForNext);
+
                 if (error === "Authorization error: User that you reference is not authorized!") {
                     throw new UnauthorizedError();
                 }
-
-                const actionForNext = createActionForNext(failureType, action, store, error);
-                next(actionForNext);
 
                 return Promise.reject(actionForNext.payload);
             }

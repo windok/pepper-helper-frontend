@@ -33,8 +33,6 @@ class ProductListScreen extends React.PureComponent {
         }
 
         if (this.props.list.isNullObject()) {
-            redirectToDefaultList();
-
             return null;
         }
 
@@ -82,18 +80,22 @@ class ProductListScreen extends React.PureComponent {
         )
     }
 
-    selectList() {
-        if(this.props.list && !this.props.list.isNullObject()) {
+    afterRender(prevList) {
+        if (this.props.list && this.props.list.isNullObject()) {
+            redirectToDefaultList();
+        }
+
+        if(this.props.list && !this.props.list.isNullObject() && prevList !== this.props.list) {
             this.props.selectList(this.props.list);
         }
     }
 
     componentDidMount() {
-        this.selectList();
+        this.afterRender(null);
     }
 
-    componentDidUpdate() {
-        this.selectList();
+    componentDidUpdate({list}) {
+        this.afterRender(list);
     }
 }
 
@@ -110,7 +112,7 @@ export default withRouter(connect(
     (state, {match}) => ({
         list: match.params.hasOwnProperty('listId')
             ? getList(state, match.params.listId)
-            : getSelectedList(state) || getFirstList(state)
+            : getSelectedList(state) || getFirstList(state),
     }),
     (dispatch, {history}) => ({
         selectList: (list) => dispatch(selectProductList(list)),

@@ -6,6 +6,9 @@ const initialState = {
     online: false,
     backendConnected: false,
     rehydrateCompleted: false,
+    ready: false,
+    coldStartBegun: false,
+    resourcesLoaded: false,
     availableLanguages: ['en', 'ru'],
     // todo refactor to not depend on lang
     unitTypes: {
@@ -37,13 +40,37 @@ const initialState = {
 export default Object.assign(
     (state = initialState, action) => {
         switch (action.type) {
-            case actionType.OFFLINE_REHYDRATE_COMPLETED:
+            case actionType.OFFLINE_REHYDRATE_COMPLETED: {
+                const persistedState = (action.payload && action.payload.app) || {};
+
                 return {
                     ...state,
+                    resourcesLoaded: persistedState.resourcesLoaded || false,
                     // todo get rid of temporal workaround
-                    cacheApplicationVersion: action.payload && action.payload.app && action.payload.app.cacheApplicationVersion,
+                    cacheApplicationVersion: persistedState.cacheApplicationVersion || 0,
                     rehydrateCompleted: true
                 };
+            }
+
+            case actionType.APP_READY:
+                return {
+                    ...state,
+                    ready: true
+                };
+
+            case actionType.APP_COLD_START_BEGUN:
+                return {
+                    ...state,
+                    coldStartBegun: true,
+                    resourcesLoaded: false
+                };
+
+            case actionType.APP_COLD_START_FINISHED:
+                return {
+                    ...state,
+                    resourcesLoaded: true
+                };
+
 
             case actionType.ONLINE_STATUS_CHANGE:
                 return {...state, online: action.payload};
@@ -62,9 +89,15 @@ export default Object.assign(
     },
     {
         persist: (state) => ({
+            resourcesLoaded: state.resourcesLoaded,
             cacheApplicationVersion: state.cacheApplicationVersion
         }),
+        // rehydrate callback does not work because OFFLINE_REHYDRATE_COMPLETED action is processed in reducer
     });
+
+export const isAppReady = (state) => state.app.ready;
+export const isColdStartFinished = (state) => state.app.resourcesLoaded;
+export const isColdStartBegun = (state) => state.app.coldStartBegun;
 
 export const isOnline = (state) => state.app.online;
 export const isBackendConnected = (state) => state.app.backendConnected;

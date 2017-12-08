@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import Entity from './Entity';
 import {entityStructureFilter, dateConverter, allowedValuesValidator} from './entityProcessors';
 import {Nullable, NotNullable} from 'Models/NullableInterface';
@@ -10,7 +12,7 @@ const UNIT_TYPE_INTERNATIONAL_RU = 'international-ru';
 class User extends NotNullable(Entity) {
     constructor(entity) {
         super(entity, [
-            (entity) => entityStructureFilter(entity, ['id', 'email', 'token', 'tokenLifeTime', 'language', 'name', 'avatar', 'unitType']),
+            (entity) => entityStructureFilter(entity, ['id', 'email', 'token', 'refreshToken', 'tokenLifeTime', 'language', 'name', 'avatar', 'unitType']),
             (entity) => allowedValuesValidator(entity, 'unitType', [UNIT_TYPE_USA, UNIT_TYPE_INTERNATIONAL, UNIT_TYPE_INTERNATIONAL_RU]),
             (entity) => dateConverter(entity, ['tokenLifeTime']),
         ]);
@@ -26,6 +28,14 @@ class User extends NotNullable(Entity) {
 
     getToken() {
         return this.entity.token;
+    }
+
+    isTokenExpired() {
+        return moment.utc().isAfter(this.getTokenLifeTime())
+    };
+
+    getRefreshToken() {
+        return this.entity.refreshToken;
     }
 
     getTokenLifeTime() {

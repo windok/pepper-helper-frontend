@@ -1,13 +1,12 @@
 import moment from 'moment';
 
-import * as actionType from 'Actions/index';
+import * as actionType from 'Actions';
 import SyncAction from 'Models/SyncAction';
 
 const initialState = {
     actions: new Map(),
     queue: [],
     syncInProgress: false,
-    resourcesLoaded: false,
     diffTime: moment.unix(1),
     lastDiffRequestTime: moment.unix(1)
 };
@@ -63,22 +62,16 @@ export default Object.assign(
                 };
             }
 
-            case actionType.SYNC_COLD_START_STARTED:
-                if (state.syncInProgress) {
-                    return state;
-                }
-
+            case actionType.APP_COLD_START_BEGUN:
                 return {
                     ...state,
                     syncInProgress: true,
-                    resourcesLoaded: false,
-                    diffTime: action.meta.time,
+                    diffTime: action.meta.time
                 };
 
-            case actionType.SYNC_COLD_START_FINISHED:
+            case actionType.APP_COLD_START_FINISHED:
                 return {
                     ...state,
-                    resourcesLoaded: true,
                     syncInProgress: false
                 };
 
@@ -104,14 +97,12 @@ export default Object.assign(
         persist: (state) => ({
             actions: Array.from(state.actions.entries(), ([actionId, action]) => [actionId, action.serialize()]),
             queue: state.queue,
-            resourcesLoaded: state.resourcesLoaded,
             diffTime: state.diffTime.unix()
         }),
         rehydrate: (persistedState) => ({
             ...initialState,
             actions: new Map(persistedState.actions.map(([actionId, actionData]) => [actionId, new SyncAction(actionData)])),
             queue: persistedState.queue,
-            resourcesLoaded: persistedState.resourcesLoaded,
             diffTime: moment.unix(persistedState.diffTime)
         })
     }
@@ -122,8 +113,6 @@ export const isQueueEmpty = (state) => !state.sync.queue.length;
 export const isSyncInProgress = (state) => state.sync.syncInProgress;
 
 export const getProcessingAction = (state) => state.sync.actions.get(state.sync.queue[0]);
-
-export const isColdStartFinished = (state) => state.sync.resourcesLoaded;
 
 export const getDiffTime = (state) => state.sync.diffTime;
 export const getLastDiffRequestTime = (state) => state.sync.lastDiffRequestTime;

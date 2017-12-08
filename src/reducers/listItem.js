@@ -205,7 +205,7 @@ export const getItemsByListAndProduct = (state, list, product) => {
 export const getTemplate = (state, list, product) => {
     const template = state.listItem.template;
 
-    if (!template || template.getProductId() !== product.getId() || template.getListId() !== list.getId()) {
+    if (!template || template.getProductId() !== product.getIdentifier() || template.getListId() !== list.getIdentifier()) {
         return null;
     }
 

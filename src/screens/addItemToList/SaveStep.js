@@ -30,20 +30,18 @@ class AddItemToListSaveStep extends React.PureComponent {
     }
 
     componentWillMount() {
-        if (!this.redirectToItemEditScreenIfPossible(this.props.template)) {
+        if (!this.props.template) {
             this.props.getTemplate(this.props.list, this.props.product);
         }
     }
 
     componentWillReceiveProps({list, product, template}) {
-        if (this.redirectToItemEditScreenIfPossible(template)) {
-            return;
-        }
-
+        // if list or product changed than receive new template
         if (this.props.list.getIdentifier() !== list.getIdentifier() || this.props.product.getIdentifier() !== product.getIdentifier()) {
             this.props.getTemplate(list, product);
         }
 
+        // if template main props were changed than use new template
         if (template && (
                 // if there were no template before
                 !this.props.template
@@ -53,19 +51,12 @@ class AddItemToListSaveStep extends React.PureComponent {
             )) {
 
             this.setState({
-                template: {...template.serialize(), name: product.getName()}
+                template: {
+                    ...template.serialize(),
+                    name: product.getName()
+                }
             });
         }
-    }
-
-    redirectToItemEditScreenIfPossible(template) {
-        if (!template || !template.getId()) {
-            return false;
-        }
-
-        this.props.redirectToItemEdit(template);
-
-        return true;
     }
 
     onTemplateFieldChange(field, value) {
@@ -75,6 +66,10 @@ class AddItemToListSaveStep extends React.PureComponent {
     }
 
     render() {
+        if (!this.props.template) {
+            return null;
+        }
+
         return (
             <div>
                 <Header
@@ -93,6 +88,18 @@ class AddItemToListSaveStep extends React.PureComponent {
             </div>
         )
     }
+
+    redirectToEditIfNecessary() {
+        this.props.template && this.props.template.getId() && this.props.redirectToItemEdit(this.props.template);
+    }
+
+    componentDidMount() {
+        this.redirectToEditIfNecessary();
+    }
+
+    componentDidUpdate() {
+        this.redirectToEditIfNecessary();
+    }
 }
 
 AddItemToListSaveStep.propTypes = {
@@ -107,11 +114,8 @@ AddItemToListSaveStep.propTypes = {
 
 export default withRouter(connect(
     (state, {match}) => {
-        const productId = match.params.productId;
-
         const list = getList(state, match.params.listId);
-
-        const product = getProduct(state, productId);
+        const product = getProduct(state, match.params.productId);
 
         const matchingListItems = getItemsByListAndProduct(state, list, product)
             .filter((listItem) => listItem.getStatus() === STATUS_DRAFT);
@@ -126,14 +130,12 @@ export default withRouter(connect(
             template,
         }
     },
-    (dispatch, {history}) => {
-        return {
-            saveItemHandler: (template) => {
-                history.push('/product-list/' + template.listId);
-                createItem(new ListItem(template))(dispatch);
-            },
-            redirectToItemEdit: (item) => history.replace(`/product-list/${item.getListId()}/item/${item.getIdentifier()}`),
-            getTemplate: (list, product) => getTemplate(list, product)(dispatch)
-        }
-    }
+    (dispatch, {history}) => ({
+        saveItemHandler: (template) => {
+            history.push('/product-list/' + template.listId);
+            createItem(new ListItem(template))(dispatch);
+        },
+        redirectToItemEdit: (item) => history.replace(`/product-list/${item.getListId()}/item/${item.getIdentifier()}`),
+        getTemplate: (list, product) => getTemplate(list, product)(dispatch)
+    })
 )(ensureListExists(AddItemToListSaveStep)));

@@ -79,7 +79,7 @@ export const createGroup = (value) => (dispatch) => {
                         return new Group({
                             ...response,
                             tmpId: response.tmpId || '',
-                            name: response[getUserLanguage(state)] || response.en
+                            name: response[getUser(state).getLanguage()] || response.en
                         });
                     }
                 },

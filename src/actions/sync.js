@@ -10,8 +10,8 @@ import {SOCKET_CALL} from "Store/socket-middleware/index";
 import SyncAction from "Models/SyncAction";
 import SocketAction from 'Models/SocketAction';
 
-import {isOnline, isBackendConnected} from 'Reducers/app';
-import {getProcessingAction, isQueueEmpty, isSyncInProgress, isColdStartFinished, getDiffTime, getLastDiffRequestTime} from 'Reducers/sync';
+import {isAppReady, isBackendConnected} from 'Reducers/app';
+import {getProcessingAction, isQueueEmpty, isSyncInProgress, getDiffTime, getLastDiffRequestTime} from 'Reducers/sync';
 import {getUser} from 'Reducers/user'
 
 export const createSyncAction = (syncAction) => ({
@@ -48,34 +48,20 @@ export const createSyncActionEpic = (action$, store) => action$
 
 
 export const startSyncEpic = (action$, store) => action$
-    .filter(action => {
-        const state = store.getState();
-
-        return (
-            (action.type === actionType.OFFLINE_REHYDRATE_COMPLETED || isBackendConnected(state))
-            && !isQueueEmpty(state)
-            && !isSyncInProgress(state)
-        )
-    })
+    .map(() => store.getState())
+    .filter(state => isAppReady(state) && isBackendConnected(state) && !isQueueEmpty(state) && !isSyncInProgress(state))
     .do(() => console.log('start sync'))
     .map(startSync);
 
 export const cancelSyncEpic = (action$, store) => action$
-    .filter(() => {
-        const state = store.getState();
-
-        return (!isOnline(state) || !isBackendConnected(state)) && isSyncInProgress(state) && isColdStartFinished(state);
-    })
+    .map(() => store.getState())
+    .filter(state => !isBackendConnected(state) && isSyncInProgress(state))
     .do(() => console.log('cancel sync'))
     .map(cancelSync);
 
 export const syncEpic = (action$, store) => action$
     .ofType(actionType.SYNC_START)
-    .filter(() => {
-        const state = store.getState();
-
-        return isOnline(state) && isBackendConnected(state);
-    })
+    .filter(() => isBackendConnected(store.getState()))
     .do(() => console.log('start sync'))
     .mergeMap(() => {
         const syncAction = getProcessingAction(store.getState());
@@ -127,41 +113,31 @@ export const syncCompleteEpic = (action$, store) => action$
     });
 
 
-
-
 export const requestDiffEpic = (action$, store) => action$
-    .filter(action => {
-        const state = store.getState();
-
-        return (
-            (action.type === actionType.OFFLINE_REHYDRATE_COMPLETED || isBackendConnected(state))
-            && isQueueEmpty(state) && !isSyncInProgress(state) && isColdStartFinished(state)
-            // at least 10 seconds after last sync past
-            && moment.duration(moment().diff(getLastDiffRequestTime(state))).asSeconds() >= 10
-        );
-    })
-    .map(() => {
-        const state = store.getState();
-
-        return {
-            [SOCKET_CALL]: {
-                action: 'diff',
-                payload: {
-                    timestamp: getDiffTime(state).unix(),
-                    language: getUser(state).getLanguage()
+    .map(() => store.getState())
+    .filter(state => (
+        isAppReady(state) && isQueueEmpty(state) && !isSyncInProgress(state)
+        // at least 10 seconds after last sync past
+        && moment.duration(moment().diff(getLastDiffRequestTime(state))).asSeconds() >= 10
+    ))
+    .map(state => ({
+        [SOCKET_CALL]: {
+            action: 'diff',
+            payload: {
+                timestamp: getDiffTime(state).unix(),
+                language: getUser(state).getLanguage()
+            },
+            types: [
+                actionType.SYNC_DIFF_REQUEST,
+                {
+                    type: actionType.SYNC_DIFF_SUCCESS,
+                    payload: (state, action, response) => ({
+                        ...response,
+                        currentTimestamp: moment.unix(response.currentTimestamp)
+                    })
                 },
-                types: [
-                    actionType.SYNC_DIFF_REQUEST,
-                    {
-                        type: actionType.SYNC_DIFF_SUCCESS,
-                        payload: (state, action, response) => ({
-                            ...response,
-                            currentTimestamp: moment.unix(response.currentTimestamp)
-                        })
-                    },
-                    actionType.SYNC_DIFF_ERROR
-                ],
-            }
+                actionType.SYNC_DIFF_ERROR
+            ],
         }
-    });
+    }));
 

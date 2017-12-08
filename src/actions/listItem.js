@@ -1,4 +1,5 @@
 import Moment from 'moment';
+import uuid from 'uuid/v4';
 
 import * as actionType from 'Actions';
 
@@ -71,20 +72,22 @@ export const getTemplate = (list, product) => (dispatch) => {
         return Promise.resolve();
     }
 
+    const createTemplateOffline = (state) => ({
+        type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
+        meta: {list, product},
+        payload: new CustomProductListItemTemplate(
+            uuid(),
+            list.getIdentifier(),
+            product.getIdentifier(),
+            getFirstGroup(state).getIdentifier(),
+            getFirstUserUnit(state).getIdentifier(),
+            1
+        )
+    });
+
     if (product.isCustom()) {
         dispatch({
-            [STATE_PROVIDER]: (state) => ({
-                type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
-                meta: {list, product},
-                payload: new CustomProductListItemTemplate(
-                    '',
-                    list.getIdentifier(),
-                    product.getIdentifier(),
-                    getFirstGroup(state).getIdentifier(),
-                    getFirstUserUnit(state).getIdentifier(),
-                    1
-                )
-            })
+            [STATE_PROVIDER]: createTemplateOffline
         });
 
         return Promise.resolve();
@@ -98,6 +101,7 @@ export const getTemplate = (list, product) => (dispatch) => {
                 language: getUser(state).getLanguage(),
                 listId: list.getId(),
             }),
+            fallback: createTemplateOffline,
             types: [
                 actionType.GET_ITEM_TEMPLATE_REQUEST,
                 {
@@ -106,7 +110,7 @@ export const getTemplate = (list, product) => (dispatch) => {
                     payload: (action, state, response) => new ListItem({
                         ...response,
                         id: response.id || 0,
-                        tmpId: response.tmpId || '',
+                        tmpId: uuid(),
                         date: response.date ? Moment.utc(response.date) : Moment.utc(),
                         productId: response.translationId,
                         quantity: parseInt(response.quantity) || 1
