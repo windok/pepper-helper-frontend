@@ -14,6 +14,21 @@ export default Object.assign(
             case actionType.FETCH_GROUP_COLLECTION_SUCCESS:
                 return {...state, items: new Map([...state.items, ...action.payload])};
 
+            case actionType.CREATE_GROUP_OFFLINE:
+                return {
+                    ...state,
+                    items: (new Map([...state.items])).set(action.payload.getIdentifier(), action.payload.clone())
+                };
+
+            case actionType.CREATE_GROUP_SUCCESS: {
+                const items = new Map([...state.items]);
+                items.delete(action.payload.getTmpId());
+                items.set(action.payload.getIdentifier(), action.payload.clone());
+
+                return {...state, items};
+            }
+
+
             case actionType.USER_LOGOUT:
                 return {...initialState}
         }
@@ -41,6 +56,43 @@ export default Object.assign(
 export const getGroupCollection = (state) => {
     return state.group.items;
 };
+
+/**
+ * @param state
+ * @param id
+ * @return {Product}
+ */
+export const getGroup = (state, id) => {
+    if (typeof id === 'string') {
+        return id.includes('-') ? getGroupByTmpId(state, id) : getGrup(state, parseInt(id))
+    }
+
+    return state.group.items.get(id) || new GroupNullObject();
+};
+
+/**
+ * @param state
+ * @param tmpId
+ * @return {Product}
+ */
+export const getGroupByTmpId = (state, tmpId) => {
+    return state.group.items.get(tmpId)
+        || Array.from(state.group.items.values()).filter(group => group.getTmpId() === tmpId)[0]
+        || new GroupNullObject()
+};
+
+/**
+ * @param state
+ * @param name
+ * @return {Product}
+ */
+export const getGroupByName = (state, name) => {
+    return Array.from(state.group.items.values())
+        .filter(group => group.getName() === name)[0] || new GroupNullObject();
+};
+
+
+
 
 /**
  * @param state

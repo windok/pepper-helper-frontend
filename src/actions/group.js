@@ -1,8 +1,11 @@
+import uuid from 'uuid/v4';
+
 import * as actionType from 'Actions';
 import {SOCKET_CALL} from 'Store/socket-middleware';
 
 import Group from 'Models/Group';
 
+import {getGroupByName} from 'Reducers/group';
 import {getUser} from 'Reducers/user';
 
 const buildGroupCollectionFromResponse = (state, groups = []) => {
@@ -47,3 +50,37 @@ export const fetchGroupDiffEpic = (action$, store) => action$
         type: actionType.FETCH_GROUP_COLLECTION_SUCCESS,
         payload: buildGroupCollectionFromResponse(store.getState(), groups),
     }));
+
+export const createGroup = (value) => (dispatch, getState) => {
+    const existingGroup = getGroupByName(getState(), value);
+
+    if (!existingGroup.isNullObject()) {
+        return existingGroup;
+    }
+
+    const group = new Group({
+        id: 0,
+        tmpId: uuid(),
+        name: value,
+        color: '',
+        userId: getUser(getState()).getId()
+    });
+
+    dispatch({
+        type: actionType.CREATE_GROUP_OFFLINE,
+        payload: group,
+        sync: {
+            name: 'translation-create',
+            payload: (state) => ({
+                ...group.serialize(),
+                value,
+                type: 'group',
+                language: getUser(state).getLanguage()
+            }),
+            successAction: actionType.CREATE_GROUP_SUCCESS,
+            errorAction: actionType.CREATE_GROUP_ERROR
+        }
+    });
+
+    return group;
+};
