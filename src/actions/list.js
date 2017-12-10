@@ -28,24 +28,22 @@ const buildListCollectionFromResponse = (state, lists = []) => {
     return listCollection;
 };
 
-export const fetchAll = () => (dispatch) => {
-    return dispatch({
-        [SOCKET_CALL]: {
-            action: 'product-list-load',
-            payload: {
-                limit: 1000
+export const fetchAll = () => ({
+    [SOCKET_CALL]: {
+        action: 'product-list-load',
+        payload: {
+            limit: 1000
+        },
+        types: [
+            actionType.FETCH_LIST_COLLECTION_REQUEST,
+            {
+                type: actionType.FETCH_LIST_COLLECTION_SUCCESS,
+                payload: (action, state, response) => buildListCollectionFromResponse(state, response.items)
             },
-            types: [
-                actionType.FETCH_LIST_COLLECTION_REQUEST,
-                {
-                    type: actionType.FETCH_LIST_COLLECTION_SUCCESS,
-                    payload: (action, state, response) => buildListCollectionFromResponse(state, response.items)
-                },
-                actionType.FETCH_LIST_COLLECTION_ERROR
-            ],
-        }
-    });
-};
+            actionType.FETCH_LIST_COLLECTION_ERROR
+        ],
+    }
+});
 
 export const fetchListDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
@@ -57,12 +55,17 @@ export const fetchListDiffEpic = (action$, store) => action$
     }));
 
 
-export const create = (listName) => (dispatch) => {
+export const createList = (listName) => (dispatch) => {
     if (listName.trim().length === 0) {
-        return Promise.reject();
+        return;
     }
 
-    const list = new List({id: 0, tmpId: uuid(), name: listName, color: ''});
+    const list = new List({
+        id: 0,
+        tmpId: uuid(),
+        name: listName,
+        color: ''
+    });
 
     dispatch({
         type: actionType.CREATE_LIST_OFFLINE,
@@ -77,31 +80,26 @@ export const create = (listName) => (dispatch) => {
     return list;
 };
 
-export const updateList = (list, newListName) => (dispatch) => {
-    const listUpdated = new List({...list.serialize(), name: newListName});
+export const updateList = (list, newListName) => ({
+    type: actionType.EDIT_LIST_OFFLINE,
+    payload: new List({
+        ...list.serialize(),
+        name: newListName
+    }),
+    sync: {
+        name: 'product-list-update',
+        successAction: actionType.EDIT_LIST_SUCCESS,
+        errorAction: actionType.EDIT_LIST_ERROR
+    }
+});
 
-    dispatch({
-        type: actionType.EDIT_LIST_OFFLINE,
-        payload: listUpdated,
-        sync: {
-            name: 'product-list-update',
-            successAction: actionType.EDIT_LIST_SUCCESS,
-            errorAction: actionType.EDIT_LIST_ERROR
-        }
-    });
-
-    return listUpdated;
-};
-
-export const deleteList = (list) => (dispatch) => {
-    dispatch({
-        type: actionType.DELETE_LIST_OFFLINE,
-        payload: list,
-        sync: {
-            name: 'product-list-delete',
-        }
-    });
-};
+export const deleteList = (list) => ({
+    type: actionType.DELETE_LIST_OFFLINE,
+    payload: list,
+    sync: {
+        name: 'product-list-delete',
+    }
+});
 
 addSyncCompleteHandler({
     match: ({response, syncAction}) => ['product-list-create', 'product-list-update'].includes(syncAction.getName()),
@@ -116,7 +114,7 @@ addSyncCompleteHandler({
     }),
 });
 
-
+// todo share via processing redux action
 export const share = (list, user, email) => {
     return RestClient.put(
         'product-list/share/' + list.getId(),

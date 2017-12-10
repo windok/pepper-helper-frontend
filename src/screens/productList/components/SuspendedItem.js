@@ -6,6 +6,8 @@ import {ListItem as ListItemModel} from 'Models/ListItem';
 import Item from './Item';
 import ItemAction from './ItemAction';
 
+import {returnItem} from 'Actions/listItem';
+
 class SuspendedItem extends React.PureComponent {
     render() {
 
@@ -39,13 +41,9 @@ SuspendedItem.propTypes = {
 };
 
 export default connect(
-    (state, {item}) => {
-        return {item}
-    },
-    (dispatch) => {
-        return {
-            returnItem: (listItem) => returnItem(listItem)(dispatch)
-        }
-    }
+    null,
+    (dispatch) => ({
+        returnItem: (listItem) => dispatch(returnItem(listItem))
+    })
 )(SuspendedItem);
 

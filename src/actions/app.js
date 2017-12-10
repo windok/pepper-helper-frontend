@@ -70,11 +70,11 @@ export const coldStartEpic = (action$, store) => action$
     .do(() => console.log('load all resources'))
     .mergeMap(() => (
         Observable.fromPromise(Promise.all([
-            fetchProductListCollection()(store.dispatch),
-            fetchProductListItemCollection()(store.dispatch),
-            fetchProductCollection()(store.dispatch),
-            fetchUnitCollection()(store.dispatch),
-            fetchGroupCollection()(store.dispatch)
+            store.dispatch(fetchProductListCollection()),
+            store.dispatch(fetchProductListItemCollection()),
+            store.dispatch(fetchProductCollection()),
+            store.dispatch(fetchUnitCollection()),
+            store.dispatch(fetchGroupCollection())
         ]))
             .catch(error => Observable.of({error: error})))
     )

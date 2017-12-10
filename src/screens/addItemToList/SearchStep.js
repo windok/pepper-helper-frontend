@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 
 import {List as ListModel} from 'Models/List';
 
-import {searchProduct, createProduct} from 'Actions/product';
+import {createProduct} from 'Actions/product';
 
 import {getList} from 'Reducers/list';
 import {findProductByName} from 'Reducers/product';
@@ -78,7 +78,6 @@ AddItemToListSearchStep.propTypes = {
     list: PropTypes.instanceOf(ListModel).isRequired,
     findProductByName: PropTypes.func,
 
-    searchProduct: PropTypes.func.isRequired,
     postToSaveStep: PropTypes.func.isRequired,
     createProduct: PropTypes.func.isRequired
 };
@@ -89,8 +88,7 @@ export default withRouter(connect(
         findProductByName: (name) => findProductByName(state, name),
     }),
     (dispatch, {history}) => ({
-        searchProduct: (query) => searchProduct(query)(dispatch),
-        createProduct: (value) => createProduct(value)(dispatch),
+        createProduct: (value) => dispatch(createProduct(value)),
         postToSaveStep: (list, product) => {
             return history.push(`/product-list/${list.getIdentifier()}/item/save/${product.getIdentifier()}`);
         }

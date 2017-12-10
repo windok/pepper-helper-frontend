@@ -170,7 +170,7 @@ export default connect(
     (dispatch) => {
         return {
             register: (userData) => {
-                register(userData)(dispatch);
+                dispatch(register(userData));
                 redirectToDefaultList();
             }
         };

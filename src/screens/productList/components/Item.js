@@ -75,14 +75,12 @@ Item.propTypes = {
 };
 
 export default connect(
-    (state, {item, leftAction, rightAction, onClick}) => {
-        return {
-            item,
-            product: getProduct(state, item.getProductId()),
-            unit: getUnit(state, item.getUnitId()),
-            onClick: onClick || function() {},
-            leftAction,
-            rightAction
-        }
-    }
+    (state, {item, leftAction, rightAction, onClick}) => ({
+        item,
+        product: getProduct(state, item.getProductId()),
+        unit: getUnit(state, item.getUnitId()),
+        onClick: onClick || function() {},
+        leftAction,
+        rightAction
+    })
 )(Item);

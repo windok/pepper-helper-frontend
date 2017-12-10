@@ -133,9 +133,9 @@ export default withRouter(connect(
     (dispatch, {history}) => ({
         saveItemHandler: (template) => {
             history.push('/product-list/' + template.listId);
-            createItem(new ListItem(template))(dispatch);
+            dispatch(createItem(new ListItem(template)));
         },
         redirectToItemEdit: (item) => history.replace(`/product-list/${item.getListId()}/item/${item.getIdentifier()}`),
-        getTemplate: (list, product) => getTemplate(list, product)(dispatch)
+        getTemplate: (list, product) => dispatch(getTemplate(list, product))
     })
 )(ensureListExists(AddItemToListSaveStep)));

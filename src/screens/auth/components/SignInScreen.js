@@ -64,7 +64,7 @@ export default connect(
     (dispatch) => {
         return {
             signIn: (email, password) => {
-                signIn(email, password)(dispatch);
+                dispatch(signIn(email, password));
                 redirectToDefaultList();
             }
         };

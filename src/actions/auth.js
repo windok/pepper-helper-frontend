@@ -42,7 +42,7 @@ export const register = (user) => (dispatch) => {
     });
 };
 
-export const signIn = (email, password) => (dispatch) => dispatch({
+export const signIn = (email, password) => ({
     [API_CALL]: {
         endpoint: '/user/signIn',
         method: PUT,

@@ -116,9 +116,9 @@ export default withRouter(connect(
 
                 history.push('/product-list/' + listItem.getListId());
 
-                editItem(listItem)(dispatch);
+                dispatch(editItem(listItem));
             },
-            delete: (item) => deleteItem(item)(dispatch)
+            delete: (item) => dispatch(deleteItem(item))
         }
     }
 )(ensureListExists(EditListItem)));

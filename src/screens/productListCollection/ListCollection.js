@@ -86,23 +86,23 @@ export default connect(
     (dispatch) => {
         return {
             showBought: (list) => {
-                hideMenu()(dispatch);
+                dispatch(hideMenu());
                 history.push('/product-list/' + list.getIdentifier() + '/bought');
             },
             showSuspended: (list) => {
-                hideMenu()(dispatch);
+                dispatch(hideMenu());
                 history.push('/product-list/' + list.getIdentifier() + '/suspended');
             },
             showRecommendations: (list) => {
-                hideMenu()(dispatch);
+                dispatch(hideMenu());
                 history.push('/product-list/' + list.getIdentifier() + '/recommendations');
             },
             addList: () => {
-                hideMenu()(dispatch);
+                dispatch(hideMenu());
                 history.push('/product-list/add');
             },
             onListClick: (list) => {
-                hideMenu()(dispatch);
+                dispatch(hideMenu());
                 history.push('/product-list/' + list.getIdentifier());
             }
         }

@@ -4,7 +4,6 @@ import uuid from 'uuid/v4';
 import * as actionType from 'Actions';
 
 import {SOCKET_CALL} from 'Store/socket-middleware';
-import {STATE_PROVIDER} from 'Store/state-provider-middleware';
 
 import {
     ListItem, CustomProductListItemTemplate,
@@ -35,24 +34,22 @@ const buildListItemCollectionFromResponse = (state, listItems = []) => {
     return items;
 };
 
-export const fetchAll = () => (dispatch) => {
-    return dispatch({
-        [SOCKET_CALL]: {
-            action: 'list-item-load',
-            payload: {
-                limit: 1000
+export const fetchAll = () => ({
+    [SOCKET_CALL]: {
+        action: 'list-item-load',
+        payload: {
+            limit: 1000
+        },
+        types: [
+            actionType.FETCH_ITEMS_FOR_LIST_REQUEST,
+            {
+                type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,
+                payload: (action, state, response) => buildListItemCollectionFromResponse(state, response.items),
             },
-            types: [
-                actionType.FETCH_ITEMS_FOR_LIST_REQUEST,
-                {
-                    type: actionType.FETCH_ITEMS_FOR_LIST_SUCCESS,
-                    payload: (action, state, response) => buildListItemCollectionFromResponse(state, response.items),
-                },
-                actionType.FETCH_ITEMS_FOR_LIST_ERROR
-            ],
-        }
-    });
-};
+            actionType.FETCH_ITEMS_FOR_LIST_ERROR
+        ],
+    }
+});
 
 export const fetchListItemDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)
@@ -64,15 +61,17 @@ export const fetchListItemDiffEpic = (action$, store) => action$
     }));
 
 
-export const getTemplate = (list, product) => (dispatch) => {
+export const getTemplate = (list, product) => (dispatch, getState) => {
     if (
         !list || !product
         || list.isNullObject() || product.isNullObject()
     ) {
-        return Promise.resolve();
+        return;
     }
 
-    const createTemplateOffline = (state) => ({
+    const state = getState();
+
+    const createTemplateOffline = () => ({
         type: actionType.GET_ITEM_TEMPLATE_SUCCESS,
         meta: {list, product},
         payload: new CustomProductListItemTemplate(
@@ -86,11 +85,7 @@ export const getTemplate = (list, product) => (dispatch) => {
     });
 
     if (product.isCustom()) {
-        dispatch({
-            [STATE_PROVIDER]: createTemplateOffline
-        });
-
-        return Promise.resolve();
+        return dispatch(createTemplateOffline());
     }
 
     return dispatch({
@@ -122,8 +117,8 @@ export const getTemplate = (list, product) => (dispatch) => {
     });
 };
 
-export const createItem = (listItem) => (dispatch) => {
-    listItem = new ListItem({...listItem.serialize(), date: Moment.utc()});
+export const createItem = (itemTemplate) => (dispatch) => {
+    const listItem = new ListItem({...itemTemplate.serialize(), date: Moment.utc()});
 
     dispatch({
         type: actionType.CREATE_ITEM_OFFLINE,
@@ -143,8 +138,8 @@ export const createItem = (listItem) => (dispatch) => {
     return listItem;
 };
 
-export const editItem = (listItem) => (dispatch) => {
-    listItem = new ListItem({...listItem.serialize(), date: Moment.utc()});
+export const editItem = (oldListItem) => (dispatch) => {
+    const listItem = new ListItem({...oldListItem.serialize(), date: Moment.utc()});
 
     dispatch({
         type: actionType.EDIT_ITEM_OFFLINE,
@@ -164,20 +159,18 @@ export const editItem = (listItem) => (dispatch) => {
     return listItem;
 };
 
-export const deleteItem = (listItem) => (dispatch) => {
-    dispatch({
-        type: actionType.DELETE_ITEM_OFFLINE,
-        payload: listItem,
-        sync: {
-            name: 'list-item-delete',
-            payload: {
-                id: listItem.getId()
-            },
-            successAction: actionType.DELETE_ITEM_SUCCESS,
-            errorAction: actionType.DELETE_ITEM_ERROR
-        }
-    });
-};
+export const deleteItem = (listItem) => ({
+    type: actionType.DELETE_ITEM_OFFLINE,
+    payload: listItem,
+    sync: {
+        name: 'list-item-delete',
+        payload: {
+            id: listItem.getId()
+        },
+        successAction: actionType.DELETE_ITEM_SUCCESS,
+        errorAction: actionType.DELETE_ITEM_ERROR
+    }
+});
 
 addSyncCompleteHandler({
     match: ({response, syncAction}) => ['list-item-create', 'list-item-update'].includes(syncAction.getName()),
@@ -193,64 +186,42 @@ addSyncCompleteHandler({
     }),
 });
 
-export const suspendItem = (listItem, date) => (dispatch) => {
-    listItem = new ListItem({...listItem.serialize(), date: Moment.utc(), status: STATUS_BOUGHT});
-
-    dispatch({
-        type: actionType.SUSPEND_ITEM_OFFLINE,
-        payload: listItem,
-        sync: {
-            name: 'list-item-suspend',
-            successAction: actionType.SUSPEND_ITEM_SUCCESS,
-            errorAction: actionType.SUSPEND_ITEM_ERROR
-        }
-    });
-
-    return listItem;
-};
-
 /**
  * @param {ListItem} listItem
  */
-export const buyItem = (listItem) => (dispatch) => {
+export const buyItem = listItem => {
     if (listItem.getStatus() !== STATUS_DRAFT && listItem.getType() !== TYPE_GENERAL) {
-        return Promise.reject();
+        return;
     }
 
-    listItem = new ListItem({...listItem.serialize(), status: STATUS_BOUGHT});
-
-    dispatch({
+    return {
         type: actionType.BUY_ITEM_OFFLINE,
-        payload: listItem,
+        payload: new ListItem({...listItem.serialize(), status: STATUS_BOUGHT}),
         sync: {
             name: 'list-item-buy',
             successAction: actionType.BUY_ITEM_SUCCESS,
             errorAction: actionType.BUY_ITEM_ERROR
         }
-    });
-
-    return listItem;
+    };
 };
 
 /**
  * @param {ListItem} listItem
  */
-export const returnItem = (listItem) => (dispatch) => {
+export const returnItem = listItem => {
     if (listItem.getStatus() !== STATUS_BOUGHT && listItem.getType() !== TYPE_GENERAL) {
-        return Promise.reject();
+        return;
     }
 
-    listItem = new ListItem({...listItem.serialize(), status: STATUS_DRAFT});
-
-    return dispatch({
+    return {
         type: actionType.RETURN_ITEM_OFFLINE,
-        payload: listItem,
+        payload: new ListItem({...listItem.serialize(), status: STATUS_DRAFT}),
         sync: {
             name: 'list-item-return',
             successAction: actionType.RETURN_ITEM_SUCCESS,
             errorAction: actionType.RETURN_ITEM_ERROR
         }
-    });
+    };
 };
 
 addSyncCompleteHandler({

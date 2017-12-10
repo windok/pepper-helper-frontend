@@ -34,13 +34,9 @@ BoughtItem.propTypes = {
 };
 
 export default connect(
-    (state, {item}) => {
-        return {item}
-    },
-    (dispatch) => {
-        return {
-            returnItem: (listItem) => returnItem(listItem)(dispatch)
-        }
-    }
+    null,
+    (dispatch) => ({
+        returnItem: (listItem) => dispatch(returnItem(listItem))
+    })
 )(BoughtItem);
 

@@ -56,15 +56,9 @@ DraftItem.propTypes = {
 };
 
 export default connect(
-    (state, {item}) => {
-        return {
-            item
-        }
-    },
-    (dispatch) => {
-        return {
-            editItem: (listItem) => history.push('/product-list/' + listItem.getListId() + '/item/' + listItem.getIdentifier()),
-            buyItem: (listItem) => buyItem(listItem)(dispatch),
-        }
-    }
+    null,
+    (dispatch) => ({
+        editItem: (listItem) => history.push('/product-list/' + listItem.getListId() + '/item/' + listItem.getIdentifier()),
+        buyItem: (listItem) => dispatch(buyItem(listItem)),
+    })
 )(DraftItem);

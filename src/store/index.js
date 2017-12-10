@@ -3,7 +3,6 @@ import {createStore, applyMiddleware, compose} from 'redux';
 import reducers from 'Reducers';
 
 import thunk from 'redux-thunk';
-import stateProviderMiddleware from './state-provider-middleware';
 import {timeInjectorMiddleware} from "./time-injector-middleware";
 import {apiMiddleware as restApiMiddleware} from './api-middleware';
 import {socketMiddleware as socketApiMiddleware} from './socket-middleware';
@@ -16,7 +15,6 @@ import {persistReducer} from 'redux-persist';
 
 const middleware = [
     thunk,
-    stateProviderMiddleware,
     restApiMiddleware,
     socketApiMiddleware,
     timeInjectorMiddleware,

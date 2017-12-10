@@ -45,7 +45,7 @@ export default connect(
         isOpened: isSidebarOpened(state),
     }),
     (dispatch) => ({
-        showMenu: () => showMenu()(dispatch),
-        hideMenu: () => hideMenu()(dispatch)
+        showMenu: () => dispatch(showMenu()),
+        hideMenu: () => dispatch(hideMenu())
     })
 )(Sidebar);

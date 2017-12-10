@@ -22,24 +22,22 @@ const buildUnitCollectionFromResponse = (state, units = []) => {
     };
 };
 
-export const fetchAll = () => (dispatch) => {
-    return dispatch({
-        [SOCKET_CALL]: {
-            action: 'unit-load',
-            payload: {
-                limit: 1000
+export const fetchAll = () => ({
+    [SOCKET_CALL]: {
+        action: 'unit-load',
+        payload: {
+            limit: 1000
+        },
+        types: [
+            actionType.FETCH_UNIT_COLLECTION_REQUEST,
+            {
+                type: actionType.FETCH_UNIT_COLLECTION_SUCCESS,
+                payload: (action, state, response) => buildUnitCollectionFromResponse(state, response.items)
             },
-            types: [
-                actionType.FETCH_UNIT_COLLECTION_REQUEST,
-                {
-                    type: actionType.FETCH_UNIT_COLLECTION_SUCCESS,
-                    payload: (action, state, response) => buildUnitCollectionFromResponse(state, response.items)
-                },
-                actionType.FETCH_UNIT_COLLECTION_ERROR
-            ],
-        }
-    });
-};
+            actionType.FETCH_UNIT_COLLECTION_ERROR
+        ],
+    }
+});
 
 export const fetchUnitDiffEpic = (action$, store) => action$
     .ofType(actionType.SYNC_DIFF_SUCCESS)

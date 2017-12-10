@@ -7,7 +7,7 @@ import BackButton from 'Components/buttons/BackButton';
 import {SaveButton} from 'Components/buttons/Button';
 import TextField from 'react-md/lib/TextFields';
 
-import {create as createList} from 'Actions/list';
+import {createList as createList} from 'Actions/list';
 
 class AddList extends React.PureComponent {
     state = {
@@ -46,8 +46,8 @@ export default connect(
         return {
             cancel: () => history.goBack(),
             save: (listName) => {
-                const list = createList(listName)(dispatch);
-                history.push('/product-list/' + list.getTmpId());
+                const list = dispatch(createList(listName));
+                list && history.push('/product-list/' + list.getTmpId());
             }
         }
     }

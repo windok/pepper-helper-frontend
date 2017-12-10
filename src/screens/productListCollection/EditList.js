@@ -85,11 +85,11 @@ export default connect(
     }),
     (dispatch, {history}) => ({
         save: (list, newListName) => {
-            updateList(list, newListName)(dispatch);
+            dispatch(updateList(list, newListName));
             history.push('/product-list/' + list.getIdentifier());
         },
         delete: (list) => {
-            deleteList(list)(dispatch);
+            dispatch(deleteList(list));
             redirectToDefaultList()
         }
     })

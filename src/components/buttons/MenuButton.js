@@ -17,7 +17,7 @@ const MenuButton = connect(
         return {
             onClick: (event) => {
                 onClick && onClick();
-                showMenu()(dispatch);
+                dispatch(showMenu());
             }
         }
     }
