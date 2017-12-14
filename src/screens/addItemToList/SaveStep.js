@@ -59,11 +59,11 @@ class AddItemToListSaveStep extends React.PureComponent {
         }
     }
 
-    onTemplateFieldChange(field, value) {
+    onTemplateFieldChange = (field, value) => {
         this.setState({
             template: {...this.state.template, [field]: value}
         });
-    }
+    };
 
     render() {
         if (!this.props.template) {
@@ -82,7 +82,7 @@ class AddItemToListSaveStep extends React.PureComponent {
                 &&
                 <ItemCard
                     listItem={this.state.template}
-                    onListItemFieldChange={this.onTemplateFieldChange.bind(this)}
+                    onListItemFieldChange={this.onTemplateFieldChange}
                 />
                 }
             </div>

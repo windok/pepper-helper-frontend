@@ -25,8 +25,8 @@ class Profile extends React.PureComponent {
         errors: []
     };
 
-    save() {
-    }
+    save = () => {
+    };
 
     render() {
         return (
@@ -72,7 +72,7 @@ class Profile extends React.PureComponent {
 
                     <Button
                         raised
-                        onClick={this.save.bind(this)}
+                        onClick={this.save}
                         className="md-cell--center"
                     >Save</Button>
 

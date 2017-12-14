@@ -34,7 +34,7 @@ class RegistrationScreen extends React.PureComponent {
         return (unitTypes[0] && unitTypes[0].value) || this.props.getUnitTypes('en')[0].value;
     }
 
-    onLanguageChange(lang) {
+    onLanguageChange = (lang) => {
         let userUnitType = this.state.unitType;
         const availableUnitTypes = this.props.getUnitTypes(lang);
 
@@ -47,9 +47,9 @@ class RegistrationScreen extends React.PureComponent {
             language: lang,
             unitType: userUnitType
         });
-    }
+    };
 
-    register() {
+    register = () => {
         // todo make validation as onChange event handler for each field
         const errors = [];
 
@@ -75,13 +75,13 @@ class RegistrationScreen extends React.PureComponent {
         }
 
         this.props.register(user);
-    }
+    };
 
     render() {
         return (
             <form className="md-grid" onSubmit={event => {
                 event.preventDefault();
-                this.register.bind(this)
+                this.register();
             }}>
                 <div className="md-cell md-cell--12">
                     <TextField
@@ -117,7 +117,7 @@ class RegistrationScreen extends React.PureComponent {
                     label="Language"
                     value={this.state.language}
                     menuItems={this.props.languages}
-                    onChange={this.onLanguageChange.bind(this)}
+                    onChange={this.onLanguageChange}
                     className="md-cell md-cell--6"
                 />
 
@@ -167,12 +167,10 @@ export default connect(
             getUnitTypes: (lang) => getUnitTypes(state, lang)
         }
     },
-    (dispatch) => {
-        return {
-            register: (userData) => {
-                dispatch(register(userData));
-                redirectToDefaultList();
-            }
-        };
-    }
+    (dispatch) => ({
+        register: (userData) => {
+            dispatch(register(userData));
+            redirectToDefaultList();
+        }
+    })
 )(AutoFill(RegistrationScreen));

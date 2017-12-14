@@ -31,15 +31,15 @@ class AddItemToListSearchStep extends React.PureComponent {
         this.setState({query: newQuery});
     }
 
-    forwardToSaveStep() {
+    forwardToSaveStep = () => {
         const product = this.props.findProductByName(this.state.query) || this.props.createProduct(this.state.query);
 
         this.props.postToSaveStep(this.props.list, product);
-    }
+    };
 
     render() {
         const forwardToSaveStepButton = this.state.query.trim().length
-            ? <Button flat onClick={this.forwardToSaveStep.bind(this)}>Add</Button>
+            ? <Button flat onClick={this.forwardToSaveStep}>Add</Button>
             : [];
 
         return (

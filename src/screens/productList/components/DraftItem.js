@@ -32,7 +32,7 @@ class DraftItem extends React.PureComponent {
         );
 
         const rightAction = new ItemAction(
-            this.showSuspendDialog.bind(this),
+            this.showSuspendDialog,
             'schedule',
             'Snooze',
             'item-suspend'

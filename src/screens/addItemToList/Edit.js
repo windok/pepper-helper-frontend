@@ -29,23 +29,29 @@ class EditListItem extends React.PureComponent {
         super(props);
 
         this.state = {
-            listItem: {...props.listItem.serialize(), name: props.product.getName()}
+            listItem: {
+                ...props.listItem.serialize(),
+                name: props.product.getName()
+            }
         };
     }
 
     componentWillReceiveProps({listItem, product}) {
         if (listItem.getIdentifier() !== this.props.listItem.getIdentifier()) {
             this.setState({
-                listItem: {...listItem.serialize(), name: product.getName()}
+                listItem: {
+                    ...listItem.serialize(),
+                    name: product.getName()
+                }
             });
         }
     }
 
-    onTemplateFieldChange(field, value) {
+    onTemplateFieldChange = (field, value) => {
         this.setState({
             listItem: {...this.state.listItem, [field]: value}
         });
-    }
+    };
 
     render() {
         return (
@@ -59,7 +65,7 @@ class EditListItem extends React.PureComponent {
                 {this.state.listItem && (
                     <div>
                         <ItemCard listItem={this.state.listItem}
-                                  onListItemFieldChange={this.onTemplateFieldChange.bind(this)}
+                                  onListItemFieldChange={this.onTemplateFieldChange}
                         />
 
                         <Divider style={{marginTop: 40, marginBottom: 40}}/>
@@ -106,19 +112,15 @@ export default withRouter(connect(
             listItem,
         }
     },
-    (dispatch, {history}) => {
-        return {
-            redirectToList: (list) => {
-                list.isNullObject() ? history.push('/') : history.push('/product-list/' + list.getIdentifier());
-            },
-            saveItemHandler: (itemData) => {
-                const listItem = new ListItem(itemData);
+    (dispatch, {history}) => ({
+        redirectToList: (list) => history.push('/product-list/' + list.getIdentifier()),
+        saveItemHandler: (itemData) => {
+            const listItem = new ListItem(itemData);
 
-                history.push('/product-list/' + listItem.getListId());
+            history.push('/product-list/' + listItem.getListId());
 
-                dispatch(editItem(listItem));
-            },
-            delete: (item) => dispatch(deleteItem(item))
-        }
-    }
+            dispatch(editItem(listItem));
+        },
+        delete: (item) => dispatch(deleteItem(item))
+    })
 )(ensureListExists(EditListItem)));

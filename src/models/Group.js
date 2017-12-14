@@ -43,7 +43,9 @@ class GroupNullObject extends Nullable(Group) {
         super({
             id: 0,
             tmpId: '',
-            name: 'n/a'
+            name: 'n/a',
+            userId: 0,
+            color: ''
         });
     }
 }
