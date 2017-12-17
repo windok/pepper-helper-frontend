@@ -18,6 +18,18 @@ const styles = {
 };
 
 class ItemCard extends React.PureComponent {
+    changeQuantity(passedQuantity, defaultValue) {
+        let quantity = String(passedQuantity).replace(/[^0-9]/g, '') || defaultValue;
+        quantity = quantity.length ? parseInt(quantity) : quantity;
+
+        if (this.props.listItem && quantity !== this.props.listItem.quantity) {
+            this.props.onListItemFieldChange('quantity', quantity)
+        }
+    }
+
+    onQuantityFieldChange = (passedQuantity) => this.changeQuantity(passedQuantity, '');
+    onQuantityFieldBlur = (event) => this.changeQuantity(event.target.value, 1);
+
     render() {
         return this.props.listItem ?
             (
@@ -45,7 +57,8 @@ class ItemCard extends React.PureComponent {
                             type="number"
                             style={styles.formField}
                             value={this.props.listItem.quantity}
-                            onChange={(value) => this.props.onListItemFieldChange('quantity', value)}
+                            onChange={this.onQuantityFieldChange}
+                            onBlur={this.onQuantityFieldBlur}
                         />
 
                         <UnitSelect
