@@ -17,7 +17,8 @@ const buildGroupCollectionFromResponse = (state, groups = []) => {
             ...groupData,
             tmpId: groupData.tmpId || '',
             color: groupData.img || '',
-            name: groupData[getUser(state).getLanguage()] || groupData.en
+            name: groupData[getUser(state).getLanguage()],
+            defaultName: groupData.en || groupData.ru || ''
         })
     ));
 
