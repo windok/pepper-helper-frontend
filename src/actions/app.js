@@ -80,3 +80,12 @@ export const coldStartEpic = (action$, store) => action$
     )
     .map(finishColdStart);
 
+export const addToast = (toast) => ({
+    type: actionType.SNACKBAR_ADD_TOAST,
+    payload: toast
+});
+
+export const releaseToast = () => ({
+    type: actionType.SNACKBAR_RELEASE_TOAST,
+});
+

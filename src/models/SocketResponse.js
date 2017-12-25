@@ -1,8 +1,7 @@
 import Entity from './Entity';
-import {Nullable, NotNullable} from 'Models/NullableInterface';
-import {entityStructureFilter, dateConverter} from './entityProcessors';
+import {entityStructureFilter} from './entityProcessors';
 
-class SocketResponse extends NotNullable(Entity) {
+class SocketResponse extends Entity {
     constructor(entityData) {
         super(
             entityData,

@@ -1,16 +1,15 @@
-import Moment from 'moment';
+import moment from 'moment';
 
 import Entity from './Entity';
-import {Nullable, NotNullable} from 'Models/NullableInterface';
 import {entityStructureFilter, dateConverter} from './entityProcessors';
 
-class SocketAction extends NotNullable(Entity) {
+class SocketAction extends Entity {
     constructor(entityData) {
         super(
             {
                 ...entityData,
                 payload: {...entityData.payload} || {},
-                date: entityData.date || Moment.utc()
+                date: entityData.date || moment.utc()
             },
             [
                 (entity) => entityStructureFilter(entity, ['id', 'name', 'payload', 'date']),

@@ -9,6 +9,7 @@ const initialState = {
     ready: false,
     coldStartBegun: false,
     resourcesLoaded: false,
+    toasts: [],
     availableLanguages: ['en', 'ru'],
     // todo refactor to not depend on lang
     unitTypes: {
@@ -78,6 +79,12 @@ export default Object.assign(
             case actionType.BACKEND_CONNECTION_STATUS_CHANGE:
                 return {...state, backendConnected: action.payload};
 
+            case actionType.SNACKBAR_ADD_TOAST:
+                return {...state, toasts: [...state.toasts, action.payload.clone()]};
+
+            case actionType.SNACKBAR_RELEASE_TOAST:
+                return {...state, toasts: state.toasts.slice(1)};
+
             case actionType.USER_LOGOUT:
                 return {
                     ...initialState,
@@ -110,3 +117,5 @@ export const getUnitTypes = (state, lang) => state.app.unitTypes[lang] || [];
 
 export const getApplicationVersion = (state) => state.app.applicationVersion;
 export const getCacheApplicationVersion = (state) => state.app.cacheApplicationVersion;
+
+export const getFirstToast = (state) => state.app.toasts[0] || null;

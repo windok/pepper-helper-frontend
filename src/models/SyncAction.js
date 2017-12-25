@@ -1,17 +1,16 @@
-import Moment from 'moment';
+import moment from 'moment';
 
 import Entity from './Entity';
-import {Nullable, NotNullable} from 'Models/NullableInterface';
 import {entityStructureFilter, dateConverter} from './entityProcessors';
 
-class SyncAction extends NotNullable(Entity) {
+class SyncAction extends Entity {
     constructor(entityData) {
         super(
             {
                 ...entityData,
                 payload: {...entityData.payload} || {},
                 meta: {...entityData.meta} || {},
-                date: entityData.date || Moment.utc(),
+                date: entityData.date || moment.utc(),
                 successAction: entityData.successAction || '',
                 errorAction: entityData.errorAction || ''
             },
