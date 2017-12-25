@@ -146,7 +146,7 @@ $md-secondary-color: $md-red-500;
 
   &.item-suspend {
     color: #FFF;
-    background: #c05400;
+    background: #ff8c00;
   }
 
   &.item-buy {
@@ -157,5 +157,11 @@ $md-secondary-color: $md-red-500;
   &.item-return {
     color: #FFF;
     background: #3498db;
+  }
+}
+
+#snooze-date-picker {
+  .md-text-field-container {
+    display: none;
   }
 }

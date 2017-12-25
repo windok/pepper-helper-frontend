@@ -18,7 +18,7 @@ class SuspendedScreen extends React.PureComponent {
         return (
             <SecondaryProductListScreen
                 list={this.props.list}
-                headerTitle={this.props.list.getName() + ': Suspended'}
+                headerTitle={this.props.list.getName() + ': Snoozed'}
                 itemComponent={SuspendedItem}
                 itemFilterFunc={(item) => {
                     const today = moment.utc();

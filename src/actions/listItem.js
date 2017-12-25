@@ -224,6 +224,26 @@ export const returnItem = listItem => {
     };
 };
 
+export const suspendItem = (listItem, date) => {
+    if (listItem.getStatus() !== STATUS_DRAFT) {
+        return;
+    }
+
+    return {
+        type: actionType.SUSPEND_ITEM_OFFLINE,
+        payload: new ListItem({...listItem.serialize(), date}),
+        sync: {
+            name: 'list-item-suspend',
+            payload: {
+                id: listItem.getIdentifier(),
+                date: date.format('YYYY-MM-DD HH:mm:ss')
+            },
+            successAction: actionType.SUSPEND_ITEM_SUCCESS,
+            errorAction: actionType.SUSPEND_ITEM_ERROR
+        }
+    };
+};
+
 addSyncCompleteHandler({
     match: ({response, syncAction}) => ['list-item-buy', 'list-item-return', 'list-item-suspend'].includes(syncAction.getName()),
     success: ({response, syncAction}) => ({

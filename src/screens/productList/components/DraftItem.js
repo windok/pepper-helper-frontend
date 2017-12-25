@@ -4,26 +4,28 @@ import {connect} from 'react-redux';
 import history from 'Services/BrowserHistory';
 
 import {ListItem as ListItemModel} from 'Models/ListItem';
+
 import Item from './Item';
 import ItemAction from './ItemAction';
+import SuspendDialog from './SuspendDialog';
+
 import {buyItem} from 'Actions/listItem';
 
 class DraftItem extends React.PureComponent {
 
     state = {
-        suspendDialog: false
+        suspendDialogVisible: false
     };
 
     showSuspendDialog = () => {
-        this.setState({suspendDialog: true});
+        this.setState({suspendDialogVisible: true});
     };
 
     hideSuspendDialog = () => {
-        this.setState({suspendDialog: false});
+        this.setState({suspendDialogVisible: false});
     };
 
     render() {
-
         const leftAction = new ItemAction(
             this.props.buyItem.bind(this),
             'done',
@@ -39,12 +41,20 @@ class DraftItem extends React.PureComponent {
         );
 
         return (
-            <Item
-                leftAction={leftAction}
-                rightAction={rightAction}
-                item={this.props.item}
-                onClick={this.props.editItem.bind(this)}
-            />
+            <div>
+                <Item
+                    leftAction={leftAction}
+                    rightAction={rightAction}
+                    item={this.props.item}
+                    onClick={this.props.editItem.bind(this)}
+                />
+
+                <SuspendDialog
+                    listItem={this.props.item}
+                    visible={this.state.suspendDialogVisible}
+                    hideDialog={this.hideSuspendDialog}
+                />
+            </div>
         )
     }
 }
@@ -59,6 +69,6 @@ export default connect(
     null,
     (dispatch) => ({
         editItem: (listItem) => history.push('/product-list/' + listItem.getListId() + '/item/' + listItem.getIdentifier()),
-        buyItem: (listItem) => dispatch(buyItem(listItem)),
+        buyItem: (listItem) => dispatch(buyItem(listItem))
     })
 )(DraftItem);

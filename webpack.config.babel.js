@@ -182,7 +182,6 @@ export default {
             Store: path.resolve(currentPath, 'src/store/'),
             Lib: path.resolve(currentPath, 'src/lib'),
             globals: path.resolve(currentPath, 'src', '_globals.scss'),
-            'redux-offline': path.resolve(currentPath, 'node_modules/@redux-offline/redux-offline/'),
         },
         extensions: ['.js'],
         mainFiles: ['index', 'index.js'],

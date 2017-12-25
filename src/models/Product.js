@@ -4,7 +4,10 @@ import {Nullable, NotNullable} from 'Models/NullableInterface';
 
 class Product extends NotNullable(Entity) {
     constructor(entity) {
-        super(entity, [
+        super({
+            ...entity,
+            defaultName: entity.defaultName || entity.name
+        }, [
             (entity) => entityStructureFilter(entity, ['id', 'tmpId', 'name', 'defaultName', 'userId'])
         ]);
     }
