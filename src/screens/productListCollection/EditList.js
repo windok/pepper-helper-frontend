@@ -10,28 +10,52 @@ import BackButton from 'Components/buttons/BackButton';
 import {SaveButton} from 'Components/buttons/Button';
 import DeleteButton from 'Components/buttons/DeleteButton';
 import TextField from 'react-md/lib/TextFields';
+import Button from 'react-md/lib/Buttons';
 import Divider from 'react-md/lib/Dividers';
+import FontIcon from 'react-md/lib/FontIcons';
 
-import ShareList from './components/ShareList';
+import SharedListOwners from './components/SharedListOwners';
+import ShareListDialog from './components/ShareListDialog';
 
 import {getList} from 'Reducers/list';
 
-import {updateList, deleteList} from 'Actions/list';
+import {updateList, deleteList, fetchSharedListOwners} from 'Actions/list';
 
 import {redirectToDefaultList} from 'Services/BrowserHistory';
+
+const styles = {
+    shareListButton: {
+        width: '100%',
+        padding: '10px'
+    }
+};
 
 class EditList extends React.PureComponent {
     constructor(params) {
         super(params);
 
-        this.state = {...params.list.serialize()};
+        this.state = {
+            list: {...params.list.serialize()},
+            shareDialogVisible: false
+        };
     }
 
     componentWillReceiveProps({list}) {
         if (list.getIdentifier() !== this.state.id) {
-            this.setState(list.serialize());
+            this.setState({list: list.serialize()});
         }
     }
+
+    showShareDialog = () => {
+        this.setState({shareDialogVisible: true});
+    };
+
+    hideShareDialog = () => {
+        // todo remove loading data from representation component. move to some HOC or somehow else
+        this.props.loadListOwners();
+        this.setState({shareDialogVisible: false});
+    };
+
 
     render() {
         if (this.props.list.isNullObject()) {
@@ -45,7 +69,7 @@ class EditList extends React.PureComponent {
                     leftLinks={<BackButton iconType="clear"/>}
                     rightLinks={[<SaveButton
                         key="save"
-                        onClick={() => this.props.save(this.props.list, this.state.name)}
+                        onClick={() => this.props.save(this.props.list, this.state.list.name)}
                     />]}
                 />
 
@@ -55,13 +79,26 @@ class EditList extends React.PureComponent {
                         label="List name"
                         customSize="title"
                         required
-                        defaultValue={this.state.name}
+                        defaultValue={this.state.list.name}
                         className="md-cell md-cell--12"
-                        onChange={(value) => this.setState({name: value})}
+                        onChange={(value) => this.setState({list: {...this.state.list, name: value}})}
                     />
                 </form>
 
-                <ShareList list={this.props.list}/>
+                <SharedListOwners list={this.props.list}/>
+
+                <div style={styles.shareListButton}>
+                <Button
+                    raised
+                    iconEl={<FontIcon>share</FontIcon>}
+                    onClick={this.showShareDialog}
+                    style={{width: '100%'}}
+                >Share list</Button>
+                <ShareListDialog
+                    list={this.props.list}
+                    visible={this.state.shareDialogVisible}
+                    hide={this.hideShareDialog}/>
+                </div>
 
                 <Divider style={{marginTop: 40, marginBottom: 40}}/>
 
@@ -70,6 +107,11 @@ class EditList extends React.PureComponent {
             </div>
         );
     }
+
+    componentDidMount() {
+        // todo remove loading data from representation component. move to some HOC or somehow else
+        this.props.loadListOwners();
+    }
 }
 
 EditList.propTypes = {
@@ -77,6 +119,7 @@ EditList.propTypes = {
 
     save: PropTypes.func.isRequired,
     delete: PropTypes.func.isRequired,
+    loadListOwners: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -91,6 +134,7 @@ export default connect(
         delete: (list) => {
             dispatch(deleteList(list));
             redirectToDefaultList()
-        }
+        },
+        loadListOwners: () => dispatch(fetchSharedListOwners())
     })
 )(ensureListExists(EditList));

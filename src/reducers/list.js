@@ -3,7 +3,8 @@ import {List, ListNullObject} from 'Models/List';
 
 const initialState = {
     items: new Map(),
-    selected: null
+    selected: null,
+    ownerToListMap: new Map()
 };
 
 export default Object.assign(
@@ -43,6 +44,9 @@ export default Object.assign(
 
                 return {...state, selected: action.payload.getIdentifier()};
 
+            case actionType.SHARED_LIST_OWNERS_SUCCESS:
+                return {...state, ownerToListMap: new Map([...action.payload.ownerToListMap])};
+
             case actionType.USER_LOGOUT:
                 return {...initialState}
         }
@@ -52,11 +56,13 @@ export default Object.assign(
     {
         persist: (state) => ({
             items: Array.from(state.items.entries(), ([listId, list]) => [listId, list.serialize()]),
-            selected: state.selected
+            selected: state.selected,
+            ownerToListMap: Array.from(state.ownerToListMap.entries())
         }),
         rehydrate: (persistedState) => ({
             items: new Map(persistedState.items.map(([listId, listData]) => [listId, new List(listData)])),
-            selected: persistedState.selected
+            selected: persistedState.selected,
+            ownerToListMap: new Map(persistedState.ownerToListMap)
         })
     }
 );
@@ -103,3 +109,10 @@ export const getFirstList = (state) => state.list.items.values().next().value ||
  * @return {Map}
  */
 export const getListCollection = (state) => state.list.items;
+
+/**
+ * @param state
+ * @param {List} list
+ * @return {Array}
+ */
+export const getListOwnerIds = (state, list) => state.list.ownerToListMap.get(list.getIdentifier()) || [];

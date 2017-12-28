@@ -3,7 +3,10 @@ import uuid from 'uuid/v4';
 import * as actionType from 'Actions';
 
 import {SOCKET_CALL} from 'Store/socket-middleware';
+import {API_CALL, GET} from 'Store/api-middleware/RSAA';
+
 import List from 'Models/List';
+import {SharedListOwner} from 'Models/SharedListOwner';
 
 import {addSyncCompleteHandler} from 'Actions/sync';
 import RestClient from 'Services/RestClient';
@@ -112,6 +115,37 @@ addSyncCompleteHandler({
             color: ''
         })
     }),
+});
+
+export const fetchSharedListOwners = () => ({
+    [API_CALL]: {
+        method: GET,
+        endpoint: '/product-list/shared',
+        types: [
+            actionType.SHARED_LIST_OWNERS_REQUEST,
+            {
+                type: actionType.SHARED_LIST_OWNERS_SUCCESS,
+                payload: (action, state, response) => {
+                    const sharedListOwners = new Map();
+                    const ownerToListMap = new Map();
+
+                    response.data.items.forEach(ownerData => {
+                        sharedListOwners.set(ownerData.id, new SharedListOwner(ownerData));
+
+                        const listOwners = ownerToListMap.get(ownerData.listId) || [];
+                        listOwners.push(ownerData.id);
+                        ownerToListMap.set(ownerData.listId, listOwners)
+                    });
+
+                    return {
+                        sharedListOwners,
+                        ownerToListMap
+                    }
+                }
+            },
+            actionType.SHARED_LIST_OWNERS_ERROR
+        ],
+    }
 });
 
 // todo share via processing redux action

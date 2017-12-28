@@ -5,8 +5,8 @@ import {connect} from 'react-redux';
 import Toast from 'Models/Toast';
 
 import TextField from 'react-md/lib/TextFields';
+import DialogContainer from 'react-md/lib/Dialogs';
 import Button from 'react-md/lib/Buttons';
-import FontIcon from 'react-md/lib/FontIcons';
 
 import List from 'Models/List';
 
@@ -26,39 +26,46 @@ class ShareList extends React.PureComponent {
 
         this.props.share(this.props.list, this.state.email)
             .then(() => {
-                this.setState({email: ''});
                 this.props.addToast('List was shared successfully with ' + this.state.email);
+                this.setState({email: ''});
             })
             .catch((error) => {
                 this.props.addToast('Failed to share with ' + this.state.email);
             });
     };
 
+    onEmailFieldChange = (email) => this.setState({email});
+
     render() {
+        const actions = [];
+        actions.push({secondary: true, children: 'Cancel', onClick: this.props.hide});
+        actions.push(<Button flat primary onClick={this.shareList}>Share</Button>);
+
         return (
-            <form className="md-grid">
+            <DialogContainer
+                id="share-list-dialog"
+                visible={this.props.visible}
+                onHide={this.props.hide}
+                actions={actions}
+                title="Share list with"
+            >
                 <TextField
-                    id="share-email"
-                    label="Email to share with"
-                    customSize="title"
-                    className="md-cell md-cell--8"
-                    value={this.state.email}
+                    id="share-list-dialog-email-field"
                     type="email"
-                    onChange={(value) => this.setState({email: value})}
+                    label="Email"
+                    placeholder="Share with..."
+                    value={this.state.email}
+                    onChange={this.onEmailFieldChange}
                 />
-                <Button
-                    raised
-                    iconEl={<FontIcon>share</FontIcon>}
-                    onClick={this.shareList}
-                    className="md-cell md-cell--4"
-                >Share list</Button>
-            </form>
+            </DialogContainer>
         );
     }
 }
 
 ShareList.propTypes = {
     list: PropTypes.instanceOf(List).isRequired,
+    visible: PropTypes.bool.isRequired,
+    hide: PropTypes.func.isRequired,
     share: PropTypes.func.isRequired,
 
     addToast: PropTypes.func.isRequired

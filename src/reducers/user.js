@@ -1,8 +1,10 @@
 import * as actionType from 'Actions';
 import User from 'Models/User';
+import {SharedListOwner} from "Models/SharedListOwner";
 
 const initialState = {
     model: null,
+    sharedListOwners: new Map(),
     refreshRequested: false
 };
 
@@ -20,8 +22,8 @@ export default Object.assign(
             case actionType.USER_REFRESH_ERROR:
                 return {...state, refreshRequested: false};
 
-            case 'userOld':
-                return {...state, model: state.model.rrToken()};
+            case actionType.SHARED_LIST_OWNERS_SUCCESS:
+                return {...state, sharedListOwners: new Map([...action.payload.sharedListOwners])};
 
             case actionType.USER_LOGOUT:
                 return {...initialState}
@@ -31,13 +33,17 @@ export default Object.assign(
     },
     {
         persist: (state) => ({
-            model: state.model ? state.model.serialize() : null
+            model: state.model ? state.model.serialize() : null,
+            sharedListOwners: Array.from(state.sharedListOwners.entries(), ([ownerId, owner]) => [ownerId, owner.serialize()])
         }),
-        rehydrate: (savedState) => ({
-            model: savedState.model && new User(savedState.model)
+        rehydrate: (persistedState) => ({
+            model: persistedState.model && new User(persistedState.model),
+            sharedListOwners: new Map(persistedState.items.map(([ownerId, ownerData]) => [ownerId, new SharedListOwner(ownerData)]))
         })
     });
 
-export const getUser = (state) => state.user.model;
+export const getUser = state => state.user.model;
 
-export const isUserRefreshRequested = (state) => state.user.refreshRequested;
+export const isUserRefreshRequested = state => state.user.refreshRequested;
+
+export const getSharedListOwners = state => state.user.sharedListOwners;

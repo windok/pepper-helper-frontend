@@ -34,8 +34,8 @@ const initialState = {
             }
         ]
     },
-    applicationVersion: 3,
-    cacheApplicationVersion: 3       // todo get rid of temporal workaround to clear local storage during dev testing,
+    applicationVersion: 4,
+    cacheApplicationVersion: 4       // todo get rid of temporal workaround to clear local storage during dev testing,
 };
 
 export default Object.assign(

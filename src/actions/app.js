@@ -7,7 +7,7 @@ import SocketClient from 'Services/SocketClient';
 import {isRehydrationCompleted, isColdStartBegun, isColdStartFinished, isAppReady, isOnline, isBackendConnected} from 'Reducers/app'
 import {getUser} from 'Reducers/user'
 
-import {fetchAll as fetchProductListCollection} from 'Actions/list';
+import {fetchAll as fetchProductListCollection, fetchSharedListOwners} from 'Actions/list';
 import {fetchAll as fetchProductListItemCollection} from 'Actions/listItem';
 import {fetchAll as fetchProductCollection} from 'Actions/product';
 import {fetchAll as fetchUnitCollection} from 'Actions/unit';
@@ -74,7 +74,8 @@ export const coldStartEpic = (action$, store) => action$
             store.dispatch(fetchProductListItemCollection()),
             store.dispatch(fetchProductCollection()),
             store.dispatch(fetchUnitCollection()),
-            store.dispatch(fetchGroupCollection())
+            store.dispatch(fetchGroupCollection()),
+            store.dispatch(fetchSharedListOwners())
         ]))
             .catch(error => Observable.of({error: error})))
     )
