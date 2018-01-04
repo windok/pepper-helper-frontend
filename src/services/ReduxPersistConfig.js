@@ -27,5 +27,6 @@ export default {
     key: 'pepper-helper',
     storage,
     transforms: [storeTransform],
-    debounce: 50
+    debounce: 50,
+    debug: process.env.NODE_ENV !== 'production'
 };

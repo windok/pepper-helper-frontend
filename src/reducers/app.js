@@ -48,7 +48,7 @@ export default Object.assign(
                     ...state,
                     resourcesLoaded: persistedState.resourcesLoaded || false,
                     // todo get rid of temporal workaround
-                    cacheApplicationVersion: persistedState.cacheApplicationVersion || 0,
+                    cacheApplicationVersion: persistedState.cacheApplicationVersion || state.cacheApplicationVersion,
                     rehydrateCompleted: true
                 };
             }

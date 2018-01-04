@@ -38,7 +38,7 @@ export default Object.assign(
         }),
         rehydrate: (persistedState) => ({
             model: persistedState.model && new User(persistedState.model),
-            sharedListOwners: new Map(persistedState.items.map(([ownerId, ownerData]) => [ownerId, new SharedListOwner(ownerData)]))
+            sharedListOwners: new Map(persistedState.sharedListOwners.map(([ownerId, ownerData]) => [ownerId, new SharedListOwner(ownerData)]))
         })
     });
 

@@ -21,6 +21,7 @@ const middleware = [
     createEpicMiddleware(rootEpic),
 ];
 
+// todo include redux devtools only in dev env
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
