@@ -36,7 +36,13 @@ export const register = (user) => (dispatch) => {
                         language: response.data.language || 'en'
                     })
                 },
-                actionType.USER_REGISTER_ERROR
+                {
+                    type: actionType.USER_REGISTER_ERROR,
+                    payload: (action, state, response) => response.status && response.status === 409
+                        ? 'Such user already exists.'
+                        : 'Sign up failed.'
+
+                }
             ],
         }
     });
@@ -58,7 +64,13 @@ export const signIn = (email, password) => ({
                     language: response.data.language || 'en'
                 })
             },
-            actionType.USER_SIGN_IN_ERROR
+            {
+                type: actionType.USER_SIGN_IN_ERROR,
+                payload: (action, state, response) => response.status && response.status === 401
+                    ? 'Invalid email or password.'
+                    : 'Sign in failed.'
+
+            }
         ],
     }
 });

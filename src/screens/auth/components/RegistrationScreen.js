@@ -7,12 +7,16 @@ import TextField from 'react-md/lib/TextFields';
 import SelectField from 'react-md/lib/SelectFields';
 import Button from 'react-md/lib/Buttons';
 
-import {register} from 'Actions/auth';
+import Toast from "Models/Toast";
 
-import {getAvailableLanguages} from 'Reducers/app';
-import {getUnitTypes} from 'Reducers/app';
+import {getAvailableLanguages, getUnitTypes} from 'Reducers/app';
+import {getUser} from "Reducers/user";
+import {getAuthErrorMessage, isAuthRequestSent} from "Reducers/auth";
+
 import {redirectToDefaultList} from 'Services/BrowserHistory';
 
+import {addToast} from "Actions/app";
+import {register} from 'Actions/auth';
 
 class RegistrationScreen extends React.PureComponent {
     constructor(props) {
@@ -23,9 +27,13 @@ class RegistrationScreen extends React.PureComponent {
             password: '',
             name: '',
             language: props.preferredLanguage,
-            unitType: this.getDefaultUnitType(),
-            errors: []
+            unitType: this.getDefaultUnitType()
         };
+    }
+
+    componentWillReceiveProps({user, errorMessage}) {
+        user && redirectToDefaultList();
+        errorMessage && this.props.errorMessage !== errorMessage && this.props.addToast(errorMessage);
     }
 
     getDefaultUnitType() {
@@ -50,16 +58,13 @@ class RegistrationScreen extends React.PureComponent {
     };
 
     register = () => {
-        // todo make validation as onChange event handler for each field
-        const errors = [];
-
         if (!/\S+@\S+\.\S+/.test(this.state.email)) {
-            errors.push('Email field is not valid.')
+            this.props.addToast('Email field is not valid.');
+
+            return;
         }
 
-        this.setState({errors});
-
-        if (errors.length && true) {
+        if (this.props.isRequestSent) {
             return;
         }
 
@@ -110,7 +115,6 @@ class RegistrationScreen extends React.PureComponent {
                     />
 
                 </div>
-
                 <SelectField
                     id="signup-language"
                     name="language"
@@ -118,7 +122,8 @@ class RegistrationScreen extends React.PureComponent {
                     value={this.state.language}
                     menuItems={this.props.languages}
                     onChange={this.onLanguageChange}
-                    className="md-cell md-cell--6"
+                    className="md-cell md-cell--12"
+                    sameWidth
                 />
 
                 <SelectField
@@ -128,7 +133,8 @@ class RegistrationScreen extends React.PureComponent {
                     value={this.state.unitType}
                     menuItems={this.props.getUnitTypes(this.state.language)}
                     onChange={(value) => this.setState({unitType: value})}
-                    className="md-cell md-cell--6"
+                    className="md-cell md-cell--12"
+                    sameWidth
                 />
 
                 <Button
@@ -136,12 +142,8 @@ class RegistrationScreen extends React.PureComponent {
                     primary
                     type="submit"
                     className="md-cell md-cell--12"
+                    disabled={this.props.isRequestSent}
                 >Create account</Button>
-
-                <div>
-                    {/*TODO snackbar */}
-                    {this.state.errors.map((errorMessage, key) => (<div key={key}>{errorMessage}</div>))}
-                </div>
             </form>
         )
     }
@@ -150,7 +152,13 @@ class RegistrationScreen extends React.PureComponent {
 RegistrationScreen.propTypes = {
     languages: PropTypes.array.isRequired,
     preferredLanguage: PropTypes.string.isRequired,
-    register: PropTypes.func.isRequired
+    isRequestSent: PropTypes.bool.isRequired,
+    errorMessage: PropTypes.string.isRequired,
+
+    getUnitTypes: PropTypes.func.isRequired,
+
+    register: PropTypes.func.isRequired,
+    addToast: PropTypes.func.isRequired
 };
 
 export default connect(
@@ -164,13 +172,14 @@ export default connect(
         return {
             languages,
             preferredLanguage: preferredLanguages.length ? preferredLanguages[0] : languages[0],
-            getUnitTypes: (lang) => getUnitTypes(state, lang)
+            getUnitTypes: (lang) => getUnitTypes(state, lang),
+            user: getUser(state),
+            isRequestSent: isAuthRequestSent(state),
+            errorMessage: getAuthErrorMessage(state)
         }
     },
     (dispatch) => ({
-        register: (userData) => {
-            dispatch(register(userData));
-            redirectToDefaultList();
-        }
+        register: (userData) => dispatch(register(userData)),
+        addToast: (text) => dispatch(addToast(new Toast({id: 'signUp-toast', text, autohideTimeout: 4000})))
     })
 )(AutoFill(RegistrationScreen));

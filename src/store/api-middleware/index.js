@@ -110,14 +110,11 @@ const apiMiddleware = (store) => {
                 },
                 (error) => {
                     // todo error payload and meta wrapping
-                    const actionForNext = {
-                        type: failureType,
-                        error
-                    };
+                    const actionForNext = createActionForNext(failureType, action, store, error.response || {});
 
                     next(actionForNext);
 
-                    return Promise.reject(actionForNext.error);
+                    return Promise.reject(error);
                 }
             )
             .catch(e => ErrorHandler.handle(e));
