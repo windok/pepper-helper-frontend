@@ -24,8 +24,6 @@ import NoList from './components/NoList';
 import ListComponent from './components/ListAggregatedByGroup';
 import DraftItem from './components/DraftItem';
 
-import pepperLogo from 'Assets/hot-pepper.svg';
-
 class ProductListScreen extends React.PureComponent {
     render() {
         if (this.props.list === null) {
@@ -69,7 +67,7 @@ class ProductListScreen extends React.PureComponent {
                         style={{
                             bottom: 90
                         }}>
-                    <SVGIcon use={pepperLogo.url} style={{fill: 'white'}}/>
+                    <SVGIcon use="#svglogo" style={{fill: 'white'}}/>
                 </Button>
 
                 <Button

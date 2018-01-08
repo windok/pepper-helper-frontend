@@ -16,15 +16,13 @@ import SVGIcon from 'react-md/lib/SVGIcons';
 
 import {getListCollection, getSelectedList} from 'Reducers/list';
 
-import pepperLogo from 'Assets/hot-pepper.svg';
-
-class ListCollection extends React.PureComponent {
+    class ListCollection extends React.PureComponent {
     getCurrentListOptions() {
         return (
             <div className="folder-list">
                 <ListItem
                     primaryText="Recommended"
-                    leftIcon={<SVGIcon use={pepperLogo.url}/>}
+                    leftIcon={<SVGIcon use="#svglogo"/>}
                     onClick={() => this.props.showRecommendations(this.props.currentList)}
                 />
                 <ListItem

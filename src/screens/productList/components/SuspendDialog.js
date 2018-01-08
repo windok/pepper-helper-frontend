@@ -14,8 +14,6 @@ import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
 
 import DatePickerElement from './DatePickerElement';
 
-import pepperLogo from 'Assets/hot-pepper.svg';
-
 import {suspendItem} from 'Actions/listItem';
 
 const styles = {
@@ -69,7 +67,7 @@ class SuspendDialog extends React.PureComponent {
                     <div style={styles.centerAlignRow}>
                         <DatePickerElement
                             label="Smart reschedule"
-                            icon={<SVGIcon use={pepperLogo.url} style={{fill: 'white'}}/>}
+                            icon={<SVGIcon use="#svglogo" style={{fill: 'white'}}/>}
                             onClick={() => {
                             }}/>
                     </div>

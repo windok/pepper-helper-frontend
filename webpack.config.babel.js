@@ -28,7 +28,7 @@ plugins.push(new webpack.DefinePlugin({
 }));
 
 plugins.push(new CircularDependencyPlugin());
-plugins.push(new SpriteLoaderPlugin());
+plugins.push(new SpriteLoaderPlugin({ plainSprite: true }));
 
 plugins.push(new webpack.LoaderOptionsPlugin({
     options: {
@@ -51,6 +51,9 @@ plugins.push(extractStyles);
 production && plugins.push(new OfflinePlugin({
     safeToUseOptionalCaches: true,
     responseStrategy: 'cache-first',
+    excludes: [
+        'sprite.svg'
+    ],
     externals: [
     ],
     ServiceWorker: {
@@ -157,7 +160,7 @@ export default {
                 loader: 'url-loader?limit=10000&name=./fonts/[hash].[ext]',
                 exclude: /node_modules|SVGIcon\/icons/,
             }, {
-                test: /\.(svg)$/i,
+                test: /\.(svg|png|jpeg)$/i,
                 include: path.resolve(currentPath, 'src/assets'),
                 loaders: [{
                     loader: 'svg-sprite-loader',
