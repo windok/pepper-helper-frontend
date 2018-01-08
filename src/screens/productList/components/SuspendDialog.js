@@ -67,7 +67,7 @@ class SuspendDialog extends React.PureComponent {
                     <div style={styles.centerAlignRow}>
                         <DatePickerElement
                             label="Smart reschedule"
-                            icon={<SVGIcon use="#svglogo" style={{fill: 'white'}}/>}
+                            icon={<SVGIcon use="#logo" style={{fill: 'white'}}/>}
                             onClick={() => {
                             }}/>
                     </div>

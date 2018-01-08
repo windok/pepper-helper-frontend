@@ -43,7 +43,7 @@ export default function (templateParams) {
     if (options.appMountId) {
         entry = '<div id="' + options.appMountId + '">';
         if (options.splash) {
-            entry += '\n<div class="splash"><svg xmlns="http://www.w3.org/2000/svg"><use xlink:href="#svglogo"></use></svg></div>\n';
+            entry += '\n<div class="splash"><svg xmlns="http://www.w3.org/2000/svg"><use xlink:href="#logo"></use></svg></div>\n';
         }
 
         entry += '</div>';

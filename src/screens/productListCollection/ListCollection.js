@@ -22,7 +22,7 @@ import {getListCollection, getSelectedList} from 'Reducers/list';
             <div className="folder-list">
                 <ListItem
                     primaryText="Recommended"
-                    leftIcon={<SVGIcon use="#svglogo"/>}
+                    leftIcon={<SVGIcon use="#logo"/>}
                     onClick={() => this.props.showRecommendations(this.props.currentList)}
                 />
                 <ListItem

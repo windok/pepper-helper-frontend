@@ -67,7 +67,7 @@ class ProductListScreen extends React.PureComponent {
                         style={{
                             bottom: 90
                         }}>
-                    <SVGIcon use="#svglogo" style={{fill: 'white'}}/>
+                    <SVGIcon use="#logo" style={{fill: 'white'}}/>
                 </Button>
 
                 <Button
