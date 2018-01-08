@@ -15,20 +15,19 @@ import SecondaryProductListScreen from "./components/SecondaryProductListScreen"
 
 class BoughtScreen extends React.PureComponent {
     render() {
+        const today = moment.utc();
+        const boughtItemSince = today.subtract(2, 'day');
+
         return (
             <SecondaryProductListScreen
                 list={this.props.list}
                 headerTitle={this.props.list.getName() + ': Bought'}
                 itemComponent={BoughtItem}
-                itemFilterFunc={(item) => {
-                    const today = moment.utc();
-                    const nextDay = moment.utc(today.add(1, 'day').format('YYYY-MM-DD'), 'YYYY-MM-DD');
-                    const isItemActual = nextDay.isAfter(item.getDate());
-
+                itemFilterFunc={item => {
                     return item.getListId() === this.props.list.getIdentifier()
                         && item.getStatus() === STATUS_BOUGHT
                         && item.getType() === TYPE_GENERAL
-                        && isItemActual
+                        && item.getDate().isAfter(boughtItemSince)
                 }}
             />
         )

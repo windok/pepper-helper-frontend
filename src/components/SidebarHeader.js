@@ -6,11 +6,11 @@ import Toolbar from 'react-md/lib/Toolbars';
 import Avatar from 'react-md/lib/Avatars';
 import Button from 'react-md/lib/Buttons';
 
-import {hideMenu} from 'actions/ui';
-import {getUser} from 'reducers/user';
-import User from 'models/User';
+import {hideMenu} from 'Actions/ui';
+import {getUser} from 'Reducers/user';
+import User from 'Models/User';
 
-import {history} from 'services/BrowserHistory'
+import {history} from 'Services/BrowserHistory'
 
 class SidebarHeader extends React.PureComponent {
     render() {
@@ -49,7 +49,7 @@ export default connect(
             showProfile: () => {
                 history.push('/user');
 
-                hideMenu()(dispatch);
+                dispatch(hideMenu());
             }
         };
     }

@@ -3,24 +3,25 @@ import uuid from 'uuid/v4';
 import * as actionType from 'Actions';
 import {SOCKET_CALL} from 'Store/socket-middleware';
 
-import Product from 'Models/Product';
+import {Product} from 'Models/Product';
 
 import {getUser} from 'Reducers/user';
 
 import {addSyncCompleteHandler} from 'Actions/sync';
 
-const buildProductCollectionFromResponse = (state, products = []) => {
+const buildProductCollectionFromResponse = (state, products = {}) => {
     const productCollection = new Map();
 
-    products.forEach(productData => productCollection.set(
-        productData.id,
-        new Product({
-            ...productData,
-            tmpId: productData.tmpId || '',
-            name: productData[getUser(state).getLanguage()],
-            defaultName: productData.en || productData.ru || ''
-        })
-    ));
+    Object.keys(products)
+        .filter(productId => products[productId].type === 'product')
+        .forEach(productId => productCollection.set(
+            products[productId].id, new Product({
+                ...products[productId],
+                tmpId: products[productId].tmpId || '',
+                name: products[productId][getUser(state).getLanguage()],
+                defaultName: products[productId].en || products[productId].ru || ''
+            })
+        ));
 
     return productCollection;
 };

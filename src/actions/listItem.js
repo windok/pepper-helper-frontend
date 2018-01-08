@@ -1,4 +1,4 @@
-import Moment from 'moment';
+import moment from 'moment';
 import uuid from 'uuid/v4';
 
 import * as actionType from 'Actions';
@@ -106,7 +106,7 @@ export const getTemplate = (list, product) => (dispatch, getState) => {
                         ...response,
                         id: response.id || 0,
                         tmpId: uuid(),
-                        date: response.date ? Moment.utc(response.date) : Moment.utc(),
+                        date: response.date ? moment.utc(response.date) : moment.utc(),
                         productId: response.translationId,
                         quantity: parseInt(response.quantity) || 1
                     })
@@ -118,7 +118,7 @@ export const getTemplate = (list, product) => (dispatch, getState) => {
 };
 
 export const createItem = (itemTemplate) => (dispatch) => {
-    const listItem = new ListItem({...itemTemplate.serialize(), date: Moment.utc()});
+    const listItem = new ListItem({...itemTemplate.serialize(), date: moment.utc()});
 
     dispatch({
         type: actionType.CREATE_ITEM_OFFLINE,
@@ -139,7 +139,7 @@ export const createItem = (itemTemplate) => (dispatch) => {
 };
 
 export const editItem = (oldListItem) => (dispatch) => {
-    const listItem = new ListItem({...oldListItem.serialize(), date: Moment.utc()});
+    const listItem = new ListItem({...oldListItem.serialize(), date: moment.utc()});
 
     dispatch({
         type: actionType.EDIT_ITEM_OFFLINE,
@@ -180,7 +180,7 @@ addSyncCompleteHandler({
         payload: new ListItem({
             ...response,
             tmpId: response.tmpId || '',
-            date: response.date ? Moment.utc(response.date) : Moment.utc(),
+            date: response.date ? moment.utc(response.date) : moment.utc(),
             productId: response.translationId
         })
     }),
@@ -196,7 +196,7 @@ export const buyItem = listItem => {
 
     return {
         type: actionType.BUY_ITEM_OFFLINE,
-        payload: new ListItem({...listItem.serialize(), status: STATUS_BOUGHT}),
+        payload: new ListItem({...listItem.serialize(), status: STATUS_BOUGHT, date: moment.utc()}),
         sync: {
             name: 'list-item-buy',
             successAction: actionType.BUY_ITEM_SUCCESS,
@@ -215,7 +215,7 @@ export const returnItem = listItem => {
 
     return {
         type: actionType.RETURN_ITEM_OFFLINE,
-        payload: new ListItem({...listItem.serialize(), status: STATUS_DRAFT}),
+        payload: new ListItem({...listItem.serialize(), status: STATUS_DRAFT, date: moment.utc()}),
         sync: {
             name: 'list-item-return',
             successAction: actionType.RETURN_ITEM_SUCCESS,

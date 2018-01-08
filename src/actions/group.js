@@ -11,16 +11,17 @@ import {getUser} from 'Reducers/user';
 const buildGroupCollectionFromResponse = (state, groups = []) => {
     const groupCollection = new Map();
 
-    groups.forEach(groupData => groupCollection.set(
-        groupData.id,
-        new Group({
-            ...groupData,
-            tmpId: groupData.tmpId || '',
-            color: groupData.img || '',
-            name: groupData[getUser(state).getLanguage()],
-            defaultName: groupData.en || groupData.ru || ''
-        })
-    ));
+    Object.keys(groups)
+        .filter(groupId => groups[groupId].type === 'group')
+        .forEach(groupId => groupCollection.set(
+            groups[groupId].id, new Group({
+                ...groups[groupId],
+                tmpId: groups[groupId].tmpId || '',
+                color: groups[groupId].img || '',
+                name: groups[groupId][getUser(state).getLanguage()],
+                defaultName: groups[groupId].en || groups[groupId].ru || ''
+            })
+        ));
 
     return groupCollection;
 };
